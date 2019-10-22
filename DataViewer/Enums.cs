@@ -1,6 +1,6 @@
 ﻿namespace DataViewer
 {
-    enum Language
+    public enum Language
     {
         English_US,
         Japanease,

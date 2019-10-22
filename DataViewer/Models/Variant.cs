@@ -2,7 +2,7 @@
 
 namespace DataViewer.Models
 {
-    class Variant
+    public class Variant
     {
         public string Name { get; set; }
 

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace DataViewer.Models
 {
-    class TextLine
+    public class TextLine
     {
         [JsonProperty]
         public string Text { get; set; }

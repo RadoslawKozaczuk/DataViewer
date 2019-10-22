@@ -1,36 +1,61 @@
 ﻿using DataViewer.Models;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DataViewer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged, INotifyPropertyChanging
     {
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
         }
 
+        #region Properties
+        LocalizationEntry _selectedEntry;
+        public LocalizationEntry SelectedEntry
+        {
+            get => _selectedEntry;
+            set
+            {
+                if (_selectedEntry != value)
+                {
+                    NotifyPropertyChanging("SelectedEntry");
+                    _selectedEntry = value;
+                    NotifyPropertyChanged("SelectedEntry");
+                }
+            }
+        }
 
-        List<LocalizationEntry> objects;
+        Variant _selectedVariant;
+        public Variant SelectedVariant
+        {
+            get => _selectedVariant;
+            set
+            {
+                if (_selectedVariant != value)
+                {
+                    NotifyPropertyChanging("SelectedVariant");
+                    _selectedVariant = value;
+                    NotifyPropertyChanged("SelectedVariant");
+                }
+            }
+        }
+        #endregion
+
+        List<LocalizationEntry> entries;
+        GridViewColumnHeader listViewSortCol = null;
+        SortAdorner listViewSortAdorner = null;
 
         private void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
@@ -41,12 +66,18 @@ namespace DataViewer
             else
                 return;
 
-            // deserialize JSON directly from a file
-            using (StreamReader file = File.OpenText(fullPath))
-            {
-                var serializer = new JsonSerializer();
-                objects = (List<LocalizationEntry>)serializer.Deserialize(file, typeof(List<LocalizationEntry>));
-            }
+            entries = LocalizationDataDeserializer.DeserializeJsonFile(fullPath);
+            EntriesLv.ItemsSource = entries;
+            
+            // get view
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(EntriesLv.ItemsSource);
+            
+            // add grouping to the view
+            PropertyGroupDescription groupDescription = new PropertyGroupDescription("Speaker");
+            view.GroupDescriptions.Add(groupDescription);
+
+            // add filtering to the view
+            view.Filter = SpeakerFilter;
         }
 
         void ExportToExcelButton_Click(object sender, RoutedEventArgs e)
@@ -66,7 +97,58 @@ namespace DataViewer
                 return;
 
             var exporter = new ExcelExporter();
-            exporter.ExportToExcel(objects, fullPath);
+            exporter.ExportToExcel(entries, fullPath);
+        }
+
+        void EntriesColumnHeader_Click(object sender, RoutedEventArgs e)
+        {
+            var column = sender as GridViewColumnHeader;
+            string sortBy = column.Tag.ToString();
+            if (listViewSortCol != null)
+            {
+                AdornerLayer.GetAdornerLayer(listViewSortCol).Remove(listViewSortAdorner);
+                EntriesLv.Items.SortDescriptions.Clear();
+            }
+
+            ListSortDirection newDir = ListSortDirection.Ascending;
+            if (listViewSortCol == column && listViewSortAdorner.Direction == newDir)
+                newDir = ListSortDirection.Descending;
+
+            listViewSortCol = column;
+            listViewSortAdorner = new SortAdorner(listViewSortCol, newDir);
+            AdornerLayer.GetAdornerLayer(listViewSortCol).Add(listViewSortAdorner);
+            EntriesLv.Items.SortDescriptions.Add(new SortDescription(sortBy, newDir));
+        }
+
+        bool SpeakerFilter(object item)
+        {
+            return string.IsNullOrEmpty(txtSpeakerFilter.Text)
+                ? true
+                : (item as LocalizationEntry).Speaker.IndexOf(txtSpeakerFilter.Text, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        void SpeakerFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(EntriesLv.ItemsSource).Refresh();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public event PropertyChangingEventHandler PropertyChanging;
+
+        // Used to notify the data context that a data context property is about to change
+        protected void NotifyPropertyChanging(string propertyName) => PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+
+        protected void NotifyPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        void NameFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TextFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 }

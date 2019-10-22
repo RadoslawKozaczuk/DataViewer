@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DataViewer.Models
 {
-    class LocalizationEntry
+    public class LocalizationEntry
     {
         [JsonProperty("Speaker")]
         public string Speaker { get; set; }
@@ -13,5 +13,7 @@ namespace DataViewer.Models
 
         [JsonConverter(typeof(VariantConverter))]
         public IList<Variant> Variants { get; set; }
+
+        public override string ToString() => $"Speaker {Speaker} GUID:{GUID}";
     }
 }
