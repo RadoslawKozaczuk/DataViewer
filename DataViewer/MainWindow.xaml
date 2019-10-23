@@ -56,12 +56,13 @@
                     </Grid.RowDefinitions>
                     <Label Margin="10, 0, 10, 0">Speaker Filter</Label>
                     <Label Grid.Column="1" Margin="10, 0, 10, 0">GUID Filter</Label>
-                    <TextBox Grid.Row="1" Margin="10, 5, 10, 0" Name="SpeakerFilterTxt" TextChanged="SpeakerFilterTxt_TextChanged"></TextBox>
-                    <TextBox Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0" Name="GUIDFilterTxt" TextChanged="GUIDFilterTxt_TextChanged"></TextBox>
+                    <TextBox Grid.Row="1" Margin="10, 5, 10, 0" Name="SpeakerFilterTxt" TextChanged="EntryFilter_ValueChanged"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0" Name="GUIDFilterTxt" TextChanged="EntryFilter_ValueChanged"></TextBox>
                 </Grid>
 
                 <DataGrid Name="EntriesDataGrid" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" 
-                        CanUserAddRows="False" AutoGenerateColumns="False" SelectedItem="{Binding SelectedEntry}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False">
+                          CanUserAddRows="False" AutoGenerateColumns="False" SelectedItem="{Binding SelectedEntry}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False"
+                          SelectionMode="Single" RowEditEnding="EntriesDataGrid_RowEditEnding">
                     <DataGrid.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.ContainerStyle>
@@ -74,7 +75,7 @@
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="14" VerticalAlignment="Bottom" />
                                                             <TextBlock Text="{Binding ItemCount}" FontSize="14" Foreground="Green" FontWeight="Bold" FontStyle="Italic" Margin="10,0,0,0" 
-                                                                    VerticalAlignment="Bottom" />
+                                                                       VerticalAlignment="Bottom" />
                                                             <TextBlock Text=" item(s)" FontSize="14" Foreground="Silver" FontStyle="Italic" VerticalAlignment="Bottom" />
                                                         </StackPanel>
                                                     </Expander.Header>
@@ -89,7 +90,7 @@
                     </DataGrid.GroupStyle>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Speaker" Width="60" Binding="{Binding Path=Speaker}"/>
-                        <DataGridTextColumn Header="GUID" Width="250" Binding="{Binding Path=GUID}"/>
+                        <DataGridTextColumn Header="GUID" Width="250" IsReadOnly="True" Binding="{Binding Path=GUID}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -105,11 +106,12 @@
                         <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
                     <Label Margin="10, 0, 10, 0">Name Filter</Label>
-                    <TextBox Grid.Row="1" Margin="10, 5, 10, 0" Name="NameFilterTxt" TextChanged="NameFilterTxt_TextChanged"></TextBox>
+                    <TextBox Grid.Row="1" Margin="10, 5, 10, 0" Name="NameFilterTxt" TextChanged="VariantFilter_ValueChanged"></TextBox>
                 </Grid>
 
                 <DataGrid Name="VariantsDataGrid" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" Width="80" CanUserAddRows="False" 
-                          AutoGenerateColumns="False" ItemsSource="{Binding SelectedEntry.Variants}" SelectedItem="{Binding SelectedVariant}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False">
+                          AutoGenerateColumns="False" ItemsSource="{Binding SelectedEntry.Variants}" SelectedItem="{Binding SelectedVariant}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False"
+                          SelectionMode="Single" RowEditEnding="VariantsDataGrid_RowEditEnding">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Width="70" Binding="{Binding Name}"/>
                     </DataGrid.Columns>
@@ -120,7 +122,7 @@
             <StackPanel Orientation="Vertical">
                 <Grid Height="50">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -129,10 +131,15 @@
                     </Grid.RowDefinitions>
                     <Label Margin="10, 0, 10, 0">Text Filter</Label>
                     <Label Grid.Column="1" Margin="10, 0, 10, 0">Language Filter</Label>
-                    <TextBox Grid.Row="1" Margin="10, 5, 10, 0" Name="LineFilterTxt" TextChanged="LineFilterTxt_TextChanged"></TextBox>
-                    <TextBox Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0" Name="LanguageFilterTxt" TextChanged="LanguageFilterTxt_TextChanged"></TextBox>
+                    <TextBox Grid.Row="1" Margin="10, 5, 10, 0" Name="TextFilterTxt" TextChanged="TextLineFilter_ValueChanged"></TextBox>
+                    <ComboBox Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0" Name="LanguageComboBox"
+                              />
+                    <!--ItemsSource="{Binding Source={StaticResource LanguageValues}}" 
+                              SelectedItem="{Binding Path=LanguageFilterValue}">
+                    </ComboBox>-->
                 </Grid>
-                <DataGrid Margin="10" x:Name="TextLines" Height="320" CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding SelectedVariant.TextLines}">
+                <DataGrid Margin="10" Name="TextLinesDataGrid" Height="320" CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding SelectedVariant.TextLines}"
+                          RowEditEnding="TextLinesDataGrid_RowEditEnding">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Text" Width="260" Binding="{Binding Path=Text}">
                             <DataGridTextColumn.ElementStyle>

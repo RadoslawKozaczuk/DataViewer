@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,13 +14,9 @@ namespace DataViewer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged, INotifyPropertyChanging
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-            DataContext = this;
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #region Properties
         LocalizationEntry _selectedEntry;
@@ -30,9 +27,18 @@ namespace DataViewer
             {
                 if (_selectedEntry != value)
                 {
-                    NotifyPropertyChanging("SelectedEntry");
                     _selectedEntry = value;
+
+                    // auto-select quality-of-life improvement
+                    // if there is only one variant to select from (after applying filtering) it will be automatically selected
+                    List<Variant> variants = _selectedEntry.Variants.Where(v => VariantFilter(v)).ToList();
+                    if (variants.Count == 1)
+                        SelectedVariant = variants[0];
+
                     NotifyPropertyChanged("SelectedEntry");
+                    var view = (CollectionView)CollectionViewSource.GetDefaultView(VariantsDataGrid.ItemsSource);
+                    if (view != null)
+                        view.Filter = VariantFilter;
                 }
             }
         }
@@ -45,17 +51,25 @@ namespace DataViewer
             {
                 if (_selectedVariant != value)
                 {
-                    NotifyPropertyChanging("SelectedVariant");
                     _selectedVariant = value;
                     NotifyPropertyChanged("SelectedVariant");
+                    var view = (CollectionView)CollectionViewSource.GetDefaultView(TextLinesDataGrid.ItemsSource);
+                    if(view != null)
+                        view.Filter = TextLineFilter;
                 }
             }
         }
         #endregion
 
-        public List<LocalizationEntry> Entries;
+        List<LocalizationEntry> LoadedData;
         GridViewColumnHeader listViewSortCol = null;
         SortAdorner listViewSortAdorner = null;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            DataContext = this;
+        }
 
         void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
@@ -66,18 +80,14 @@ namespace DataViewer
             else
                 return;
 
-            Entries = LocalizationDataDeserializer.DeserializeJsonFile(fullPath);
-            EntriesDataGrid.ItemsSource = Entries;
+            LoadedData = LocalizationDataDeserializer.DeserializeJsonFile(fullPath);
+            EntriesDataGrid.ItemsSource = LoadedData;
 
-            // get view
-            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource);
-
-            // add grouping to the view
-            PropertyGroupDescription groupDescription = new PropertyGroupDescription("Speaker");
-            view.GroupDescriptions.Add(groupDescription);
-
-            // add filtering to the view
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource);
             view.Filter = EntryFilter;
+
+            var groupDescription = new PropertyGroupDescription("Speaker");
+            view.GroupDescriptions.Add(groupDescription);
         }
 
         void ExportToExcelButton_Click(object sender, RoutedEventArgs e)
@@ -97,7 +107,7 @@ namespace DataViewer
                 return;
 
             var exporter = new ExcelExporter();
-            exporter.ExportToExcel(Entries, fullPath);
+            exporter.ExportToExcel(LoadedData, fullPath);
         }
 
         void EntriesColumnHeader_Click(object sender, RoutedEventArgs e)
@@ -137,41 +147,53 @@ namespace DataViewer
             return true;
         }
 
-        void SpeakerFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        bool VariantFilter(object item)
         {
-            CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource).Refresh();
+            if (!string.IsNullOrEmpty(NameFilterTxt.Text))
+            {
+                if ((item as Variant).Name.IndexOf(NameFilterTxt.Text, StringComparison.OrdinalIgnoreCase) < 0)
+                    return false;
+            }
+
+            return true;
         }
 
-        void GUIDFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        bool TextLineFilter(object item)
         {
-            CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource).Refresh();
+            if (!string.IsNullOrEmpty(TextFilterTxt.Text))
+            {
+                if ((item as TextLine).Text.IndexOf(TextFilterTxt.Text, StringComparison.OrdinalIgnoreCase) < 0)
+                    return false;
+            }
+
+            //if (!string.IsNullOrEmpty(LanguageFilterTxt.Text))
+            //{
+            //    if ((item as TextLine).Language.IndexOf(LanguageFilterTxt.Text, StringComparison.OrdinalIgnoreCase) < 0)
+            //        return false;
+            //}
+
+            return true;
         }
 
-        void LineFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource).Refresh();
-        }
+        void EntryFilter_ValueChanged(object sender, TextChangedEventArgs e) => CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource).Refresh();
 
-        void LanguageFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource).Refresh();
-        }
+        void VariantFilter_ValueChanged(object sender, TextChangedEventArgs e) => CollectionViewSource.GetDefaultView(VariantsDataGrid.ItemsSource).Refresh();
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        // Used to notify the data context that a data context property is about to change
-        protected void NotifyPropertyChanging(string propertyName) => PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+        void TextLineFilter_ValueChanged(object sender, TextChangedEventArgs e) => CollectionViewSource.GetDefaultView(TextLinesDataGrid.ItemsSource).Refresh();
 
         protected void NotifyPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        void NameFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        void EntriesDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
 
         }
 
-        void TextFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        void VariantsDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+
+        }
+
+        void TextLinesDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
 
         }
