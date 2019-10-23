@@ -6,9 +6,14 @@
         xmlns:local="clr-namespace:DataViewer"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="1000">
     <Window.Resources>
         <sys:String x:Key="strWindow">Hello, Window world!</sys:String>
+        <ObjectDataProvider x:Key="LanguageValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:Language"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </Window.Resources>
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
@@ -37,20 +42,27 @@
         </ToolBar>
 
         <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Vertical">
-                <TextBox DockPanel.Dock="Top" Margin="0,0,0,10" Name="txtSpeakerFilter" TextChanged="SpeakerFilter_TextChanged"/>
-                <ListView Margin="10" Name="EntriesLv" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" 
-                          SelectedItem="{Binding SelectedEntry}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Width="60" DisplayMemberBinding="{Binding Speaker}">
-                                <GridViewColumnHeader Tag="Speaker" Click="EntriesColumnHeader_Click">Name</GridViewColumnHeader>
-                            </GridViewColumn>
-                            <GridViewColumn Header="GUID" Width="250" DisplayMemberBinding="{Binding GUID}" />
-                        </GridView>
-                    </ListView.View>
 
-                    <ListView.GroupStyle>
+            <!-- localization entry filters and data grid -->
+            <StackPanel Orientation="Vertical">
+                <Grid Height="50">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+                    <Label Margin="10, 0, 10, 0">Speaker Filter</Label>
+                    <Label Grid.Column="1" Margin="10, 0, 10, 0">GUID Filter</Label>
+                    <TextBox Grid.Row="1" Margin="10, 5, 10, 0" Name="SpeakerFilterTxt" TextChanged="SpeakerFilterTxt_TextChanged"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0" Name="GUIDFilterTxt" TextChanged="GUIDFilterTxt_TextChanged"></TextBox>
+                </Grid>
+
+                <DataGrid Name="EntriesDataGrid" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" 
+                        CanUserAddRows="False" AutoGenerateColumns="False" SelectedItem="{Binding SelectedEntry}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False">
+                    <DataGrid.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.ContainerStyle>
                                 <Style TargetType="{x:Type GroupItem}">
@@ -61,7 +73,8 @@
                                                     <Expander.Header>
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="14" VerticalAlignment="Bottom" />
-                                                            <TextBlock Text="{Binding ItemCount}" FontSize="14" Foreground="Green" FontWeight="Bold" FontStyle="Italic" Margin="10,0,0,0" VerticalAlignment="Bottom" />
+                                                            <TextBlock Text="{Binding ItemCount}" FontSize="14" Foreground="Green" FontWeight="Bold" FontStyle="Italic" Margin="10,0,0,0" 
+                                                                    VerticalAlignment="Bottom" />
                                                             <TextBlock Text=" item(s)" FontSize="14" Foreground="Silver" FontStyle="Italic" VerticalAlignment="Bottom" />
                                                         </StackPanel>
                                                     </Expander.Header>
@@ -73,39 +86,87 @@
                                 </Style>
                             </GroupStyle.ContainerStyle>
                         </GroupStyle>
-                    </ListView.GroupStyle>
-                </ListView>
-            </StackPanel>
-            
-            <StackPanel Orientation="Vertical">
-                <TextBox DockPanel.Dock="Top" Margin="0,0,0,10" Name="NameFilterTxt" TextChanged="NameFilterTxt_TextChanged" />
-                <ListView Margin="10" Name="VariantsLv" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" ItemsSource="{Binding SelectedEntry.Variants}"
-                          SelectedItem="{Binding SelectedVariant}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Width="60" DisplayMemberBinding="{Binding Name}">
-                                <GridViewColumnHeader Tag="Name" Click="EntriesColumnHeader_Click">Name</GridViewColumnHeader>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                    </DataGrid.GroupStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Speaker" Width="60" Binding="{Binding Path=Speaker}"/>
+                        <DataGridTextColumn Header="GUID" Width="250" Binding="{Binding Path=GUID}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </StackPanel>
 
+            <!-- variant filter and data grid -->
             <StackPanel Orientation="Vertical">
-                <TextBox DockPanel.Dock="Top" Margin="0,0,0,10" Name="TextFilterTxt" TextChanged="TextFilterTxt_TextChanged" />
-                <ListView Margin="10" Name="TextLinesLv" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" ItemsSource="{Binding SelectedVariant.TextLines}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Width="60" DisplayMemberBinding="{Binding Text}">
-                                <GridViewColumnHeader Tag="Text" Click="EntriesColumnHeader_Click">Text</GridViewColumnHeader>
-                            </GridViewColumn>
-                            <GridViewColumn Width="60" DisplayMemberBinding="{Binding Language}">
-                                <GridViewColumnHeader Tag="Language" Click="EntriesColumnHeader_Click">Language</GridViewColumnHeader>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <Grid Height="50">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+                    <Label Margin="10, 0, 10, 0">Name Filter</Label>
+                    <TextBox Grid.Row="1" Margin="10, 5, 10, 0" Name="NameFilterTxt" TextChanged="NameFilterTxt_TextChanged"></TextBox>
+                </Grid>
+
+                <DataGrid Name="VariantsDataGrid" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" Width="80" CanUserAddRows="False" 
+                          AutoGenerateColumns="False" ItemsSource="{Binding SelectedEntry.Variants}" SelectedItem="{Binding SelectedVariant}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Width="70" Binding="{Binding Name}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </StackPanel>
+
+            <!-- text line filters and data grid -->
+            <StackPanel Orientation="Vertical">
+                <Grid Height="50">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+                    <Label Margin="10, 0, 10, 0">Text Filter</Label>
+                    <Label Grid.Column="1" Margin="10, 0, 10, 0">Language Filter</Label>
+                    <TextBox Grid.Row="1" Margin="10, 5, 10, 0" Name="LineFilterTxt" TextChanged="LineFilterTxt_TextChanged"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0" Name="LanguageFilterTxt" TextChanged="LanguageFilterTxt_TextChanged"></TextBox>
+                </Grid>
+                <DataGrid Margin="10" x:Name="TextLines" Height="320" CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding SelectedVariant.TextLines}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Text" Width="260" Binding="{Binding Path=Text}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTemplateColumn Header="Language">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Language}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate>
+                                    <ComboBox Name="LanguageComboBox" ItemsSource="{Binding Source={StaticResource LanguageValues}}" 
+                                              SelectedItem="{Binding Path=Language}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+
+            <StackPanel Margin="10" Orientation="Vertical">
+                <Label>
+                    Press Ctrl-Z to undo last edit.
+                </Label>
+                <TextBlock Margin="5, 10, 5, 0" TextWrapping="Wrap">
+                    Executed command list:
+                </TextBlock>
+            </StackPanel>
+            
         </StackPanel>
     </DockPanel>
 </Window>

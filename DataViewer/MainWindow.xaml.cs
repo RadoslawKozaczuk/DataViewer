@@ -53,11 +53,11 @@ namespace DataViewer
         }
         #endregion
 
-        List<LocalizationEntry> entries;
+        public List<LocalizationEntry> Entries;
         GridViewColumnHeader listViewSortCol = null;
         SortAdorner listViewSortAdorner = null;
 
-        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
+        void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
             string fullPath;
             var openFileDialog = new OpenFileDialog { Filter = "JSON files (*.json)|*.json" };
@@ -66,18 +66,18 @@ namespace DataViewer
             else
                 return;
 
-            entries = LocalizationDataDeserializer.DeserializeJsonFile(fullPath);
-            EntriesLv.ItemsSource = entries;
-            
+            Entries = LocalizationDataDeserializer.DeserializeJsonFile(fullPath);
+            EntriesDataGrid.ItemsSource = Entries;
+
             // get view
-            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(EntriesLv.ItemsSource);
-            
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource);
+
             // add grouping to the view
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("Speaker");
             view.GroupDescriptions.Add(groupDescription);
 
             // add filtering to the view
-            view.Filter = SpeakerFilter;
+            view.Filter = EntryFilter;
         }
 
         void ExportToExcelButton_Click(object sender, RoutedEventArgs e)
@@ -97,7 +97,7 @@ namespace DataViewer
                 return;
 
             var exporter = new ExcelExporter();
-            exporter.ExportToExcel(entries, fullPath);
+            exporter.ExportToExcel(Entries, fullPath);
         }
 
         void EntriesColumnHeader_Click(object sender, RoutedEventArgs e)
@@ -107,7 +107,7 @@ namespace DataViewer
             if (listViewSortCol != null)
             {
                 AdornerLayer.GetAdornerLayer(listViewSortCol).Remove(listViewSortAdorner);
-                EntriesLv.Items.SortDescriptions.Clear();
+                EntriesDataGrid.Items.SortDescriptions.Clear();
             }
 
             ListSortDirection newDir = ListSortDirection.Ascending;
@@ -117,19 +117,44 @@ namespace DataViewer
             listViewSortCol = column;
             listViewSortAdorner = new SortAdorner(listViewSortCol, newDir);
             AdornerLayer.GetAdornerLayer(listViewSortCol).Add(listViewSortAdorner);
-            EntriesLv.Items.SortDescriptions.Add(new SortDescription(sortBy, newDir));
+            EntriesDataGrid.Items.SortDescriptions.Add(new SortDescription(sortBy, newDir));
         }
 
-        bool SpeakerFilter(object item)
+        bool EntryFilter(object item)
         {
-            return string.IsNullOrEmpty(txtSpeakerFilter.Text)
-                ? true
-                : (item as LocalizationEntry).Speaker.IndexOf(txtSpeakerFilter.Text, StringComparison.OrdinalIgnoreCase) >= 0;
+            if(!string.IsNullOrEmpty(SpeakerFilterTxt.Text))
+            {
+                if ((item as LocalizationEntry).Speaker.IndexOf(SpeakerFilterTxt.Text, StringComparison.OrdinalIgnoreCase) < 0)
+                    return false;
+            }
+
+            if (!string.IsNullOrEmpty(GUIDFilterTxt.Text))
+            {
+                if ((item as LocalizationEntry).GUID.IndexOf(GUIDFilterTxt.Text, StringComparison.OrdinalIgnoreCase) < 0)
+                    return false;
+            }
+
+            return true;
         }
 
-        void SpeakerFilter_TextChanged(object sender, TextChangedEventArgs e)
+        void SpeakerFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
         {
-            CollectionViewSource.GetDefaultView(EntriesLv.ItemsSource).Refresh();
+            CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource).Refresh();
+        }
+
+        void GUIDFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource).Refresh();
+        }
+
+        void LineFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource).Refresh();
+        }
+
+        void LanguageFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(EntriesDataGrid.ItemsSource).Refresh();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -146,7 +171,7 @@ namespace DataViewer
 
         }
 
-        private void TextFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
+        void TextFilterTxt_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
