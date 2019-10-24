@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using DataViewer.Commands;
 using DataViewer.Models;
 using Google.Cloud.Translation.V2;
 using Microsoft.Win32;
@@ -43,10 +44,10 @@ namespace DataViewer.ViewModels
                         List<Variant> variants = _selectedEntry.Variants.Where(v => VariantFilter(v)).ToList();
                         if (variants.Count == 1)
                             SelectedVariant = variants[0];
-                    }
 
-                    _variantsView = CollectionViewSource.GetDefaultView(SelectedEntry.Variants);
-                    _variantsView.Filter = VariantFilter;
+                        _variantsView = CollectionViewSource.GetDefaultView(SelectedEntry.Variants);
+                        _variantsView.Filter = VariantFilter;
+                    }
                 }
             }
         }
@@ -137,8 +138,6 @@ namespace DataViewer.ViewModels
         }
         #endregion
 
-        GridViewColumnHeader _listViewSortCol;
-        SortAdorner _listViewSortAdorner;
         ICollectionView _entriesView;
         ICollectionView _variantsView;
         ICollectionView _textLinesView;
@@ -218,19 +217,15 @@ namespace DataViewer.ViewModels
             _textLinesView.Refresh();
         }
 
-        public bool CanUndo => true;
+        public bool CanUndo => CommandStack.UndoStack.Count > 0;
 
         public void Undo()
         {
-            using TranslationClient client = TranslationClient.Create();
-            var response = client.TranslateText(
-                text: "Hello World.",
-                targetLanguage: "pl",  // Polish
-                sourceLanguage: "en",  // English
-                model: TranslationModel.NeuralMachineTranslation);
-            Console.WriteLine(response.TranslatedText);
-
-            MessageBox.Show($"Hello World. => {response.TranslatedText}");
+            CommandStack.UndoStack.Pop().ExecuteUndo();
+            _entriesView?.Refresh();
+            _variantsView?.Refresh();
+            _textLinesView?.Refresh();
+            NotifyOfPropertyChange(() => CanUndo);
         }
 
         public bool CanRedo => true;
@@ -241,39 +236,43 @@ namespace DataViewer.ViewModels
         }
         #endregion
 
-        void EntriesColumnHeader_Click(object sender, RoutedEventArgs e)
+        public void Entries_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
-            var column = sender as GridViewColumnHeader;
-            string sortBy = column.Tag.ToString();
-            if (_listViewSortCol != null)
+            if (e.EditAction != DataGridEditAction.Commit)
+                return;
+
+            if (e.Column.Header.ToString() == "Speaker")
             {
-                AdornerLayer.GetAdornerLayer(_listViewSortCol).Remove(_listViewSortAdorner);
-                _entriesView.SortDescriptions.Clear();
+                var undoCmd = new UndoCommand(SelectedEntry, new LocalizationEntry { Speaker = SelectedEntry.Speaker });
+                CommandStack.UndoStack.Push(undoCmd);
+                NotifyOfPropertyChange(() => CanUndo);
             }
-
-            ListSortDirection newDir = ListSortDirection.Ascending;
-            if (_listViewSortCol == column && _listViewSortAdorner.Direction == newDir)
-                newDir = ListSortDirection.Descending;
-
-            _listViewSortCol = column;
-            _listViewSortAdorner = new SortAdorner(_listViewSortCol, newDir);
-            AdornerLayer.GetAdornerLayer(_listViewSortCol).Add(_listViewSortAdorner);
-            _entriesView.SortDescriptions.Add(new SortDescription(sortBy, newDir));
         }
 
-        void EntriesDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        public void Variants_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
+            if (e.EditAction != DataGridEditAction.Commit)
+                return;
 
+            if (e.Column.Header.ToString() == "Name")
+            {
+                var undoCmd = new UndoCommand(SelectedVariant, new Variant { Name = SelectedVariant.Name });
+                CommandStack.UndoStack.Push(undoCmd);
+                NotifyOfPropertyChange(() => CanUndo);
+            }
         }
 
-        void VariantsDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        public void TextLines_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
+            if (e.EditAction != DataGridEditAction.Commit)
+                return;
 
-        }
-
-        void TextLinesDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        {
-
+            if (e.Column.Header.ToString() == "Text")
+            {
+                var undoCmd = new UndoCommand(SelectedTextLine, new TextLine { Text = SelectedTextLine.Text });
+                CommandStack.UndoStack.Push(undoCmd);
+                NotifyOfPropertyChange(() => CanUndo);
+            }
         }
 
         #region Filters
@@ -296,21 +295,9 @@ namespace DataViewer.ViewModels
             => string.IsNullOrWhiteSpace(NameFilter) 
             || (item as Variant).Name.IndexOf(NameFilter, StringComparison.OrdinalIgnoreCase) >= 0;
 
-        bool TextLineFilter(object item)
-        {
-            var textLine = item as TextLine;
-
-            if (!string.IsNullOrWhiteSpace(TextFilter) && textLine.Text.IndexOf(TextFilter, StringComparison.OrdinalIgnoreCase) < 0)
-                return false;
-
-            //if (!string.IsNullOrEmpty(LanguageFilterTxt.Text))
-            //{
-            //    if ((item as TextLine).Language.IndexOf(LanguageFilterTxt.Text, StringComparison.OrdinalIgnoreCase) < 0)
-            //        return false;
-            //}
-
-            return true;
-        }
+        bool TextLineFilter(object item) 
+            => string.IsNullOrWhiteSpace(TextFilter) 
+            || (item as TextLine).Text.IndexOf(TextFilter, StringComparison.OrdinalIgnoreCase) >= 0;
         #endregion
     }
 }

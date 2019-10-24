@@ -82,9 +82,9 @@
                     <TextBox x:Name="GUIDFilter" Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0"></TextBox>
                 </Grid>
 
-                <DataGrid Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" 
-                          CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False"
-                          SelectionMode="Single">
+                <DataGrid x:Name="Entries" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" 
+                          CanUserAddRows="False" AutoGenerateColumns="False" SelectedItem="{Binding SelectedEntry}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False"
+                          SelectionMode="Single" cal:Message.Attach="[Event CellEditEnding] = [Action Entries_CellEditEnding($eventArgs)]">
                     <DataGrid.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.ContainerStyle>
@@ -131,9 +131,9 @@
                     <TextBox x:Name="NameFilter" Grid.Row="1" Margin="10, 5, 10, 0"></TextBox>
                 </Grid>
 
-                <DataGrid Name="VariantsDataGrid" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" Width="80" CanUserAddRows="False" 
+                <DataGrid Name="Variants" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" Width="80" CanUserAddRows="False" 
                           AutoGenerateColumns="False" ItemsSource="{Binding SelectedEntry.Variants}" SelectedItem="{Binding SelectedVariant}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False"
-                          SelectionMode="Single">
+                          SelectionMode="Single" cal:Message.Attach="[Event CellEditEnding] = [Action Variants_CellEditEnding($eventArgs)]">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Width="70" Binding="{Binding Name}"/>
                     </DataGrid.Columns>
@@ -158,17 +158,12 @@
                               ItemsSource="{Binding Source={StaticResource LanguageValues}}" SelectedItem="{Binding TranslationLanguage}"
                               MinWidth="80"/>
                 </Grid>
-                <DataGrid Margin="10" Name="TextLinesDataGrid" Height="320" CanUserAddRows="False" AutoGenerateColumns="False" 
+                <DataGrid x:Name="TextLines" Margin="10" Height="320" CanUserAddRows="False" AutoGenerateColumns="False" 
+                          ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" VerticalScrollBarVisibility="Auto"
                           ItemsSource="{Binding SelectedVariant.TextLines, Mode=TwoWay}"
-                          SelectedItem="{Binding SelectedTextLine, Mode=TwoWay}" SelectionMode="Single">
+                          SelectedItem="{Binding SelectedTextLine, Mode=TwoWay}" SelectionMode="Single" 
+                          cal:Message.Attach="[Event CellEditEnding] = [Action TextLines_CellEditEnding($eventArgs)]">
                     <DataGrid.Columns>
-                        <!--<DataGridTextColumn Header="Text" Width="260" Binding="{Binding Path=FullDisplayText}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style>
-                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>-->
                         <DataGridTemplateColumn Header="Text" Width="260">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>

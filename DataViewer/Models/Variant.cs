@@ -4,14 +4,8 @@ namespace DataViewer.Models
 {
     public class Variant
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
-        public List<TextLine> TextLines { get; set; }
-
-        public Variant(string name)
-        {
-            Name = name;
-            TextLines = new List<TextLine>();
-        }
+        public List<TextLine> TextLines { get; set; } = new List<TextLine>();
     }
 }

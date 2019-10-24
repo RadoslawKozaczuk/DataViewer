@@ -6,10 +6,10 @@ namespace DataViewer.Models
     public class LocalizationEntry
     {
         [JsonProperty("Speaker")]
-        public string Speaker { get; set; }
+        public string Speaker { get; set; } = "";
 
         [JsonProperty("GUID")]
-        public string GUID { get; set; }
+        public string GUID { get; set; } = "";
 
         [JsonConverter(typeof(VariantConverter))]
         public IList<Variant> Variants { get; set; }
