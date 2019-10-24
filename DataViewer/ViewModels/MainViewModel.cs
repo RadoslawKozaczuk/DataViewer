@@ -44,7 +44,7 @@ namespace DataViewer.ViewModels
                         if (variants.Count == 1)
                             SelectedVariant = variants[0];
 
-                        _variantsView = CollectionViewSource.GetDefaultView(SelectedEntry.Variants);
+                        _variantsView = (ListCollectionView)CollectionViewSource.GetDefaultView(SelectedEntry.Variants);
                         _variantsView.Filter = VariantFilter;
                     }
                 }
@@ -63,7 +63,7 @@ namespace DataViewer.ViewModels
 
                     if(_selectedVariant != null)
                     {
-                        _textLinesView = CollectionViewSource.GetDefaultView(SelectedVariant.TextLines);
+                        _textLinesView = (ListCollectionView)CollectionViewSource.GetDefaultView(SelectedVariant.TextLines);
                         _textLinesView.Filter = TextLineFilter;
                     }
                 }
@@ -88,7 +88,7 @@ namespace DataViewer.ViewModels
             set
             {
                 _speakerFilter = value;
-                _entriesView?.Refresh();
+                _entriesView?.ForceCommitRefresh();
             }    
         }
 
@@ -99,7 +99,7 @@ namespace DataViewer.ViewModels
             set
             {
                 _guidFilter = value;
-                _entriesView?.Refresh();
+                _entriesView?.ForceCommitRefresh();
             }
         }
 
@@ -110,7 +110,7 @@ namespace DataViewer.ViewModels
             set
             {
                 _nameFilter = value;
-                _variantsView?.Refresh();
+                _variantsView?.ForceCommitRefresh();
             }
         }
 
@@ -121,7 +121,7 @@ namespace DataViewer.ViewModels
             set
             {
                 _textFilter = value;
-                _textLinesView?.Refresh();
+                _textLinesView?.ForceCommitRefresh();
             }
         }
 
@@ -137,9 +137,16 @@ namespace DataViewer.ViewModels
         }
         #endregion
 
-        ICollectionView _entriesView;
-        ICollectionView _variantsView;
-        ICollectionView _textLinesView;
+        ListCollectionView _entriesView;
+        ListCollectionView _variantsView;
+        ListCollectionView _textLinesView;
+
+        public MainViewModel() : base()
+        {
+            // for convenience we pass notifiers to command stack so whenever an operation is executed on it, notifiers will also be called
+            CommandStack.NotifyUndoAction = () => NotifyOfPropertyChange(() => CanUndo);
+            CommandStack.NotifyRedoAction = () => NotifyOfPropertyChange(() => CanRedo);
+        }
 
         #region Button methods
         public void OpenFile()
@@ -156,7 +163,7 @@ namespace DataViewer.ViewModels
             if (Entries == null || Entries.Count == 0)
                 return;
 
-            _entriesView = CollectionViewSource.GetDefaultView(Entries);
+            _entriesView = (ListCollectionView)CollectionViewSource.GetDefaultView(Entries);
             _entriesView.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
             _entriesView.Filter = EntryFilter;
             
@@ -216,25 +223,30 @@ namespace DataViewer.ViewModels
             SelectedTextLine.TranslatedText = response.TranslatedText;
             SelectedTextLine.TranslationLanguage = TranslationLanguage;
 
-            _textLinesView.Refresh();
+            _textLinesView.ForceCommitRefresh();
         }
 
-        public bool CanUndo => CommandStack.UndoStack.Count > 0;
+        public bool CanUndo => CommandStack.UndoCount > 0;
 
         public void Undo()
         {
-            CommandStack.UndoStack.Pop().ExecuteUndo();
-            _entriesView?.Refresh();
-            _variantsView?.Refresh();
-            _textLinesView?.Refresh();
-            NotifyOfPropertyChange(() => CanUndo);
+            CommandStack.Undo();
+            RefreshAllViews();
         }
 
-        public bool CanRedo => true;
+        public bool CanRedo => CommandStack.RedoCount > 0;
 
         public void Redo()
         {
-            MessageBox.Show("Redo Clicked");
+            CommandStack.Redo();
+            RefreshAllViews();
+        }
+
+        void RefreshAllViews()
+        {
+            _entriesView?.ForceCommitRefresh();
+            _variantsView?.ForceCommitRefresh();
+            _textLinesView?.ForceCommitRefresh();
         }
         #endregion
 
@@ -245,9 +257,12 @@ namespace DataViewer.ViewModels
 
             if (e.Column.Header.ToString() == "Speaker")
             {
-                var undoCmd = new UndoCommand(SelectedEntry, new LocalizationEntry { Speaker = SelectedEntry.Speaker });
-                CommandStack.UndoStack.Push(undoCmd);
-                NotifyOfPropertyChange(() => CanUndo);
+                var undoCmd = new UndoRedoCommand(
+                    objRef: SelectedEntry, 
+                    oldValue: new LocalizationEntry { Speaker = SelectedEntry.Speaker },
+                    newValue: new LocalizationEntry { Speaker = ((TextBox)e.EditingElement).Text });
+
+                CommandStack.Push(undoCmd);
             }
         }
 
@@ -258,12 +273,16 @@ namespace DataViewer.ViewModels
 
             if (e.Column.Header.ToString() == "Name")
             {
-                var undoCmd = new UndoCommand(SelectedVariant, new Variant { Name = SelectedVariant.Name });
-                CommandStack.UndoStack.Push(undoCmd);
-                NotifyOfPropertyChange(() => CanUndo);
+                var undoCmd = new UndoRedoCommand(
+                    objRef: SelectedVariant, 
+                    oldValue: new Variant { Name = SelectedVariant.Name },
+                    newValue: new Variant { Name = ((TextBox)e.EditingElement).Text });
+
+                CommandStack.Push(undoCmd);
             }
         }
 
+        // doesnt work for now something is wrong with the xaml structure
         public void TextLines_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
             if (e.EditAction != DataGridEditAction.Commit)
@@ -271,9 +290,12 @@ namespace DataViewer.ViewModels
 
             if (e.Column.Header.ToString() == "Text")
             {
-                var undoCmd = new UndoCommand(SelectedTextLine, new TextLine { Text = SelectedTextLine.Text });
-                CommandStack.UndoStack.Push(undoCmd);
-                NotifyOfPropertyChange(() => CanUndo);
+                var undoCmd = new UndoRedoCommand(
+                    objRef: SelectedTextLine, 
+                    oldValue: new TextLine { Text = SelectedTextLine.Text },
+                    newValue: new TextLine { Text = SelectedTextLine.Text });
+
+                CommandStack.Push(undoCmd);
             }
         }
 

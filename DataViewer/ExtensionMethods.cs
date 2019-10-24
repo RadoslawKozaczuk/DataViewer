@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Data;
 
 namespace DataViewer
 {
@@ -14,5 +15,19 @@ namespace DataViewer
             Language.Japanease => "ja",
             _ => throw new ArgumentOutOfRangeException("lang"),
         };
+
+        /// <summary>
+        /// Performs normal refresh but before that makes sure if view is not in Editing or Adding mode and if so commits changes.
+        /// </summary>
+        public static void ForceCommitRefresh(this ListCollectionView view)
+        {
+            if (view.IsEditingItem)
+                view.CommitEdit();
+
+            if (view.IsAddingNew)
+                view.CommitNew();
+
+            view.Refresh();
+        }
     }
 }

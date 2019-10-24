@@ -36,4 +36,6 @@ namespace DataViewer
         Japanease,
         French
     }
+
+    enum CommandState { ExecutedUndo, ExecutedRedo }
 }
