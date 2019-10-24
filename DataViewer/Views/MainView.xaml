@@ -8,7 +8,7 @@
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
-        Title="MainView" Height="450" Width="1000">
+        Title="MainView" MinHeight="500" Height="500" MaxHeight="500" Width="1000">
     <Window.Resources>
         
         <!-- Language enum access -->
@@ -18,7 +18,7 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         
-        <!-- hide label when null or empty -->
+        <!-- Hides label when its value is null or empty -->
         <Style TargetType="TextBlock" x:Key="HideTextBlock">
             <Style.Triggers>
                 <Trigger Property="Text" Value="">
@@ -29,11 +29,37 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Set toolbar buttons margins -->
+        <Style TargetType="Button" x:Key="ToolBarButton">
+            <Style.Setters>
+                <Setter Property="Margin" Value="3, 0, 3, 0"/>
+            </Style.Setters>
+        </Style>
+        
+        <Style TargetType="DataGrid" x:Key="ContentTable">
+            <Style.Setters>
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="Height" Value="350"/>
+                <Setter Property="CanUserAddRows" Value="False"/>
+                <Setter Property="AutoGenerateColumns" Value="False"/>
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
+                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                <Setter Property="SelectionMode" Value="Single"/>
+            </Style.Setters>
+        </Style>
     </Window.Resources>
     
-    <DockPanel>
-        <ToolBar DockPanel.Dock="Top">
-            <Button x:Name="OpenFile">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        
+        <ToolBar Grid.Row="0">
+            <Button x:Name="OpenFile" Style="{StaticResource ToolBarButton}">
                 <Button.Content>
                     Open File
                 </Button.Content>
@@ -52,18 +78,21 @@
                     </StackPanel>
                 </Button.ToolTip>
             </Button>
-            <Button x:Name="ExportToExcel">
-                ExportToExcel
+            <Button x:Name="ExportToExcel" Style="{StaticResource ToolBarButton}">
+                Export To Excel
             </Button>
-            <Button x:Name="Undo">
+            <Button x:Name="Undo" Style="{StaticResource ToolBarButton}">
                 Undo
             </Button>
-            <Button x:Name="Redo">
+            <Button x:Name="Redo" Style="{StaticResource ToolBarButton}">
                 Redo
+            </Button>
+            <Button x:Name="HealDocument" Style="{StaticResource ToolBarButton}">
+                Heal Document
             </Button>
         </ToolBar>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
 
             <!-- localization entry filters and data grid -->
             <StackPanel Orientation="Vertical">
@@ -82,9 +111,9 @@
                     <TextBox x:Name="GUIDFilter" Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0"></TextBox>
                 </Grid>
 
-                <DataGrid x:Name="Entries" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" 
-                          CanUserAddRows="False" AutoGenerateColumns="False" SelectedItem="{Binding SelectedEntry}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False"
-                          SelectionMode="Single" cal:Message.Attach="[Event CellEditEnding] = [Action Entries_CellEditEnding($eventArgs)]">
+                <DataGrid x:Name="Entries" Style="{StaticResource ContentTable}"
+                          SelectedItem="{Binding SelectedEntry}"
+                          cal:Message.Attach="[Event CellEditEnding] = [Action Entries_CellEditEnding($eventArgs)]">
                     <DataGrid.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.ContainerStyle>
@@ -131,9 +160,9 @@
                     <TextBox x:Name="NameFilter" Grid.Row="1" Margin="10, 5, 10, 0"></TextBox>
                 </Grid>
 
-                <DataGrid Name="Variants" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" Height="320" Width="80" CanUserAddRows="False" 
-                          AutoGenerateColumns="False" ItemsSource="{Binding SelectedEntry.Variants}" SelectedItem="{Binding SelectedVariant}" VerticalScrollBarVisibility="Auto" CanUserResizeRows="False"
-                          SelectionMode="Single" cal:Message.Attach="[Event CellEditEnding] = [Action Variants_CellEditEnding($eventArgs)]">
+                <DataGrid Name="Variants" Style="{StaticResource ContentTable}" Width="80"
+                          ItemsSource="{Binding SelectedEntry.Variants}" SelectedItem="{Binding SelectedVariant}"
+                          cal:Message.Attach="[Event CellEditEnding] = [Action Variants_CellEditEnding($eventArgs)]">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Width="70" Binding="{Binding Name}"/>
                     </DataGrid.Columns>
@@ -158,10 +187,8 @@
                               ItemsSource="{Binding Source={StaticResource LanguageValues}}" SelectedItem="{Binding TranslationLanguage}"
                               MinWidth="80"/>
                 </Grid>
-                <DataGrid x:Name="TextLines" Margin="10" Height="320" CanUserAddRows="False" AutoGenerateColumns="False" 
-                          ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" VerticalScrollBarVisibility="Auto"
-                          ItemsSource="{Binding SelectedVariant.TextLines, Mode=TwoWay}"
-                          SelectedItem="{Binding SelectedTextLine, Mode=TwoWay}" SelectionMode="Single" 
+                <DataGrid x:Name="TextLines" Style="{StaticResource ContentTable}"
+                          ItemsSource="{Binding SelectedVariant.TextLines, Mode=TwoWay}" SelectedItem="{Binding SelectedTextLine, Mode=TwoWay}" 
                           cal:Message.Attach="[Event CellEditEnding] = [Action TextLines_CellEditEnding($eventArgs)]">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Header="Text" Width="260">
@@ -203,5 +230,11 @@
             </StackPanel>
 
         </StackPanel>
-    </DockPanel>
+
+        <StatusBar Grid.Row="2" Height="30">
+            <StatusBarItem>
+                <TextBlock Name="lblCursorPosition" Text="status status" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
 </Window>
