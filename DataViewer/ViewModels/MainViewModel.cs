@@ -3,9 +3,10 @@ using DataViewer.Commands;
 using DataViewer.Models;
 using Google.Cloud.Translation.V2;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -158,10 +159,24 @@ namespace DataViewer.ViewModels
             else
                 return;
 
-            Entries = LocalizationDataDeserializer.DeserializeJsonFile(fullPath);
+            List<LocalizationEntry> entries;
 
-            if (Entries == null || Entries.Count == 0)
+            try
+            {
+                using StreamReader file = File.OpenText(fullPath);
+                var serializer = new JsonSerializer();
+                entries = (List<LocalizationEntry>)serializer.Deserialize(file, typeof(List<LocalizationEntry>));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("File is corrupted and impossible to read.", "File corrupted", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
+            }
+
+            if (entries == null || entries.Count == 0)
+                return;
+
+            Entries = entries;
 
             _entriesView = (ListCollectionView)CollectionViewSource.GetDefaultView(Entries);
             _entriesView.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
