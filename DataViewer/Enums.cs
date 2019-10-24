@@ -3,7 +3,7 @@
 namespace DataViewer
 {
     /// <summary>
-    /// helps to hide the enum value
+    /// Helps to hide the enum value.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class ShouldBeHiddenAttribute : Attribute

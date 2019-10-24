@@ -10,7 +10,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 
 namespace DataViewer.ViewModels
 {
@@ -18,8 +17,8 @@ namespace DataViewer.ViewModels
     {
         #region Properties
 
-        //        // Grouping disables virtualization! This can bring huge performance issues on large data sets. 
-        //        // So be careful when using it.
+        // Grouping disables virtualization. This can bring huge performance issues on large data sets. 
+        // So be careful when using it.
         List<LocalizationEntry> _entries;
         public List<LocalizationEntry> Entries
         {
@@ -89,7 +88,7 @@ namespace DataViewer.ViewModels
             set
             {
                 _speakerFilter = value;
-                _entriesView.Refresh();
+                _entriesView?.Refresh();
             }    
         }
 
@@ -100,7 +99,7 @@ namespace DataViewer.ViewModels
             set
             {
                 _guidFilter = value;
-                _entriesView.Refresh();
+                _entriesView?.Refresh();
             }
         }
 
@@ -111,7 +110,7 @@ namespace DataViewer.ViewModels
             set
             {
                 _nameFilter = value;
-                _variantsView.Refresh();
+                _variantsView?.Refresh();
             }
         }
 
@@ -122,7 +121,7 @@ namespace DataViewer.ViewModels
             set
             {
                 _textFilter = value;
-                _textLinesView.Refresh();
+                _textLinesView?.Refresh();
             }
         }
 
@@ -153,6 +152,9 @@ namespace DataViewer.ViewModels
                 return;
 
             Entries = LocalizationDataDeserializer.DeserializeJsonFile(fullPath);
+
+            if (Entries == null || Entries.Count == 0)
+                return;
 
             _entriesView = CollectionViewSource.GetDefaultView(Entries);
             _entriesView.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));

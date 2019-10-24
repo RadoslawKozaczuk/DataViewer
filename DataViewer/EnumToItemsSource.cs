@@ -13,11 +13,9 @@ namespace DataViewer
             _type = type;
         }
 
-        public override object ProvideValue(IServiceProvider serviceProvider)
-        {
-            return Enum.GetValues(_type)
+        public override object ProvideValue(IServiceProvider serviceProvider) 
+            => Enum.GetValues(_type)
                 .Cast<object>()
                 .Select(e => new { Value = (int)e, DisplayName = e.ToString() });
-        }
     }
 }

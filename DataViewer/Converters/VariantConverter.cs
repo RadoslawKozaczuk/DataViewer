@@ -16,7 +16,7 @@ namespace DataViewer
             if (reader.TokenType == JsonToken.Null)
                 return new List<Variant>(0);
 
-            var obj = JObject.Load(reader);
+            JObject obj = JObject.Load(reader);
             var varList = new List<Variant>(obj.Count);
 
             foreach(KeyValuePair<string, JToken> kvp in obj)

@@ -24,15 +24,13 @@ namespace DataViewer.Converters
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        => ((string)reader.Value) switch
         {
-            switch ((string)reader.Value)
-            {
-                case "en_us": return Language.English_US;
-                case "fr_fr": return Language.French;
-                case "jp_jp": return Language.Japanease;
-                default: throw new ArgumentException("Not supported language."); ;
-            }
-        }
+            "en_us" => Language.English_US,
+            "fr_fr" => Language.French,
+            "jp_jp" => Language.Japanease,
+            _ => throw new ArgumentException("Not supported language.")
+        };
 
         public override bool CanConvert(Type objectType) => objectType == typeof(string);
     }

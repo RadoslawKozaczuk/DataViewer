@@ -22,7 +22,7 @@ namespace DataViewer
             {
                 DataRow newRow = dt.NewRow();
 
-                var entry = locEntries[i];
+                LocalizationEntry entry = locEntries[i];
                 newRow[0] = i;
                 newRow[1] = entry.Speaker;
                 newRow[2] = entry.GUID;
