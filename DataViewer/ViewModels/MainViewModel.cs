@@ -19,8 +19,12 @@ namespace DataViewer.ViewModels
 
         //        // Grouping disables virtualization! This can bring huge performance issues on large data sets. 
         //        // So be careful when using it.
-
-
+        List<LocalizationEntry> _entries;
+        public List<LocalizationEntry> Entries
+        {
+            get => _entries;
+            set => Set(ref _entries, value);
+        }
 
         LocalizationEntry _selectedEntry;
         public LocalizationEntry SelectedEntry
@@ -57,9 +61,23 @@ namespace DataViewer.ViewModels
                 {
                     Set(ref _selectedVariant, value); // this one-liner does both set and notify
 
-                    _textLinesView = CollectionViewSource.GetDefaultView(SelectedVariant.TextLines);
-                    _textLinesView.Filter = TextLineFilter;
+                    if(_selectedVariant != null)
+                    {
+                        _textLinesView = CollectionViewSource.GetDefaultView(SelectedVariant.TextLines);
+                        _textLinesView.Filter = TextLineFilter;
+                    }
                 }
+            }
+        }
+
+        TextLine _selectedTextLine;
+        public TextLine SelectedTextLine
+        {
+            get => _selectedTextLine;
+            set
+            {
+                Set(ref _selectedTextLine, value); // this one-liner does both set and notify
+                NotifyOfPropertyChange(() => CanTranslate);
             }
         }
 
@@ -107,11 +125,15 @@ namespace DataViewer.ViewModels
             }
         }
 
-        List<LocalizationEntry> _entries;
-        public List<LocalizationEntry> Entries
+        Language _translationLanguage;
+        public Language TranslationLanguage 
         {
-            get => _entries;
-            set => Set(ref _entries, value);
+            get => _translationLanguage;
+            set
+            {
+                _translationLanguage = value;
+                NotifyOfPropertyChange(() => CanTranslate);
+            }
         }
         #endregion
 
@@ -121,6 +143,7 @@ namespace DataViewer.ViewModels
         ICollectionView _variantsView;
         ICollectionView _textLinesView;
 
+        #region Button methods
         public void OpenFile()
         {
             string fullPath;
@@ -135,9 +158,11 @@ namespace DataViewer.ViewModels
             _entriesView = CollectionViewSource.GetDefaultView(Entries);
             _entriesView.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
             _entriesView.Filter = EntryFilter;
+            
+            NotifyOfPropertyChange(() => CanExportToExcel);
         }
 
-        public bool CanExportToExcel() => Entries != null && Entries.Count != 0;
+        public bool CanExportToExcel => Entries != null && Entries.Count != 0;
 
         public void ExportToExcel()
         {
@@ -158,6 +183,63 @@ namespace DataViewer.ViewModels
             var exporter = new ExcelExporter();
             exporter.ExportToExcel(Entries, fullPath);
         }
+
+        public bool CanTranslate => SelectedTextLine != null && SelectedTextLine.Language != TranslationLanguage;
+
+        /// <summary>
+        /// Calls the Google Translation Cloud to perform text translation.
+        /// </summary>
+        public void Translate()
+        {
+            TranslationResult response;
+            try
+            {
+                using TranslationClient client = TranslationClient.Create();
+                response = client.TranslateText(
+                    text: SelectedTextLine.Text,
+                    targetLanguage: TranslationLanguage.ToGoogleLangId(),
+                    sourceLanguage: SelectedTextLine.Language.ToGoogleLangId(),
+                    model: TranslationModel.NeuralMachineTranslation);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(
+                    "Translation error. No Internet connection or Google Translation Cloud Service is inactive.", 
+                    "Translation Error", 
+                    MessageBoxButton.OK, 
+                    MessageBoxImage.Error);
+
+                return;
+            }
+
+            SelectedTextLine.TranslatedText = response.TranslatedText;
+            SelectedTextLine.TranslationLanguage = TranslationLanguage;
+
+            _textLinesView.Refresh();
+        }
+
+        public bool CanUndo => true;
+
+        public void Undo()
+        {
+            using TranslationClient client = TranslationClient.Create();
+            var response = client.TranslateText(
+                text: "Hello World.",
+                targetLanguage: "pl",  // Polish
+                sourceLanguage: "en",  // English
+                model: TranslationModel.NeuralMachineTranslation);
+            Console.WriteLine(response.TranslatedText);
+
+            MessageBox.Show($"Hello World. => {response.TranslatedText}");
+        }
+
+        public bool CanRedo => true;
+
+        public void Redo()
+        {
+            MessageBox.Show("Redo Clicked");
+        }
+        #endregion
 
         void EntriesColumnHeader_Click(object sender, RoutedEventArgs e)
         {
@@ -194,34 +276,7 @@ namespace DataViewer.ViewModels
 
         }
 
-        public bool CanUndo()
-        {
-            return true;
-        }
-
-        public void Undo()
-        {
-            using TranslationClient client = TranslationClient.Create();
-            var response = client.TranslateText(
-                text: "Hello World.",
-                targetLanguage: "pl",  // Polish
-                sourceLanguage: "en",  // English
-                model: TranslationModel.NeuralMachineTranslation);
-            Console.WriteLine(response.TranslatedText);
-
-            MessageBox.Show($"Hello World. => {response.TranslatedText}");
-        }
-
-        public bool CanRedo()
-        {
-            return true;
-        }
-
-        public void Redo()
-        {
-            MessageBox.Show("Redo Clicked");
-        }
-
+        #region Filters
         bool EntryFilter(object item)
         {
             var entry = item as LocalizationEntry;
@@ -256,5 +311,6 @@ namespace DataViewer.ViewModels
 
             return true;
         }
+        #endregion
     }
 }
