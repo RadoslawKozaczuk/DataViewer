@@ -15,5 +15,7 @@ namespace DataViewer.Models
         public string TranslatedText { get; set; } = "";
 
         public Language TranslationLanguage { get; set; } = Language.None;
+
+        public bool LanguageUnrecognizedOrInconsistent;
     }
 }

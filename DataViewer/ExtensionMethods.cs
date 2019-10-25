@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Data;
 
 namespace DataViewer
@@ -28,6 +29,20 @@ namespace DataViewer
                 view.CommitNew();
 
             view.Refresh();
+        }
+
+        public static Window GetWindow(this FrameworkElement element)
+        {
+            if (element == null)
+                return null;
+
+            if (element is Window)
+                return (Window)element;
+
+            if (element.Parent == null)
+                return null;
+
+            return GetWindow(element.Parent as FrameworkElement);
         }
     }
 }

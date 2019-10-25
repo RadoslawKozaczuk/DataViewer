@@ -1,14 +1,7 @@
 ﻿<Application x:Class="DataViewer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:DataViewer">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Application.Resources>
-    <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-            <ResourceDictionary>
-                <local:Bootstrapper x:Key="Bootstrapper"/> <!-- Boostrapper class handles application startup -->
-            </ResourceDictionary>
-        </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
+        <ResourceDictionary Source="ResourceDictionary.xaml" />
     </Application.Resources>
 </Application>

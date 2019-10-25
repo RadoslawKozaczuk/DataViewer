@@ -1,23 +1,26 @@
 ﻿using Caliburn.Micro;
 using DataViewer.Commands;
+using DataViewer.Input;
 using DataViewer.Models;
 using Google.Cloud.Translation.V2;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace DataViewer.ViewModels
 {
-    public class MainViewModel : PropertyChangedBase
+    public class MainViewModel : ViewModelBase
     {
         #region Properties
-
         // Grouping disables virtualization. This can bring huge performance issues on large data sets. 
         // So be careful when using it.
         List<LocalizationEntry> _entries;
@@ -142,11 +145,46 @@ namespace DataViewer.ViewModels
         ListCollectionView _variantsView;
         ListCollectionView _textLinesView;
 
+        bool _dataInconsistencyDetected;
+
+        bool _isTranslating;
+
+        TranslationModel _translationModel;
+
         public MainViewModel() : base()
         {
             // for convenience we pass notifiers to command stack so whenever an operation is executed on it, notifiers will also be called
             CommandStack.NotifyUndoAction = () => NotifyOfPropertyChange(() => CanUndo);
             CommandStack.NotifyRedoAction = () => NotifyOfPropertyChange(() => CanRedo);
+
+            Enum.TryParse(ConfigurationManager.AppSettings["TranslationMethod"], out _translationModel);
+        }
+
+        protected override IEnumerable<InputBindingCommand> GetInputBindingCommands()
+        {
+            yield return new InputBindingCommand(OpenFile)
+            {
+                GestureModifier = ModifierKeys.Control,
+                GestureKey = Key.O
+            };
+
+            yield return new InputBindingCommand(ExportToExcel)
+            {
+                GestureModifier = ModifierKeys.Control,
+                GestureKey = Key.E
+            }.If(() => CanExportToExcel);
+
+            yield return new InputBindingCommand(Undo)
+            {
+                GestureModifier = ModifierKeys.Control,
+                GestureKey = Key.Z
+            }.If(() => CanUndo);
+
+            yield return new InputBindingCommand(Redo)
+            {
+                GestureModifier = ModifierKeys.Control,
+                GestureKey = Key.R
+            }.If(() => CanRedo);
         }
 
         #region Button methods
@@ -207,38 +245,54 @@ namespace DataViewer.ViewModels
             exporter.ExportToExcel(Entries, fullPath);
         }
 
-        public bool CanTranslate => SelectedTextLine != null && SelectedTextLine.Language != TranslationLanguage;
+        public bool CanTranslate 
+            => !_isTranslating 
+            && SelectedTextLine != null && SelectedTextLine.Language != TranslationLanguage;
 
         /// <summary>
         /// Calls the Google Translation Cloud to perform text translation.
         /// </summary>
-        public void Translate()
+        public void Translate() => TranslateAsync();
+
+        async void TranslateAsync()
         {
-            TranslationResult response;
+            _isTranslating = true;
+            NotifyOfPropertyChange(() => CanTranslate);
+
             try
             {
                 using TranslationClient client = TranslationClient.Create();
-                response = client.TranslateText(
-                    text: SelectedTextLine.Text,
-                    targetLanguage: TranslationLanguage.ToGoogleLangId(),
-                    sourceLanguage: SelectedTextLine.Language.ToGoogleLangId(),
-                    model: TranslationModel.NeuralMachineTranslation);
+                var translationTask = new Task<TranslationResult>(() =>
+                    client.TranslateText(
+                        text: SelectedTextLine.Text,
+                        targetLanguage: TranslationLanguage.ToGoogleLangId(),
+                        sourceLanguage: SelectedTextLine.Language.ToGoogleLangId(),
+                        model: TranslationModel.NeuralMachineTranslation)
+                    );
+
+                translationTask.Start();
+                await Task.WhenAll(translationTask);
+
+                SelectedTextLine.TranslatedText = translationTask.Result.TranslatedText;
+                SelectedTextLine.TranslationLanguage = TranslationLanguage;
+
+                _textLinesView.ForceCommitRefresh();
             }
             catch (Exception)
             {
                 MessageBox.Show(
-                    "Translation error. No Internet connection or Google Translation Cloud Service is inactive.", 
-                    "Translation Error", 
-                    MessageBoxButton.OK, 
+                    "Translation error. No Internet connection or Google Translation Cloud Service is inactive.",
+                    "Translation Error",
+                    MessageBoxButton.OK,
                     MessageBoxImage.Error);
 
                 return;
             }
-
-            SelectedTextLine.TranslatedText = response.TranslatedText;
-            SelectedTextLine.TranslationLanguage = TranslationLanguage;
-
-            _textLinesView.ForceCommitRefresh();
+            finally
+            {
+                _isTranslating = false;
+                NotifyOfPropertyChange(() => CanTranslate);
+            }
         }
 
         public bool CanUndo => CommandStack.UndoCount > 0;
@@ -262,6 +316,37 @@ namespace DataViewer.ViewModels
             _entriesView?.ForceCommitRefresh();
             _variantsView?.ForceCommitRefresh();
             _textLinesView?.ForceCommitRefresh();
+        }
+
+        public bool CanCheckDataConsistency()
+        {
+            return true;
+        }
+
+        public void CheckDataConsistency() => CheckDataConsistencyAsync();
+
+        /// <summary>
+        /// Performs the following checks:
+        /// - GUID duplication
+        /// - duplicated variant names
+        /// - mismatching languages (language field is set different than the one recognized by the translation cloud).
+        /// - language field equal null or empty
+        /// - variant's name field is equal null or empty (impossible to auto fix)
+        /// - speaker is equal null or empty (impossible to auto fix)
+        /// </summary>
+        async void CheckDataConsistencyAsync()
+        {
+
+        }
+
+        public bool CanHealDocument()
+        {
+            return true;
+        }
+
+        public void HealDocument()
+        {
+
         }
         #endregion
 

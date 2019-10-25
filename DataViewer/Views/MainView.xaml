@@ -3,54 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DataViewer.Views"
-        xmlns:root="clr-namespace:DataViewer"
-        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         xmlns:cal="http://www.caliburnproject.org"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:DataViewer.Views"
         mc:Ignorable="d"
-        Title="MainView" MinHeight="500" Height="500" MaxHeight="500" Width="1000">
+        Title="MainView" MinHeight="520" Height="520" MaxHeight="520" Width="1000">
+    <Window.InputBindings>
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenFile}"/>
+    </Window.InputBindings>
+
     <Window.Resources>
         
-        <!-- Language enum access -->
-        <ObjectDataProvider x:Key="LanguageValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="root:Language"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        
-        <!-- Hides label when its value is null or empty -->
-        <Style TargetType="TextBlock" x:Key="HideTextBlock">
-            <Style.Triggers>
-                <Trigger Property="Text" Value="">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                </Trigger>
-                <Trigger Property="Text" Value="{x:Null}">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Set toolbar buttons margins -->
-        <Style TargetType="Button" x:Key="ToolBarButton">
-            <Style.Setters>
-                <Setter Property="Margin" Value="3, 0, 3, 0"/>
-            </Style.Setters>
-        </Style>
-        
-        <Style TargetType="DataGrid" x:Key="ContentTable">
-            <Style.Setters>
-                <Setter Property="Margin" Value="10"/>
-                <Setter Property="Height" Value="350"/>
-                <Setter Property="CanUserAddRows" Value="False"/>
-                <Setter Property="AutoGenerateColumns" Value="False"/>
-                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
-                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-                <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
-                <Setter Property="SelectionMode" Value="Single"/>
-            </Style.Setters>
-        </Style>
     </Window.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -73,19 +38,56 @@
                         </TextBlock>
                         <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
                         <WrapPanel>
-                            <TextBlock FontStyle="Italic">Press F1 for more help</TextBlock>
+                            <TextBlock FontStyle="Italic">shortcut: Ctrl + O</TextBlock>
                         </WrapPanel>
                     </StackPanel>
                 </Button.ToolTip>
             </Button>
             <Button x:Name="ExportToExcel" Style="{StaticResource ToolBarButton}">
                 Export To Excel
+                <Button.ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">Export To Excel</TextBlock>
+                        <TextBlock>Exports data set to an excel file.</TextBlock>
+                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                        <WrapPanel>
+                            <TextBlock FontStyle="Italic">shortcut: Ctrl + E</TextBlock>
+                        </WrapPanel>
+                    </StackPanel>
+                </Button.ToolTip>
             </Button>
             <Button x:Name="Undo" Style="{StaticResource ToolBarButton}">
                 Undo
+                <Button.ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">Undo Last Edit</TextBlock>
+                        <TextBlock>Restores previous value of the least committed cell.</TextBlock>
+                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                        <WrapPanel>
+                            <TextBlock FontStyle="Italic">shortcut: Ctrl + Z</TextBlock>
+                        </WrapPanel>
+                    </StackPanel>
+                </Button.ToolTip>
             </Button>
             <Button x:Name="Redo" Style="{StaticResource ToolBarButton}">
                 Redo
+                <Button.ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">Redo Last Edit</TextBlock>
+                        <TextBlock>
+                        Revokes last undo command bringing back the original value.
+                        <LineBreak/>
+                        Making a new edit disables possibility to redo commands executed before it.
+                        </TextBlock>
+                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                        <WrapPanel>
+                            <TextBlock FontStyle="Italic">shortcut: Ctrl + R</TextBlock>
+                        </WrapPanel>
+                    </StackPanel>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="CheckDataConsistency" Style="{StaticResource ToolBarButton}">
+                Check Data Consistency
             </Button>
             <Button x:Name="HealDocument" Style="{StaticResource ToolBarButton}">
                 Heal Document
@@ -126,7 +128,7 @@
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="14" VerticalAlignment="Bottom" />
                                                             <TextBlock Text="{Binding ItemCount}" FontSize="14" Foreground="Green" FontWeight="Bold" FontStyle="Italic" Margin="10,0,0,0" 
-                                                                       VerticalAlignment="Bottom" />
+                                                                       VerticalAlignment="Bottom"/>
                                                             <TextBlock Text=" item(s)" FontSize="14" Foreground="Silver" FontStyle="Italic" VerticalAlignment="Bottom" />
                                                         </StackPanel>
                                                     </Expander.Header>
