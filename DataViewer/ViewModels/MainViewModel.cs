@@ -1,16 +1,13 @@
-﻿using Caliburn.Micro;
-using DataViewer.Commands;
+﻿using DataViewer.Controllers;
 using DataViewer.Input;
 using DataViewer.Models;
-using Google.Cloud.Translation.V2;
+using DataViewer.UndoRedoCommands;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -141,23 +138,22 @@ namespace DataViewer.ViewModels
         }
         #endregion
 
+        readonly HealDocumentController _healDocumentController = new HealDocumentController();
+        readonly CommandController<UndoRedoCommand> _commandController;
+
         ListCollectionView _entriesView;
         ListCollectionView _variantsView;
         ListCollectionView _textLinesView;
 
         bool _dataInconsistencyDetected;
-
         bool _isTranslating;
-
-        TranslationModel _translationModel;
 
         public MainViewModel() : base()
         {
             // for convenience we pass notifiers to command stack so whenever an operation is executed on it, notifiers will also be called
-            CommandStack.NotifyUndoAction = () => NotifyOfPropertyChange(() => CanUndo);
-            CommandStack.NotifyRedoAction = () => NotifyOfPropertyChange(() => CanRedo);
-
-            Enum.TryParse(ConfigurationManager.AppSettings["TranslationMethod"], out _translationModel);
+            _commandController = new CommandController<UndoRedoCommand>(
+                notifyUndoAction: () => NotifyOfPropertyChange(() => CanUndo),
+                notifyRedoAction: () => NotifyOfPropertyChange(() => CanUndo));
         }
 
         protected override IEnumerable<InputBindingCommand> GetInputBindingCommands()
@@ -171,7 +167,7 @@ namespace DataViewer.ViewModels
             yield return new InputBindingCommand(ExportToExcel)
             {
                 GestureModifier = ModifierKeys.Control,
-                GestureKey = Key.E
+                GestureKey = Key.E 
             }.If(() => CanExportToExcel);
 
             yield return new InputBindingCommand(Undo)
@@ -252,62 +248,21 @@ namespace DataViewer.ViewModels
         /// <summary>
         /// Calls the Google Translation Cloud to perform text translation.
         /// </summary>
-        public void Translate() => TranslateAsync();
+        public void Translate() => _healDocumentController.TranslateAsync();
 
-        async void TranslateAsync()
-        {
-            _isTranslating = true;
-            NotifyOfPropertyChange(() => CanTranslate);
-
-            try
-            {
-                using TranslationClient client = TranslationClient.Create();
-                var translationTask = new Task<TranslationResult>(() =>
-                    client.TranslateText(
-                        text: SelectedTextLine.Text,
-                        targetLanguage: TranslationLanguage.ToGoogleLangId(),
-                        sourceLanguage: SelectedTextLine.Language.ToGoogleLangId(),
-                        model: TranslationModel.NeuralMachineTranslation)
-                    );
-
-                translationTask.Start();
-                await Task.WhenAll(translationTask);
-
-                SelectedTextLine.TranslatedText = translationTask.Result.TranslatedText;
-                SelectedTextLine.TranslationLanguage = TranslationLanguage;
-
-                _textLinesView.ForceCommitRefresh();
-            }
-            catch (Exception)
-            {
-                MessageBox.Show(
-                    "Translation error. No Internet connection or Google Translation Cloud Service is inactive.",
-                    "Translation Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                return;
-            }
-            finally
-            {
-                _isTranslating = false;
-                NotifyOfPropertyChange(() => CanTranslate);
-            }
-        }
-
-        public bool CanUndo => CommandStack.UndoCount > 0;
+        public bool CanUndo => _commandController.UndoCount > 0;
 
         public void Undo()
         {
-            CommandStack.Undo();
+            _commandController.Undo();
             RefreshAllViews();
         }
 
-        public bool CanRedo => CommandStack.RedoCount > 0;
+        public bool CanRedo => _commandController.RedoCount > 0;
 
         public void Redo()
         {
-            CommandStack.Redo();
+            _commandController.Redo();
             RefreshAllViews();
         }
 
@@ -346,7 +301,9 @@ namespace DataViewer.ViewModels
 
         public void HealDocument()
         {
+            _healDocumentController.HealDocument(_entries);
 
+            RefreshAllViews();
         }
         #endregion
 
@@ -362,7 +319,7 @@ namespace DataViewer.ViewModels
                     oldValue: new LocalizationEntry { Speaker = SelectedEntry.Speaker },
                     newValue: new LocalizationEntry { Speaker = ((TextBox)e.EditingElement).Text });
 
-                CommandStack.Push(undoCmd);
+                _commandController.Push(undoCmd);
             }
         }
 
@@ -378,7 +335,7 @@ namespace DataViewer.ViewModels
                     oldValue: new Variant { Name = SelectedVariant.Name },
                     newValue: new Variant { Name = ((TextBox)e.EditingElement).Text });
 
-                CommandStack.Push(undoCmd);
+                _commandController.Push(undoCmd);
             }
         }
 
@@ -395,7 +352,7 @@ namespace DataViewer.ViewModels
                     oldValue: new TextLine { Text = SelectedTextLine.Text },
                     newValue: new TextLine { Text = SelectedTextLine.Text });
 
-                CommandStack.Push(undoCmd);
+                _commandController.Push(undoCmd);
             }
         }
 

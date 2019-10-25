@@ -19,7 +19,7 @@ namespace DataViewer.Converters
                     writer.WriteValue("jp_jp");
                     break;
                 default:
-                    throw new ArgumentException("Not supported language.");
+                    throw new ArgumentException("Not supported language. Please extend LanguageConverter functionality.");
             }
         }
 
@@ -29,7 +29,7 @@ namespace DataViewer.Converters
             "en_us" => Language.English_US,
             "fr_fr" => Language.French,
             "jp_jp" => Language.Japanease,
-            _ => throw new ArgumentException("Not supported language.")
+            _ => throw new ArgumentException("Not supported language. Please extend LanguageConverter functionality.")
         };
 
         public override bool CanConvert(Type objectType) => objectType == typeof(string);

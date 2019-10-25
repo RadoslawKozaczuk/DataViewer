@@ -10,11 +10,11 @@ namespace DataViewer.Models
 
         [JsonProperty("Language")]
         [JsonConverter(typeof(LanguageConverter))]
-        public Language Language { get; set; } = Language.None;
+        public Language? Language { get; set; }
 
         public string TranslatedText { get; set; } = "";
 
-        public Language TranslationLanguage { get; set; } = Language.None;
+        public Language? TranslationLanguage { get; set; }
 
         public bool LanguageUnrecognizedOrInconsistent;
     }

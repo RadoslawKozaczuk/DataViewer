@@ -1,12 +1,12 @@
 ﻿using DataViewer.Models;
 using System;
 
-namespace DataViewer.Commands
+namespace DataViewer.UndoRedoCommands
 {
     /// <summary>
     /// A command is Undo or Redo based on context.
     /// </summary>
-    sealed class UndoRedoCommand
+    sealed class UndoRedoCommand : IUndoRedoCommand
     {
         // commands are impossible to be created in redo state, the only way to achieve redo state is to execute command while in undo state
         public CommandState State = CommandState.ExecutedUndo;
@@ -69,7 +69,7 @@ namespace DataViewer.Commands
 
             if (OldTextLine != null)
             {
-                if (OldTextLine.Language != Language.None)
+                if (OldTextLine.Language != null)
                     TextLineRef.Language = OldTextLine.Language;
 
                 if (OldTextLine.Text != null)
@@ -99,7 +99,7 @@ namespace DataViewer.Commands
 
             if (NewTextLine != null)
             {
-                if (NewTextLine.Language != Language.None)
+                if (NewTextLine.Language != null)
                     TextLineRef.Language = NewTextLine.Language;
 
                 if (NewTextLine.Text != null)

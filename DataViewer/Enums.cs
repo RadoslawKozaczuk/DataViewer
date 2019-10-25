@@ -1,41 +1,9 @@
-﻿using System;
-
-namespace DataViewer
+﻿namespace DataViewer
 {
     /// <summary>
-    /// Helps to hide the enum value.
+    /// Languages supported by our system.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class ShouldBeHiddenAttribute : Attribute
-    {
-        public ShouldBeHiddenAttribute(bool isHiddenInUi)
-        {
-            HiddenInUi = isHiddenInUi;
-        }
+    public enum Language { English_US, Japanease, French }
 
-        public bool HiddenInUi { get; set; }
-    }
-
-    public enum Language
-    {
-        /// <summary>
-        /// Indicates that the field is empty.
-        /// </summary>
-        [ShouldBeHidden(true)]
-        None,
-
-        /// <summary>
-        /// Indicates that the language could not be parsed by JSON deserializer.
-        /// Typically means that data is inconsistent.
-        /// </summary>
-        [ShouldBeHidden(true)]
-        UnidentifiedOrInvalid,
-
-        // below that are valid languages
-        English_US,
-        Japanease,
-        French
-    }
-
-    enum CommandState { ExecutedUndo, ExecutedRedo }
+    public enum CommandState { ExecutedUndo, ExecutedRedo }
 }

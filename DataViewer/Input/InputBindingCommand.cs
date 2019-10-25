@@ -28,10 +28,7 @@ namespace DataViewer.Input
 
         public bool CanExecute(object parameter) => _canExecutePredicate(parameter);
 
-        public void Execute(object parameter)
-        {
-            _executeDelegate(parameter);
-        }
+        public void Execute(object parameter) => _executeDelegate(parameter);
 
         public InputBindingCommand If(Func<bool> canExecutePredicate)
         {

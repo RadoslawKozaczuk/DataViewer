@@ -1,5 +1,6 @@
 ﻿using DataViewer.Models;
 using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -8,8 +9,11 @@ namespace DataViewer
 {
     class ExcelExporter
     {
-        public void ExportToExcel(List<LocalizationEntry> locEntries, string fullPath)
+        public void ExportToExcel(List<LocalizationEntry> entries, string fullpath)
         {
+            if (entries == null)
+                throw new ArgumentNullException("entries");
+
             var dt = new DataTable("Fruit Sales");
             dt.Columns.Add("ID", typeof(int));
             dt.Columns.Add("Speaker", typeof(string));
@@ -18,11 +22,11 @@ namespace DataViewer
             dt.Columns.Add("Text", typeof(string));
             dt.Columns.Add("Language", typeof(string));
 
-            for (int i = 0; i < locEntries.Count; i++)
+            for (int i = 0; i < entries.Count; i++)
             {
                 DataRow newRow = dt.NewRow();
 
-                LocalizationEntry entry = locEntries[i];
+                LocalizationEntry entry = entries[i];
                 newRow[0] = i;
                 newRow[1] = entry.Speaker;
                 newRow[2] = entry.GUID;
@@ -59,7 +63,7 @@ namespace DataViewer
                 dt.Rows.Add(newRow);
             }
 
-            string sheetName = Path.GetFileName(fullPath);
+            string sheetName = Path.GetFileName(fullpath);
 
             byte[] fileContents;
             using (var package = new ExcelPackage())
@@ -69,7 +73,7 @@ namespace DataViewer
                 fileContents = package.GetAsByteArray();
             }
             
-            File.WriteAllBytes(fullPath, fileContents);
+            File.WriteAllBytes(fullpath, fileContents);
         }
     }
 }
