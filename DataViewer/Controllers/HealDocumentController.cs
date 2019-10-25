@@ -3,6 +3,7 @@ using Google.Cloud.Translation.V2;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Threading.Tasks;
 
 namespace DataViewer.Controllers
 {
@@ -33,8 +34,8 @@ namespace DataViewer.Controllers
             if(!_cofidencyThreshold.apiDefault)
             {
                 if (!float.TryParse(langugeDetectionThresholdValue, out float val)
-                || val < 0
-                || val > 1)
+                    || val < 0
+                    || val > 1)
                     throw new ArgumentException(INVALID_LANG_DET_THRESHOLD_MSG);
 
                 _cofidencyThreshold.threshold = val;
@@ -48,10 +49,9 @@ namespace DataViewer.Controllers
 
             _entries = entries;
 
-            //RemoveEntriesWithInvalidGUID();
-            //RemoveEntriesWithDuplicatedGUID();
-            //CorrectLanguageEntries();
-            MergeVariantsWithSameName();
+            RemoveEntriesWithInvalidGUID();
+            RemoveEntriesWithDuplicatedGUID();
+            CorrectLanguageEntries();
         }
 
         void RemoveEntriesWithInvalidGUID()
@@ -70,50 +70,6 @@ namespace DataViewer.Controllers
                     _entries.RemoveAt(i--);
                 else
                     guidsSeen.Add(_entries[i].GUID);
-            }
-        }
-
-        void MergeVariantsWithSameName()
-        {
-            foreach (LocalizationEntry entry in _entries)
-            {
-                // holds variants from within the same entry that have the same name (empty names are ignored)
-                var dict = new Dictionary<string, List<Variant>>();
-
-                foreach (Variant variant in entry.Variants)
-                {
-                    string name = variant.Name;
-
-                    if (string.IsNullOrWhiteSpace(name))
-                        continue; // ignore empty, we don't want to merge entries with empty name as that would be data overinterpretation
-
-                    // unify key
-                    name = name.Trim().ToLower();
-
-                    if (dict.ContainsKey(name))
-                    {
-                        var list = dict[name];
-                        list.Add(variant);
-                        dict[name] = list;
-                    }
-                    else
-                    {
-                        dict.Add(name, new List<Variant> { variant });
-                    }
-                }
-
-                // merge them all (add all subsequent to the first one)
-                foreach(List<Variant> variants in dict.Values)
-                {
-                    Variant first = variants[0];
-                    for(int i = 1; i < variants.Count; i++)
-                    {
-                        first.TextLines.AddRange(variants[i].TextLines);
-                        variants.RemoveAt(i--);
-                    }
-                }
-
-                dict.Clear();
             }
         }
 
@@ -157,45 +113,30 @@ namespace DataViewer.Controllers
             }
         }
 
-        public async void TranslateAsync()
+        /// <summary>
+        /// Returns null in case of error or no connection.
+        /// </summary>
+        public string Translate(string text, Language source, Language target)
         {
-            //_isTranslating = true;
-            //NotifyOfPropertyChange(() => CanTranslate);
+            // assertions
+            if (string.IsNullOrWhiteSpace(text))
+                throw new ArgumentNullException("text");
+            if (source == target)
+                throw new ArgumentException("The source language and the target language can not be the same.");
+            
+            TranslationResult result;
 
-            //try
-            //{
-            //    using TranslationClient client = TranslationClient.Create();
-            //    var translationTask = new Task<TranslationResult>(() =>
-            //        client.TranslateText(
-            //            text: SelectedTextLine.Text,
-            //            targetLanguage: TranslationLanguage.ToGoogleLangId(),
-            //            sourceLanguage: SelectedTextLine.Language.ToGoogleLangId(),
-            //            model: TranslationModel.NeuralMachineTranslation)
-            //        );
-
-            //    translationTask.Start();
-            //    await Task.WhenAll(translationTask);
-
-            //    SelectedTextLine.TranslatedText = translationTask.Result.TranslatedText;
-            //    SelectedTextLine.TranslationLanguage = TranslationLanguage;
-
-            //    _textLinesView.ForceCommitRefresh();
-            //}
-            //catch (Exception)
-            //{
-            //    MessageBox.Show(
-            //        "Translation error. No Internet connection or Google Translation Cloud Service is inactive.",
-            //        "Translation Error",
-            //        MessageBoxButton.OK,
-            //        MessageBoxImage.Error);
-
-            //    return;
-            //}
-            //finally
-            //{
-            //    _isTranslating = false;
-            //    NotifyOfPropertyChange(() => CanTranslate);
-            //}
+            try
+            {
+                using TranslationClient client = TranslationClient.Create();
+                result = client.TranslateText(text, target.ToGoogleLangId(), source.ToGoogleLangId(), _translationModel);
+                
+                return result.TranslatedText;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

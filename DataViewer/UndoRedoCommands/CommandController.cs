@@ -25,7 +25,7 @@ namespace DataViewer.UndoRedoCommands
         /// </summary>
         public void Push(T cmd)
         {
-            if (cmd.State == CommandState.ExecutedUndo)
+            if (cmd.State == CommandState.Undo)
             {
                 _undoStack.Push(cmd);
                 _redoStack.Clear();

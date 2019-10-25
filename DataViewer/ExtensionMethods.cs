@@ -19,6 +19,17 @@ namespace DataViewer
 
         /// <summary>
         /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at https://cloud.google.com/translate/docs/languages
+        /// </summary>
+        public static string ToGoogleLangId(this Language lang) => lang switch
+        {
+            Language.English_US => "en",
+            Language.French => "fr",
+            Language.Japanease => "ja",
+            _ => throw new ArgumentOutOfRangeException("lang"),
+        };
+
+        /// <summary>
+        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at https://cloud.google.com/translate/docs/languages
         /// If throwExceptionWhenNotSupported is set to true method will throw an exception is there is no match in the <see cref="Language"/> enumerator
         /// for the given Google language id, other wise it will be set to None.
         /// </summary>

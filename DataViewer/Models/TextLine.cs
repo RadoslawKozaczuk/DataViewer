@@ -5,8 +5,19 @@ namespace DataViewer.Models
 {
     public class TextLine
     {
+        string _text = "";
+
         [JsonProperty]
-        public string Text { get; set; } = "";
+        public string Text 
+        {
+            get => _text;
+            set
+            {
+                _text = value;
+                TranslatedText = null;
+                TranslationLanguage = null; // notify property change should be fired here (or in VM)
+            } 
+        }
 
         [JsonProperty("Language")]
         [JsonConverter(typeof(LanguageConverter))]

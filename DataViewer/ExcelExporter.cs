@@ -11,8 +11,13 @@ namespace DataViewer
     {
         public void ExportToExcel(List<LocalizationEntry> entries, string fullpath)
         {
+            // assertions
             if (entries == null)
-                throw new ArgumentNullException("entries");
+                throw new ArgumentNullException("entries", "ExportToExcel should not be called on empty set");
+            else if (entries.Count == 0)
+                throw new ArgumentException("ExportToExcel should not be called on empty set", "entries");
+            if (string.IsNullOrWhiteSpace(fullpath))
+                throw new ArgumentNullException("fullpath");
 
             var dt = new DataTable("Fruit Sales");
             dt.Columns.Add("ID", typeof(int));

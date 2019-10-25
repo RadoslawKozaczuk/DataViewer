@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -248,7 +249,36 @@ namespace DataViewer.ViewModels
         /// <summary>
         /// Calls the Google Translation Cloud to perform text translation.
         /// </summary>
-        public void Translate() => _healDocumentController.TranslateAsync();
+        public void Translate()
+        {
+            // disable Translate button
+            _isTranslating = true;
+            NotifyOfPropertyChange(() => CanTranslate);
+
+            TextLine selectedLine = SelectedTextLine; // in case user changed the selected line before cloud responded
+            Language targetLanguage = TranslationLanguage;
+
+            string translation = _healDocumentController.Translate(
+                text: selectedLine.Text,
+                source: selectedLine.Language.Value,
+                target: targetLanguage);
+
+            if (translation == null)
+            {
+                MessageBox.Show(
+                    "Translation error. No Internet connection or Google Translation Cloud is inactive.",
+                    "Translation Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            else
+            {
+                selectedLine.TranslatedText = translation;
+                selectedLine.TranslationLanguage = targetLanguage;
+                NotifyOfPropertyChange(() => CanTranslate);
+                _textLinesView.ForceCommitRefresh();
+            }
+        }
 
         public bool CanUndo => _commandController.UndoCount > 0;
 

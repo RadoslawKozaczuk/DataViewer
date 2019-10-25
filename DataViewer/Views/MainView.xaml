@@ -208,6 +208,7 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Text="{Binding Path=Language}" />
+                                        <TextBlock Style="{StaticResource HideTextBlock}" FontStyle="Italic" Text="{Binding Path=TranslationLanguage}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

@@ -8,8 +8,8 @@ namespace DataViewer.UndoRedoCommands
     /// </summary>
     sealed class UndoRedoCommand : IUndoRedoCommand
     {
-        // commands are impossible to be created in redo state, the only way to achieve redo state is to execute command while in undo state
-        public CommandState State = CommandState.ExecutedUndo;
+        // commands are impossible to be created in redo state, the only way to achieve redo state is to perform undo action while in Undo state
+        public CommandState State { get; private set; } = CommandState.Undo;
 
         // if something is null then it was not modified by the command
         public LocalizationEntry LocalizationEntryRef;
@@ -52,7 +52,7 @@ namespace DataViewer.UndoRedoCommands
         /// </summary>
         public void ExecuteUndo()
         {
-            if (State == CommandState.ExecutedRedo)
+            if (State == CommandState.Undo)
                 throw new Exception("Command already undone cannot be undone again. Consider calling ExecuteRedo method.");
 
             if (OldEntry != null)
@@ -75,6 +75,8 @@ namespace DataViewer.UndoRedoCommands
                 if (OldTextLine.Text != null)
                     TextLineRef.Text = OldTextLine.Text;
             }
+
+            State = CommandState.Undo;
         }
 
         /// <summary>
@@ -82,7 +84,7 @@ namespace DataViewer.UndoRedoCommands
         /// </summary>
         public void ExecuteRedo()
         {
-            if (State == CommandState.ExecutedRedo)
+            if (State == CommandState.Redo)
                 throw new Exception("Command already redone cannot be redone again. Consider calling ExecuteUndo method.");
 
             if (NewEntry != null)
@@ -105,6 +107,8 @@ namespace DataViewer.UndoRedoCommands
                 if (NewTextLine.Text != null)
                     TextLineRef.Text = NewTextLine.Text;
             }
+
+            State = CommandState.Redo;
         }
     }
 }
