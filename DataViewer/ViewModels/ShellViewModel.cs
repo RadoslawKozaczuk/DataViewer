@@ -1,5 +1,5 @@
-﻿using DataViewer.Controllers;
-using DataViewer.Input;
+﻿using DataViewer.Input;
+using DataViewer.Interfaces;
 using DataViewer.Models;
 using DataViewer.UndoRedoCommands;
 using Microsoft.Win32;
@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,7 +15,7 @@ using System.Windows.Input;
 
 namespace DataViewer.ViewModels
 {
-    public class MainViewModel : ViewModelBase
+    public class ShellViewModel : ViewModelBase, IShellViewModel
     {
         #region Properties
         // Grouping disables virtualization. This can bring huge performance issues on large data sets. 
@@ -139,7 +138,7 @@ namespace DataViewer.ViewModels
         }
         #endregion
 
-        readonly HealDocumentController _healDocumentController = new HealDocumentController();
+        readonly IHealDocumentController _healDocumentController;
         readonly CommandController<UndoRedoCommand> _commandController;
 
         ListCollectionView _entriesView;
@@ -149,8 +148,11 @@ namespace DataViewer.ViewModels
         bool _dataInconsistencyDetected;
         bool _isTranslating;
 
-        public MainViewModel() : base()
+        public ShellViewModel(IHealDocumentController healDocumentController) 
+            : base()
         {
+            _healDocumentController = healDocumentController;
+
             // for convenience we pass notifiers to command stack so whenever an operation is executed on it, notifiers will also be called
             _commandController = new CommandController<UndoRedoCommand>(
                 notifyUndoAction: () => NotifyOfPropertyChange(() => CanUndo),
@@ -278,6 +280,10 @@ namespace DataViewer.ViewModels
                 NotifyOfPropertyChange(() => CanTranslate);
                 _textLinesView.ForceCommitRefresh();
             }
+
+            // enable button
+            _isTranslating = false;
+            NotifyOfPropertyChange(() => CanTranslate);
         }
 
         public bool CanUndo => _commandController.UndoCount > 0;

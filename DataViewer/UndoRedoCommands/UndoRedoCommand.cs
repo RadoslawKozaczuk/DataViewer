@@ -52,7 +52,7 @@ namespace DataViewer.UndoRedoCommands
         /// </summary>
         public void ExecuteUndo()
         {
-            if (State == CommandState.Undo)
+            if (State == CommandState.Redo)
                 throw new Exception("Command already undone cannot be undone again. Consider calling ExecuteRedo method.");
 
             if (OldEntry != null)
@@ -76,7 +76,7 @@ namespace DataViewer.UndoRedoCommands
                     TextLineRef.Text = OldTextLine.Text;
             }
 
-            State = CommandState.Undo;
+            State = CommandState.Redo;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace DataViewer.UndoRedoCommands
         /// </summary>
         public void ExecuteRedo()
         {
-            if (State == CommandState.Redo)
+            if (State == CommandState.Undo)
                 throw new Exception("Command already redone cannot be redone again. Consider calling ExecuteUndo method.");
 
             if (NewEntry != null)
@@ -108,7 +108,7 @@ namespace DataViewer.UndoRedoCommands
                     TextLineRef.Text = NewTextLine.Text;
             }
 
-            State = CommandState.Redo;
+            State = CommandState.Undo;
         }
     }
 }

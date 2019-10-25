@@ -1,4 +1,5 @@
-﻿using DataViewer.Models;
+﻿using DataViewer.Interfaces;
+using DataViewer.Models;
 using Google.Cloud.Translation.V2;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataViewer.Controllers
 {
-    class HealDocumentController
+    class HealDocumentController : IHealDocumentController
     {
         const string INVALID_LANG_DET_THRESHOLD_MSG 
             = "Invalid LanguageDetectionThreshold value in appconfig. The value should be either from 0 to 1 inclusive or 'API_default'.";
