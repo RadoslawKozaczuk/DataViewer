@@ -38,7 +38,7 @@ namespace DataViewer.ViewModels
 
                     // auto-select quality-of-life improvement
                     // if there is only one variant to select from (after applying filtering) it will be automatically selected
-                    if(_selectedEntry != null)
+                    if (_selectedEntry != null)
                     {
                         List<Variant> variants = _selectedEntry.Variants.Where(v => VariantFilter(v)).ToList();
                         if (variants.Count == 1)
@@ -61,7 +61,7 @@ namespace DataViewer.ViewModels
                 {
                     Set(ref _selectedVariant, value); // this one-liner does both set and notify
 
-                    if(_selectedVariant != null)
+                    if (_selectedVariant != null)
                     {
                         _textLinesView = (ListCollectionView)CollectionViewSource.GetDefaultView(SelectedVariant.TextLines);
                         _textLinesView.Filter = TextLineFilter;
@@ -82,14 +82,14 @@ namespace DataViewer.ViewModels
         }
 
         string _speakerFilter;
-        public string SpeakerFilter 
+        public string SpeakerFilter
         {
             get => _speakerFilter;
             set
             {
                 _speakerFilter = value;
                 _entriesView?.ForceCommitRefresh();
-            }    
+            }
         }
 
         string _guidFilter;
@@ -126,7 +126,7 @@ namespace DataViewer.ViewModels
         }
 
         Language _translationLanguage;
-        public Language TranslationLanguage 
+        public Language TranslationLanguage
         {
             get => _translationLanguage;
             set
@@ -137,13 +137,13 @@ namespace DataViewer.ViewModels
         }
 
         bool _isTranslating;
-        public bool IsTranslating 
+        public bool IsTranslating
         {
-            get 
+            get
             {
                 return _isTranslating;
             }
-            set 
+            set
             {
                 Set(ref _isTranslating, value);
             }
@@ -159,7 +159,7 @@ namespace DataViewer.ViewModels
 
         bool _dataInconsistencyDetected;
 
-        public ShellViewModel(IHealDocumentController healDocumentController) 
+        public ShellViewModel(IHealDocumentController healDocumentController)
             : base()
         {
             _healDocumentController = healDocumentController;
@@ -181,7 +181,7 @@ namespace DataViewer.ViewModels
             yield return new InputBindingCommand(ExportToExcel)
             {
                 GestureModifier = ModifierKeys.Control,
-                GestureKey = Key.E 
+                GestureKey = Key.E
             }.If(() => CanExportToExcel);
 
             yield return new InputBindingCommand(Undo)
@@ -231,7 +231,7 @@ namespace DataViewer.ViewModels
 
             // Grouping disables virtualization. This can bring huge performance issues on large data sets.
             _entriesView.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
-            
+
             NotifyOfPropertyChange(() => CanExportToExcel);
         }
 
@@ -257,8 +257,8 @@ namespace DataViewer.ViewModels
             exporter.ExportToExcel(Entries, fullPath);
         }
 
-        public bool CanTranslate 
-            => !_isTranslating 
+        public bool CanTranslate
+            => !_isTranslating
             && SelectedTextLine != null && SelectedTextLine.Language != TranslationLanguage;
 
         public void Translate()
@@ -371,7 +371,7 @@ namespace DataViewer.ViewModels
             if (e.Column.Header.ToString() == "Speaker")
             {
                 var undoCmd = new UndoRedoCommand(
-                    objRef: SelectedEntry, 
+                    objRef: SelectedEntry,
                     oldValue: new LocalizationEntry { Speaker = SelectedEntry.Speaker },
                     newValue: new LocalizationEntry { Speaker = ((TextBox)e.EditingElement).Text });
 
@@ -387,7 +387,7 @@ namespace DataViewer.ViewModels
             if (e.Column.Header.ToString() == "Name")
             {
                 var undoCmd = new UndoRedoCommand(
-                    objRef: SelectedVariant, 
+                    objRef: SelectedVariant,
                     oldValue: new Variant { Name = SelectedVariant.Name },
                     newValue: new Variant { Name = ((TextBox)e.EditingElement).Text });
 
@@ -404,7 +404,7 @@ namespace DataViewer.ViewModels
             if (e.Column.Header.ToString() == "Text")
             {
                 var undoCmd = new UndoRedoCommand(
-                    objRef: SelectedTextLine, 
+                    objRef: SelectedTextLine,
                     oldValue: new TextLine { Text = SelectedTextLine.Text },
                     newValue: new TextLine { Text = SelectedTextLine.Text });
 
@@ -417,23 +417,23 @@ namespace DataViewer.ViewModels
         {
             var entry = item as LocalizationEntry;
 
-            if (!string.IsNullOrWhiteSpace(SpeakerFilter) 
+            if (!string.IsNullOrWhiteSpace(SpeakerFilter)
                 && entry.Speaker.IndexOf(SpeakerFilter, StringComparison.OrdinalIgnoreCase) < 0)
                 return false;
 
-            if (!string.IsNullOrWhiteSpace(GUIDFilter) 
+            if (!string.IsNullOrWhiteSpace(GUIDFilter)
                 && entry.GUID.IndexOf(GUIDFilter, StringComparison.OrdinalIgnoreCase) < 0)
                 return false;
 
             return true;
         }
 
-        bool VariantFilter(object item) 
-            => string.IsNullOrWhiteSpace(NameFilter) 
+        bool VariantFilter(object item)
+            => string.IsNullOrWhiteSpace(NameFilter)
             || (item as Variant).Name.IndexOf(NameFilter, StringComparison.OrdinalIgnoreCase) >= 0;
 
-        bool TextLineFilter(object item) 
-            => string.IsNullOrWhiteSpace(TextFilter) 
+        bool TextLineFilter(object item)
+            => string.IsNullOrWhiteSpace(TextFilter)
             || (item as TextLine).Text.IndexOf(TextFilter, StringComparison.OrdinalIgnoreCase) >= 0;
         #endregion
     }

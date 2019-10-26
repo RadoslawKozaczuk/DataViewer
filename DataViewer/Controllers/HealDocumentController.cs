@@ -10,7 +10,7 @@ namespace DataViewer.Controllers
 {
     class HealDocumentController : IHealDocumentController
     {
-        const string INVALID_LANG_DET_THRESHOLD_MSG 
+        const string INVALID_LANG_DET_THRESHOLD_MSG
             = "Invalid LanguageDetectionThreshold value in appconfig. The value should be either from 0 to 1 inclusive or 'API_default'.";
 
         const string INVALID_TRANSLATION_METHOD_MSG
@@ -25,14 +25,14 @@ namespace DataViewer.Controllers
 
         public HealDocumentController()
         {
-            if(!Enum.TryParse(ConfigurationManager.AppSettings["TranslationMethod"], out _translationModel))
+            if (!Enum.TryParse(ConfigurationManager.AppSettings["TranslationMethod"], out _translationModel))
                 throw new ArgumentException(INVALID_TRANSLATION_METHOD_MSG);
-           
+
             string langugeDetectionThresholdValue = ConfigurationManager.AppSettings["LanguageDetectionThreshold"];
 
             _cofidencyThreshold.apiDefault = langugeDetectionThresholdValue.ToLower() == "api_default";
 
-            if(!_cofidencyThreshold.apiDefault)
+            if (!_cofidencyThreshold.apiDefault)
             {
                 if (!float.TryParse(langugeDetectionThresholdValue, out float val)
                     || val < 0
@@ -57,8 +57,8 @@ namespace DataViewer.Controllers
 
         void RemoveEntriesWithInvalidGUID()
         {
-            for(int i = 0; i < _entries.Count; i++)
-                if(!Guid.TryParse(_entries[i].GUID, out Guid _))
+            for (int i = 0; i < _entries.Count; i++)
+                if (!Guid.TryParse(_entries[i].GUID, out Guid _))
                     _entries.RemoveAt(i--);
         }
 
@@ -108,7 +108,7 @@ namespace DataViewer.Controllers
                 else
                 {
                     // we manually set the certain threshold above which we treat results as valid
-                    if(d.Confidence > _cofidencyThreshold.threshold)
+                    if (d.Confidence > _cofidencyThreshold.threshold)
                         translationDataList[i].Language = detectedLang.Value;
                 }
             }
@@ -124,14 +124,14 @@ namespace DataViewer.Controllers
                 throw new ArgumentNullException("text");
             if (source == target)
                 throw new ArgumentException("The source language and the target language can not be the same.");
-            
+
             TranslationResult result;
 
             try
             {
                 using TranslationClient client = TranslationClient.Create();
                 result = client.TranslateText(text, target.ToGoogleLangId(), source.ToGoogleLangId(), _translationModel);
-                
+
                 return result.TranslatedText;
             }
             catch (Exception)

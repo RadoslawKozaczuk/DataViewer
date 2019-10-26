@@ -8,7 +8,7 @@ namespace DataViewer.Converters.JSON
 {
     public class VariantConverter : JsonConverter
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) 
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             => throw new NotImplementedException("Not implemented yet");
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -19,7 +19,7 @@ namespace DataViewer.Converters.JSON
             JObject obj = JObject.Load(reader);
             var varList = new List<Variant>(obj.Count);
 
-            foreach(KeyValuePair<string, JToken> kvp in obj)
+            foreach (KeyValuePair<string, JToken> kvp in obj)
             {
                 var variant = new Variant { Name = kvp.Key };
 

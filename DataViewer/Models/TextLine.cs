@@ -8,7 +8,7 @@ namespace DataViewer.Models
         string _text = "";
 
         [JsonProperty]
-        public string Text 
+        public string Text
         {
             get => _text;
             set
@@ -16,7 +16,7 @@ namespace DataViewer.Models
                 _text = value;
                 TranslatedText = null;
                 TranslationLanguage = null; // notify property change should be fired here (or in VM)
-            } 
+            }
         }
 
         [JsonProperty("Language")]
@@ -27,9 +27,9 @@ namespace DataViewer.Models
 
         public Language? TranslationLanguage { get; set; }
 
-        public string TranslationLanguageShortId 
-            => TranslationLanguage.HasValue 
-            ? TranslationLanguage.Value.ToGoogleLangId() 
+        public string TranslationLanguageShortId
+            => TranslationLanguage.HasValue
+            ? TranslationLanguage.Value.ToGoogleLangId()
             : "";
 
         public bool LanguageUnrecognizedOrInconsistent;

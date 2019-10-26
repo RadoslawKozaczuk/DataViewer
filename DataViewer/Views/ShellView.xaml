@@ -11,7 +11,7 @@
     </Window.InputBindings>
 
     <Window.Resources>
-        
+
     </Window.Resources>
 
     <Grid>
@@ -20,7 +20,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        
+
         <ToolBar Grid.Row="0">
             <Button x:Name="OpenFile" Style="{StaticResource ToolBarButton}">
                 <Button.Content>
@@ -242,8 +242,6 @@
         </StackPanel>
 
         <StatusBar Grid.Row="2" Height="30">
-            
-            
             <StatusBarItem Margin="5, 0, 0, 0">
                 <StackPanel Orientation="Horizontal" Visibility="{Binding IsTranslating, Converter={StaticResource BoolToVisibilityConverter}}">
                     <ProgressBar x:Name="StatusProgressBar" Width="100" Height="15" Orientation="Horizontal" IsIndeterminate="True"/>

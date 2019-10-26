@@ -5,8 +5,8 @@
     /// </summary>
     public enum Language { English_US, Japanease, French }
 
-    public enum CommandState 
-    { 
+    public enum CommandState
+    {
         /// <summary>
         /// Command is ready to perform Undo action.
         /// </summary>

@@ -77,7 +77,7 @@ namespace DataViewer
                 worksheet.Cells["A1"].LoadFromDataTable(dt, true);
                 fileContents = package.GetAsByteArray();
             }
-            
+
             File.WriteAllBytes(fullpath, fileContents);
         }
     }

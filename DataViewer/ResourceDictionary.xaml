@@ -51,7 +51,7 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
+
     <uiConverters:TextToVisibilityConverter x:Key="TextToVisibilityConverter" />
     <uiConverters:InverseBoolConverter x:Key="InverseBoolConverter" />
     <uiConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />

@@ -42,7 +42,7 @@ namespace DataViewer.UndoRedoCommands
             T cmd = _undoStack.Pop();
             cmd.ExecuteUndo();
             _redoStack.Push(cmd);
-            
+
             _notifyUndoAction?.Invoke();
             _notifyRedoAction?.Invoke();
         }
