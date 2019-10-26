@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,8 +19,6 @@ namespace DataViewer.ViewModels
     public class ShellViewModel : ViewModelBase, IShellViewModel
     {
         #region Properties
-        // Grouping disables virtualization. This can bring huge performance issues on large data sets. 
-        // So be careful when using it.
         List<LocalizationEntry> _entries;
         public List<LocalizationEntry> Entries
         {
@@ -136,6 +135,19 @@ namespace DataViewer.ViewModels
                 NotifyOfPropertyChange(() => CanTranslate);
             }
         }
+
+        bool _isTranslating;
+        public bool IsTranslating 
+        {
+            get 
+            {
+                return _isTranslating;
+            }
+            set 
+            {
+                Set(ref _isTranslating, value);
+            }
+        }
         #endregion
 
         readonly IHealDocumentController _healDocumentController;
@@ -146,7 +158,6 @@ namespace DataViewer.ViewModels
         ListCollectionView _textLinesView;
 
         bool _dataInconsistencyDetected;
-        bool _isTranslating;
 
         public ShellViewModel(IHealDocumentController healDocumentController) 
             : base()
@@ -216,8 +227,10 @@ namespace DataViewer.ViewModels
             Entries = entries;
 
             _entriesView = (ListCollectionView)CollectionViewSource.GetDefaultView(Entries);
-            _entriesView.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
             _entriesView.Filter = EntryFilter;
+
+            // Grouping disables virtualization. This can bring huge performance issues on large data sets.
+            _entriesView.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
             
             NotifyOfPropertyChange(() => CanExportToExcel);
         }
@@ -248,16 +261,23 @@ namespace DataViewer.ViewModels
             => !_isTranslating 
             && SelectedTextLine != null && SelectedTextLine.Language != TranslationLanguage;
 
-        /// <summary>
-        /// Calls the Google Translation Cloud to perform text translation.
-        /// </summary>
         public void Translate()
         {
             // disable Translate button
-            _isTranslating = true;
+            IsTranslating = true;
             NotifyOfPropertyChange(() => CanTranslate);
 
-            TextLine selectedLine = SelectedTextLine; // in case user changed the selected line before cloud responded
+            Task translationJob = new Task(TranslateAction);
+            translationJob.Start();
+        }
+
+        /// <summary>
+        /// Calls the Google Translation Cloud to perform text translation.
+        /// </summary>
+        public void TranslateAction()
+        {
+            // we cache these values in case user changed the selected line before the cloud responded
+            TextLine selectedLine = SelectedTextLine;
             Language targetLanguage = TranslationLanguage;
 
             string translation = _healDocumentController.Translate(
@@ -277,13 +297,14 @@ namespace DataViewer.ViewModels
             {
                 selectedLine.TranslatedText = translation;
                 selectedLine.TranslationLanguage = targetLanguage;
-                NotifyOfPropertyChange(() => CanTranslate);
-                _textLinesView.ForceCommitRefresh();
             }
 
             // enable button
-            _isTranslating = false;
+            IsTranslating = false;
             NotifyOfPropertyChange(() => CanTranslate);
+
+            // in order to update UI form a different thread than the main thread we need to call Dispatcher
+            Application.Current.Dispatcher.Invoke(() => _textLinesView.ForceCommitRefresh());
         }
 
         public bool CanUndo => _commandController.UndoCount > 0;
@@ -319,11 +340,10 @@ namespace DataViewer.ViewModels
         /// <summary>
         /// Performs the following checks:
         /// - GUID duplication
-        /// - duplicated variant names
         /// - mismatching languages (language field is set different than the one recognized by the translation cloud).
-        /// - language field equal null or empty
-        /// - variant's name field is equal null or empty (impossible to auto fix)
-        /// - speaker is equal null or empty (impossible to auto fix)
+        /// - language is empty
+        /// - variant's name is empty (impossible to auto fix)
+        /// - speaker is empty (impossible to auto fix)
         /// </summary>
         async void CheckDataConsistencyAsync()
         {
@@ -375,7 +395,7 @@ namespace DataViewer.ViewModels
             }
         }
 
-        // doesnt work for now something is wrong with the xaml structure
+        // doesn't work for now something is wrong with the XAML structure
         public void TextLines_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
             if (e.EditAction != DataGridEditAction.Commit)

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
-        Title="DataViewer9000" MinHeight="520" Height="520" MaxHeight="520" Width="1000">
+        Title="DataViewer" MinHeight="520" Height="520" MaxHeight="520" Width="1000">
     <Window.InputBindings>
         <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenFile}"/>
     </Window.InputBindings>
@@ -111,7 +111,8 @@
                     <TextBox x:Name="GUIDFilter" Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0"></TextBox>
                 </Grid>
 
-                <DataGrid x:Name="Entries" Style="{StaticResource ContentTable}"
+                <DataGrid x:Name="Entries" Style="{StaticResource GrayForegroundWhenDisabled}" 
+                          IsHitTestVisible="{Binding IsTranslating, Converter={StaticResource InverseBoolConverter}}"
                           SelectedItem="{Binding SelectedEntry}"
                           cal:Message.Attach="[Event CellEditEnding] = [Action Entries_CellEditEnding($eventArgs)]">
                     <DataGrid.GroupStyle>
@@ -160,7 +161,9 @@
                     <TextBox x:Name="NameFilter" Grid.Row="1" Margin="10, 5, 10, 0"></TextBox>
                 </Grid>
 
-                <DataGrid Name="Variants" Style="{StaticResource ContentTable}" Width="80"
+                <DataGrid Name="Variants" Style="{StaticResource GrayForegroundWhenDisabled}" 
+                          IsHitTestVisible="{Binding IsTranslating, Converter={StaticResource InverseBoolConverter}}"
+                          Width="80"
                           ItemsSource="{Binding SelectedEntry.Variants}" SelectedItem="{Binding SelectedVariant}"
                           cal:Message.Attach="[Event CellEditEnding] = [Action Variants_CellEditEnding($eventArgs)]">
                     <DataGrid.Columns>
@@ -187,7 +190,8 @@
                               ItemsSource="{Binding Source={StaticResource LanguageValues}}" SelectedItem="{Binding TranslationLanguage}"
                               MinWidth="80"/>
                 </Grid>
-                <DataGrid x:Name="TextLines" Style="{StaticResource ContentTable}" Width="340"
+                <DataGrid x:Name="TextLines" Style="{StaticResource GrayForegroundWhenDisabled}" Width="340"
+                          IsHitTestVisible="{Binding IsTranslating, Converter={StaticResource InverseBoolConverter}}"
                           ItemsSource="{Binding SelectedVariant.TextLines, Mode=TwoWay}" SelectedItem="{Binding SelectedTextLine, Mode=TwoWay}" 
                           cal:Message.Attach="[Event CellEditEnding] = [Action TextLines_CellEditEnding($eventArgs)]">
                     <DataGrid.Columns>
@@ -230,7 +234,7 @@
                     </DataGrid.RowDetailsTemplate>
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
-                            <Setter Property="DetailsVisibility" Value="{Binding TranslatedText, Converter={StaticResource TextToVisibilityConverter}}" />
+                            <Setter Property="DetailsVisibility" Value="{Binding TranslatedText, Converter={StaticResource TextToVisibilityConverter}}"/>
                         </Style>
                     </DataGrid.RowStyle>
                 </DataGrid>
@@ -238,8 +242,13 @@
         </StackPanel>
 
         <StatusBar Grid.Row="2" Height="30">
-            <StatusBarItem>
-                <TextBlock Name="lblCursorPosition" Text="status status" />
+            
+            
+            <StatusBarItem Margin="5, 0, 0, 0">
+                <StackPanel Orientation="Horizontal" Visibility="{Binding IsTranslating, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ProgressBar x:Name="StatusProgressBar" Width="100" Height="15" Orientation="Horizontal" IsIndeterminate="True"/>
+                    <TextBlock Text="Translating..." />
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
     </Grid>

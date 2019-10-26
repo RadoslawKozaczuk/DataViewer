@@ -11,32 +11,21 @@
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 
-    <!-- Language enum access -->
+    <!-- Language enumerator access -->
     <ObjectDataProvider x:Key="LanguageValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
         <ObjectDataProvider.MethodParameters>
             <x:Type TypeName="local:Language"/>
         </ObjectDataProvider.MethodParameters>
     </ObjectDataProvider>
 
-    <!-- Hides label when its value is null or empty -->
-    <Style TargetType="TextBlock" x:Key="HideTextBlock">
-        <Style.Triggers>
-            <Trigger Property="Text" Value="">
-                <Setter Property="Visibility" Value="Collapsed" />
-            </Trigger>
-            <Trigger Property="Text" Value="{x:Null}">
-                <Setter Property="Visibility" Value="Collapsed" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <!-- Set toolbar buttons margins -->
+    <!-- Set ToolBar buttons margins -->
     <Style TargetType="Button" x:Key="ToolBarButton">
         <Style.Setters>
             <Setter Property="Margin" Value="3, 0, 3, 0"/>
         </Style.Setters>
     </Style>
 
+    <!-- DataGrid style -->
     <Style TargetType="DataGrid" x:Key="ContentTable">
         <Style.Setters>
             <Setter Property="Margin" Value="10"/>
@@ -50,5 +39,20 @@
         </Style.Setters>
     </Style>
 
+    <!-- Derived from ContentTable. 
+         Additionally sets DataGrid foreground to gray when the grid is not interactable -->
+    <Style TargetType="DataGrid" x:Key="GrayForegroundWhenDisabled" BasedOn="{StaticResource ContentTable}">
+        <Style.Triggers>
+            <Trigger Property="IsHitTestVisible" Value="True">
+                <Setter Property="Foreground" Value="Black"/>
+            </Trigger>
+            <Trigger Property="IsHitTestVisible" Value="False">
+                <Setter Property="Foreground" Value="Gray"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
     <uiConverters:TextToVisibilityConverter x:Key="TextToVisibilityConverter" />
+    <uiConverters:InverseBoolConverter x:Key="InverseBoolConverter" />
+    <uiConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 </ResourceDictionary>
