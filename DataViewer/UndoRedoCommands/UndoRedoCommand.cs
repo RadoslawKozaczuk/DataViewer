@@ -6,11 +6,11 @@ namespace DataViewer.UndoRedoCommands
     /// <summary>
     /// A command is Undo or Redo based on context.
     /// </summary>
-    sealed class UndoRedoCommand : IUndoRedoCommand
+    sealed class UndoRedoCommand : AbstractUndoRedoCommand
     {
         // commands are impossible to be created in redo state, the only way to achieve redo state is to perform undo action while in Undo state
-        public CommandState State { get; private set; } = CommandState.Undo;
-
+        
+            
         // if something is null then it was not modified by the command
         public LocalizationEntry LocalizationEntryRef;
         public Variant VariantRef;
@@ -50,10 +50,10 @@ namespace DataViewer.UndoRedoCommands
         /// <summary>
         /// Reverse the action performed by this action.
         /// </summary>
-        public void ExecuteUndo()
+        public override void Undo()
         {
-            if (State == CommandState.Redo)
-                throw new Exception("Command already undone cannot be undone again. Consider calling ExecuteRedo method.");
+            if (State == UndoRedoCommandState.Redo)
+                throw new Exception(UNDO_CONSECUTIVE_CALL_ERROR);
 
             if (OldEntry != null)
             {
@@ -76,16 +76,16 @@ namespace DataViewer.UndoRedoCommands
                     TextLineRef.Text = OldTextLine.Text;
             }
 
-            State = CommandState.Redo;
+            State = UndoRedoCommandState.Redo;
         }
 
         /// <summary>
         /// Applies the changes performed by this action (only possible if the action was previously undone).
         /// </summary>
-        public void ExecuteRedo()
+        public override void Redo()
         {
-            if (State == CommandState.Undo)
-                throw new Exception("Command already redone cannot be redone again. Consider calling ExecuteUndo method.");
+            if (State == UndoRedoCommandState.Undo)
+                throw new Exception(REDO_CONSECUTIVE_CALL_ERROR);
 
             if (NewEntry != null)
             {
@@ -108,7 +108,7 @@ namespace DataViewer.UndoRedoCommands
                     TextLineRef.Text = NewTextLine.Text;
             }
 
-            State = CommandState.Undo;
+            State = UndoRedoCommandState.Undo;
         }
     }
 }

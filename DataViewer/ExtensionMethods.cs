@@ -71,5 +71,11 @@ namespace DataViewer
 
             return GetWindow(element.Parent as FrameworkElement);
         }
+
+        /// <summary>
+        /// Returns for example 'E751F84EDCD7437F9F4BC89CEEDC5118'
+        /// </summary>
+        public static string ToPlainUpper(this Guid guid) 
+            => guid.ToString().Replace("-", "").ToUpper();
     }
 }

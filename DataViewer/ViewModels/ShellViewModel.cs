@@ -23,7 +23,11 @@ namespace DataViewer.ViewModels
         public List<LocalizationEntry> Entries
         {
             get => _entries;
-            set => Set(ref _entries, value);
+            set
+            {
+                Set(ref _entries, value);
+                NotifyOfPropertyChange(() => CanAddEntry);
+            }
         }
 
         LocalizationEntry _selectedEntry;
@@ -46,6 +50,8 @@ namespace DataViewer.ViewModels
 
                         _variantsView = (ListCollectionView)CollectionViewSource.GetDefaultView(SelectedEntry.Variants);
                         _variantsView.Filter = VariantFilter;
+
+                        NotifyOfPropertyChange(() => CanAddVariant);
                     }
                 }
             }
@@ -65,6 +71,7 @@ namespace DataViewer.ViewModels
                     {
                         _textLinesView = (ListCollectionView)CollectionViewSource.GetDefaultView(SelectedVariant.TextLines);
                         _textLinesView.Filter = TextLineFilter;
+                        NotifyOfPropertyChange(() => CanAddTextLine);
                     }
                 }
             }
@@ -151,7 +158,7 @@ namespace DataViewer.ViewModels
         #endregion
 
         readonly IHealDocumentController _healDocumentController;
-        readonly CommandController<UndoRedoCommand> _commandController;
+        readonly CommandController<IUndoRedoCommand> _commandController;
 
         ListCollectionView _entriesView;
         ListCollectionView _variantsView;
@@ -165,9 +172,9 @@ namespace DataViewer.ViewModels
             _healDocumentController = healDocumentController;
 
             // for convenience we pass notifiers to command stack so whenever an operation is executed on it, notifiers will also be called
-            _commandController = new CommandController<UndoRedoCommand>(
+            _commandController = new CommandController<IUndoRedoCommand>(
                 notifyUndoAction: () => NotifyOfPropertyChange(() => CanUndo),
-                notifyRedoAction: () => NotifyOfPropertyChange(() => CanUndo));
+                notifyRedoAction: () => NotifyOfPropertyChange(() => CanRedo));
         }
 
         protected override IEnumerable<InputBindingCommand> GetInputBindingCommands()
@@ -360,6 +367,33 @@ namespace DataViewer.ViewModels
             _healDocumentController.HealDocument(_entries);
 
             RefreshAllViews();
+        }
+
+        public bool CanAddEntry => Entries != null;
+
+        public void AddEntry()
+        {
+            var entry = new LocalizationEntry();
+            Entries.Add(entry);
+            _commandController.Push(new AddCommand<LocalizationEntry>(Entries, Entries.Count - 1, entry));
+
+            _entriesView.ForceCommitRefresh();
+        }
+
+        public bool CanAddVariant => SelectedEntry != null;
+
+        public void AddVariant()
+        {
+            SelectedEntry.Variants.Add(new Variant());
+            _variantsView.ForceCommitRefresh();
+        }
+
+        public bool CanAddTextLine => SelectedVariant != null;
+
+        public void AddTextLine()
+        {
+            SelectedVariant.TextLines.Add(new TextLine());
+            _textLinesView.ForceCommitRefresh();
         }
         #endregion
 

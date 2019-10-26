@@ -36,6 +36,7 @@
             <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
             <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
             <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
         </Style.Setters>
     </Style>
 
@@ -52,6 +53,7 @@
         </Style.Triggers>
     </Style>
 
+    <!-- converters -->
     <uiConverters:TextToVisibilityConverter x:Key="TextToVisibilityConverter" />
     <uiConverters:InverseBoolConverter x:Key="InverseBoolConverter" />
     <uiConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />

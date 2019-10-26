@@ -25,7 +25,7 @@ namespace DataViewer.UndoRedoCommands
         /// </summary>
         public void Push(T cmd)
         {
-            if (cmd.State == CommandState.Undo)
+            if (cmd.State == UndoRedoCommandState.Undo)
             {
                 _undoStack.Push(cmd);
                 _redoStack.Clear();
@@ -40,7 +40,7 @@ namespace DataViewer.UndoRedoCommands
         public void Undo()
         {
             T cmd = _undoStack.Pop();
-            cmd.ExecuteUndo();
+            cmd.Undo();
             _redoStack.Push(cmd);
 
             _notifyUndoAction?.Invoke();
@@ -50,7 +50,7 @@ namespace DataViewer.UndoRedoCommands
         public void Redo()
         {
             T cmd = _redoStack.Pop();
-            cmd.ExecuteRedo();
+            cmd.Redo();
             _undoStack.Push(cmd);
 
             _notifyUndoAction?.Invoke();
