@@ -173,7 +173,7 @@
 
             <!-- text line filters and data grid -->
             <StackPanel Orientation="Vertical">
-                <Grid Height="50">
+                <Grid Height="50" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="1*" />
@@ -198,7 +198,7 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Vertical">
                                         <TextBox TextWrapping="Wrap" Text="{Binding Path=Text}" />
-                                        <TextBlock Style="{StaticResource HideTextBlock}" TextWrapping="Wrap" FontStyle="Italic" Text="{Binding TranslatedText}"/>
+                                        <!--<TextBlock Style="{StaticResource HideTextBlock}" TextWrapping="Wrap" FontStyle="Italic" Text="{Binding TranslatedText}"/>-->
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -208,7 +208,7 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Text="{Binding Path=Language}" />
-                                        <TextBlock Style="{StaticResource HideTextBlock}" FontStyle="Italic" Text="{Binding Path=TranslationLanguage}" />
+                                        <!--<TextBlock Style="{StaticResource HideTextBlock}" FontStyle="Italic" Text="{Binding Path=TranslationLanguage}" />-->
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -220,6 +220,23 @@
                             </DataGridTemplateColumn.CellEditingTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
+                    <DataGrid.RowDetailsTemplate>
+                        <DataTemplate>
+                            <TextBlock FontStyle="Italic" TextWrapping="Wrap" Margin="10">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat='Translation ({0}): {1}'>
+                                        <Binding Path="TranslationLanguageShortId" />
+                                        <Binding Path="TranslatedText" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGrid.RowDetailsTemplate>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="DetailsVisibility" Value="{Binding TranslatedText, Converter={StaticResource TextToVisibilityConverter}}" />
+                        </Style>
+                    </DataGrid.RowStyle>
                 </DataGrid>
             </StackPanel>
 

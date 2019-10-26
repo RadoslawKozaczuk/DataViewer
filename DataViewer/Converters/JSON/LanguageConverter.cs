@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace DataViewer.Converters
+namespace DataViewer.Converters.JSON
 {
     public class LanguageConverter : JsonConverter
     {

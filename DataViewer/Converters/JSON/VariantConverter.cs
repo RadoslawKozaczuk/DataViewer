@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
-namespace DataViewer
+namespace DataViewer.Converters.JSON
 {
     public class VariantConverter : JsonConverter
     {

@@ -1,4 +1,4 @@
-﻿using DataViewer.Converters;
+﻿using DataViewer.Converters.JSON;
 using Newtonsoft.Json;
 
 namespace DataViewer.Models
@@ -26,6 +26,11 @@ namespace DataViewer.Models
         public string TranslatedText { get; set; } = "";
 
         public Language? TranslationLanguage { get; set; }
+
+        public string TranslationLanguageShortId 
+            => TranslationLanguage.HasValue 
+            ? TranslationLanguage.Value.ToGoogleLangId() 
+            : "";
 
         public bool LanguageUnrecognizedOrInconsistent;
     }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DataViewer.Converters.JSON;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace DataViewer.Models
