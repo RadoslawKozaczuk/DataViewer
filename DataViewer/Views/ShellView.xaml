@@ -4,10 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:cal="http://www.caliburnproject.org"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:local="clr-namespace:DataViewer.Views"
         mc:Ignorable="d"
-        Title="MainView" MinHeight="520" Height="520" MaxHeight="520" Width="1000">
+        Title="DataViewer9000" MinHeight="520" Height="520" MaxHeight="520" Width="1000">
     <Window.InputBindings>
         <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenFile}"/>
     </Window.InputBindings>
@@ -26,7 +24,7 @@
         <ToolBar Grid.Row="0">
             <Button x:Name="OpenFile" Style="{StaticResource ToolBarButton}">
                 <Button.Content>
-                    Open File
+                    Open
                 </Button.Content>
                 <Button.ToolTip>
                     <StackPanel>
@@ -44,7 +42,7 @@
                 </Button.ToolTip>
             </Button>
             <Button x:Name="ExportToExcel" Style="{StaticResource ToolBarButton}">
-                Export To Excel
+                Export
                 <Button.ToolTip>
                     <StackPanel>
                         <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">Export To Excel</TextBlock>
@@ -87,10 +85,10 @@
                 </Button.ToolTip>
             </Button>
             <Button x:Name="CheckDataConsistency" Style="{StaticResource ToolBarButton}">
-                Check Data Consistency
+                Scan
             </Button>
             <Button x:Name="HealDocument" Style="{StaticResource ToolBarButton}">
-                Heal Document
+                Heal
             </Button>
         </ToolBar>
 
@@ -166,7 +164,7 @@
                           ItemsSource="{Binding SelectedEntry.Variants}" SelectedItem="{Binding SelectedVariant}"
                           cal:Message.Attach="[Event CellEditEnding] = [Action Variants_CellEditEnding($eventArgs)]">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Width="70" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -189,26 +187,24 @@
                               ItemsSource="{Binding Source={StaticResource LanguageValues}}" SelectedItem="{Binding TranslationLanguage}"
                               MinWidth="80"/>
                 </Grid>
-                <DataGrid x:Name="TextLines" Style="{StaticResource ContentTable}"
+                <DataGrid x:Name="TextLines" Style="{StaticResource ContentTable}" Width="340"
                           ItemsSource="{Binding SelectedVariant.TextLines, Mode=TwoWay}" SelectedItem="{Binding SelectedTextLine, Mode=TwoWay}" 
                           cal:Message.Attach="[Event CellEditEnding] = [Action TextLines_CellEditEnding($eventArgs)]">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Text" Width="260">
+                        <DataGridTemplateColumn Header="Text" Width="*" SortMemberPath="Text">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Vertical">
                                         <TextBox TextWrapping="Wrap" Text="{Binding Path=Text}" />
-                                        <!--<TextBlock Style="{StaticResource HideTextBlock}" TextWrapping="Wrap" FontStyle="Italic" Text="{Binding TranslatedText}"/>-->
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Language">
+                        <DataGridTemplateColumn Header="Language" Width="80" SortMemberPath="Language">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Text="{Binding Path=Language}" />
-                                        <!--<TextBlock Style="{StaticResource HideTextBlock}" FontStyle="Italic" Text="{Binding Path=TranslationLanguage}" />-->
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -239,16 +235,6 @@
                     </DataGrid.RowStyle>
                 </DataGrid>
             </StackPanel>
-
-            <StackPanel Margin="10" Orientation="Vertical">
-                <Label>
-                    Press Ctrl-Z to undo last edit.
-                </Label>
-                <TextBlock Margin="5, 10, 5, 0" TextWrapping="Wrap">
-                    Executed command list:
-                </TextBlock>
-            </StackPanel>
-
         </StackPanel>
 
         <StatusBar Grid.Row="2" Height="30">
