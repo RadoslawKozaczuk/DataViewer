@@ -4,7 +4,6 @@ using Google.Cloud.Translation.V2;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Threading.Tasks;
 
 namespace DataViewer.Controllers
 {
@@ -20,8 +19,7 @@ namespace DataViewer.Controllers
         (bool apiDefault, float threshold) _cofidencyThreshold;
 
         List<LocalizationEntry> _entries;
-
-        TranslationModel _translationModel;
+        readonly TranslationModel _translationModel;
 
         public HealDocumentController()
         {
@@ -53,6 +51,32 @@ namespace DataViewer.Controllers
             RemoveEntriesWithInvalidGUID();
             RemoveEntriesWithDuplicatedGUID();
             CorrectLanguageEntries();
+        }
+
+        /// <summary>
+        /// Returns null in case of error or no connection.
+        /// </summary>
+        public string Translate(string text, Language source, Language target)
+        {
+            // assertions
+            if (string.IsNullOrWhiteSpace(text))
+                throw new ArgumentNullException("text");
+            if (source == target)
+                throw new ArgumentException("The source language and the target language can not be the same.");
+
+            TranslationResult result;
+
+            try
+            {
+                using TranslationClient client = TranslationClient.Create();
+                result = client.TranslateText(text, target.ToGoogleLangId(), source.ToGoogleLangId(), _translationModel);
+
+                return result.TranslatedText;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         void RemoveEntriesWithInvalidGUID()
@@ -111,32 +135,6 @@ namespace DataViewer.Controllers
                     if (d.Confidence > _cofidencyThreshold.threshold)
                         translationDataList[i].Language = detectedLang.Value;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Returns null in case of error or no connection.
-        /// </summary>
-        public string Translate(string text, Language source, Language target)
-        {
-            // assertions
-            if (string.IsNullOrWhiteSpace(text))
-                throw new ArgumentNullException("text");
-            if (source == target)
-                throw new ArgumentException("The source language and the target language can not be the same.");
-
-            TranslationResult result;
-
-            try
-            {
-                using TranslationClient client = TranslationClient.Create();
-                result = client.TranslateText(text, target.ToGoogleLangId(), source.ToGoogleLangId(), _translationModel);
-
-                return result.TranslatedText;
-            }
-            catch (Exception)
-            {
-                return null;
             }
         }
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DataViewer.UndoRedoCommands
 {
-    class CommandController<T> where T : IUndoRedoCommand
+    public class CommandStack<T> where T : IUndoRedoCommand
     {
         public int UndoCount => _undoStack.Count;
         public int RedoCount => _redoStack.Count;
@@ -13,27 +13,24 @@ namespace DataViewer.UndoRedoCommands
         readonly Action _notifyUndoAction;
         readonly Action _notifyRedoAction;
 
-        public CommandController(Action notifyUndoAction = null, Action notifyRedoAction = null)
+        /// <summary>
+        /// Optional parameters allow to pass an action that should be executed each time command stack's state is changed.
+        /// </summary>
+        public CommandStack(Action notifyUndoAction = null, Action notifyRedoAction = null)
         {
             _notifyUndoAction = notifyUndoAction;
             _notifyRedoAction = notifyRedoAction;
         }
 
         /// <summary>
-        /// Automatically pushes given command on the appropriate stack based on the State variable.
-        /// Pushing on undo stack results in redo stack being cleared out.
+        /// Automatically pushes given <see cref="IUndoRedoCommand"/> command on the Undo stack.
+        /// Whenever a new commands is pushed all Redo stack commands are cleared.
         /// </summary>
         public void Push(T cmd)
         {
-            if (cmd.State == UndoRedoCommandState.Undo)
-            {
-                _undoStack.Push(cmd);
-                _redoStack.Clear();
-                _notifyUndoAction?.Invoke();
-            }
-            else
-                _redoStack.Push(cmd);
-
+            _undoStack.Push(cmd);
+            _redoStack.Clear();
+            _notifyUndoAction?.Invoke();
             _notifyRedoAction?.Invoke();
         }
 

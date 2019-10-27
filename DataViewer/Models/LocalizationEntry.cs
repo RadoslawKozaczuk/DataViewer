@@ -14,7 +14,7 @@ namespace DataViewer.Models
         public string GUID { get; set; } = "";
 
         [JsonConverter(typeof(VariantConverter))]
-        public List<Variant> Variants { get; set; } = new List<Variant>(0);
+        public IList<Variant> Variants { get; set; } = new List<Variant>(0);
 
         public override string ToString() => $"Speaker {Speaker} GUID:{GUID}";
 

@@ -1,5 +1,4 @@
-﻿using DataViewer.Input;
-using DataViewer.Interfaces;
+﻿using DataViewer.Interfaces;
 using DataViewer.Models;
 using DataViewer.UndoRedoCommands;
 using Microsoft.Win32;
@@ -12,15 +11,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 
 namespace DataViewer.ViewModels
 {
-    public class ShellViewModel : ViewModelBase, IShellViewModel
+    public partial class ShellViewModel : ViewModelBase, IShellViewModel
     {
         #region Properties
-        List<LocalizationEntry> _entries;
-        public List<LocalizationEntry> Entries
+        public UndoRedoList<LocalizationEntry> Entries
         {
             get => _entries;
             set
@@ -30,7 +27,6 @@ namespace DataViewer.ViewModels
             }
         }
 
-        LocalizationEntry _selectedEntry;
         public LocalizationEntry SelectedEntry
         {
             get => _selectedEntry;
@@ -53,11 +49,12 @@ namespace DataViewer.ViewModels
 
                         NotifyOfPropertyChange(() => CanAddVariant);
                     }
+
+                    NotifyOfPropertyChange(() => CanDeleteEntry);
                 }
             }
         }
 
-        Variant _selectedVariant;
         public Variant SelectedVariant
         {
             get => _selectedVariant;
@@ -73,11 +70,12 @@ namespace DataViewer.ViewModels
                         _textLinesView.Filter = TextLineFilter;
                         NotifyOfPropertyChange(() => CanAddTextLine);
                     }
+
+                    NotifyOfPropertyChange(() => CanDeleteVariant);
                 }
             }
         }
 
-        TextLine _selectedTextLine;
         public TextLine SelectedTextLine
         {
             get => _selectedTextLine;
@@ -85,10 +83,10 @@ namespace DataViewer.ViewModels
             {
                 Set(ref _selectedTextLine, value); // this one-liner does both set and notify
                 NotifyOfPropertyChange(() => CanTranslate);
+                NotifyOfPropertyChange(() => CanDeleteTextLine);
             }
         }
 
-        string _speakerFilter;
         public string SpeakerFilter
         {
             get => _speakerFilter;
@@ -99,7 +97,6 @@ namespace DataViewer.ViewModels
             }
         }
 
-        string _guidFilter;
         public string GUIDFilter
         {
             get => _guidFilter;
@@ -110,7 +107,6 @@ namespace DataViewer.ViewModels
             }
         }
 
-        string _nameFilter;
         public string NameFilter
         {
             get => _nameFilter;
@@ -121,7 +117,6 @@ namespace DataViewer.ViewModels
             }
         }
 
-        string _textFilter;
         public string TextFilter
         {
             get => _textFilter;
@@ -132,7 +127,6 @@ namespace DataViewer.ViewModels
             }
         }
 
-        Language _translationLanguage;
         public Language TranslationLanguage
         {
             get => _translationLanguage;
@@ -143,28 +137,48 @@ namespace DataViewer.ViewModels
             }
         }
 
-        bool _isTranslating;
         public bool IsTranslating
         {
-            get
-            {
-                return _isTranslating;
-            }
+            get => _isTranslating;
             set
             {
                 Set(ref _isTranslating, value);
+                NotifyOfPropertyChange(() => CanTranslate);
             }
         }
+
+        public int TextLinesSelectedIndex { get; set; }
+
+        public object TextLinesCurrentCell { get; set; }
         #endregion
 
-        readonly IHealDocumentController _healDocumentController;
-        readonly CommandController<IUndoRedoCommand> _commandController;
+        #region Guard Methods (properties)
+        public bool CanExportToExcel => Entries != null && Entries.Count != 0;
 
-        ListCollectionView _entriesView;
-        ListCollectionView _variantsView;
-        ListCollectionView _textLinesView;
+        public bool CanTranslate
+            => !IsTranslating
+            && SelectedTextLine != null && SelectedTextLine.Language != TranslationLanguage;
 
-        bool _dataInconsistencyDetected;
+        public bool CanUndo => _commandStack.UndoCount > 0;
+
+        public bool CanRedo => _commandStack.RedoCount > 0;
+
+        public bool CanCheckDataConsistency => true;
+
+        public bool CanHealDocument => true;
+
+        public bool CanAddEntry => Entries != null;
+
+        public bool CanAddVariant => SelectedEntry != null;
+
+        public bool CanAddTextLine => SelectedVariant != null;
+
+        public bool CanDeleteEntry => SelectedEntry != null;
+
+        public bool CanDeleteVariant => SelectedVariant != null;
+
+        public bool CanDeleteTextLine => SelectedTextLine != null;
+        #endregion
 
         public ShellViewModel(IHealDocumentController healDocumentController)
             : base()
@@ -172,39 +186,20 @@ namespace DataViewer.ViewModels
             _healDocumentController = healDocumentController;
 
             // for convenience we pass notifiers to command stack so whenever an operation is executed on it, notifiers will also be called
-            _commandController = new CommandController<IUndoRedoCommand>(
-                notifyUndoAction: () => NotifyOfPropertyChange(() => CanUndo),
-                notifyRedoAction: () => NotifyOfPropertyChange(() => CanRedo));
+            _commandStack = new CommandStack<IUndoRedoCommand>(
+                notifyUndoAction: () =>
+                {
+                    NotifyOfPropertyChange(() => CanUndo);
+                    RefreshAllViews();
+                },
+                notifyRedoAction: () =>
+                {
+                    NotifyOfPropertyChange(() => CanRedo);
+                    RefreshAllViews();
+                });
         }
 
-        protected override IEnumerable<InputBindingCommand> GetInputBindingCommands()
-        {
-            yield return new InputBindingCommand(OpenFile)
-            {
-                GestureModifier = ModifierKeys.Control,
-                GestureKey = Key.O
-            };
-
-            yield return new InputBindingCommand(ExportToExcel)
-            {
-                GestureModifier = ModifierKeys.Control,
-                GestureKey = Key.E
-            }.If(() => CanExportToExcel);
-
-            yield return new InputBindingCommand(Undo)
-            {
-                GestureModifier = ModifierKeys.Control,
-                GestureKey = Key.Z
-            }.If(() => CanUndo);
-
-            yield return new InputBindingCommand(Redo)
-            {
-                GestureModifier = ModifierKeys.Control,
-                GestureKey = Key.R
-            }.If(() => CanRedo);
-        }
-
-        #region Button methods
+        #region Public Methods
         public void OpenFile()
         {
             string fullPath;
@@ -231,7 +226,10 @@ namespace DataViewer.ViewModels
             if (entries == null || entries.Count == 0)
                 return;
 
-            Entries = entries;
+            // we don't want models or JSON serializer to know anything undo/redo specific so this conversion needs to be done here
+            Entries = entries.ConvertToUndoRedoList(_commandStack);
+            foreach (LocalizationEntry entry in Entries)
+                entry.Variants = entry.Variants.ConvertToUndoRedoList(_commandStack);
 
             _entriesView = (ListCollectionView)CollectionViewSource.GetDefaultView(Entries);
             _entriesView.Filter = EntryFilter;
@@ -241,8 +239,6 @@ namespace DataViewer.ViewModels
 
             NotifyOfPropertyChange(() => CanExportToExcel);
         }
-
-        public bool CanExportToExcel => Entries != null && Entries.Count != 0;
 
         public void ExportToExcel()
         {
@@ -264,10 +260,6 @@ namespace DataViewer.ViewModels
             exporter.ExportToExcel(Entries, fullPath);
         }
 
-        public bool CanTranslate
-            => !_isTranslating
-            && SelectedTextLine != null && SelectedTextLine.Language != TranslationLanguage;
-
         public void Translate()
         {
             // disable Translate button
@@ -278,89 +270,11 @@ namespace DataViewer.ViewModels
             translationJob.Start();
         }
 
-        /// <summary>
-        /// Calls the Google Translation Cloud to perform text translation.
-        /// </summary>
-        public void TranslateAction()
-        {
-            // we cache these values in case user changed the selected line before the cloud responded
-            TextLine selectedLine = SelectedTextLine;
-            Language targetLanguage = TranslationLanguage;
+        public void Undo() => _commandStack.Undo();
 
-            string translation = _healDocumentController.Translate(
-                text: selectedLine.Text,
-                source: selectedLine.Language.Value,
-                target: targetLanguage);
-
-            if (translation == null)
-            {
-                MessageBox.Show(
-                    "Translation error. No Internet connection or Google Translation Cloud is inactive.",
-                    "Translation Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-            else
-            {
-                selectedLine.TranslatedText = translation;
-                selectedLine.TranslationLanguage = targetLanguage;
-            }
-
-            // enable button
-            IsTranslating = false;
-            NotifyOfPropertyChange(() => CanTranslate);
-
-            // in order to update UI form a different thread than the main thread we need to call Dispatcher
-            Application.Current.Dispatcher.Invoke(() => _textLinesView.ForceCommitRefresh());
-        }
-
-        public bool CanUndo => _commandController.UndoCount > 0;
-
-        public void Undo()
-        {
-            _commandController.Undo();
-            RefreshAllViews();
-        }
-
-        public bool CanRedo => _commandController.RedoCount > 0;
-
-        public void Redo()
-        {
-            _commandController.Redo();
-            RefreshAllViews();
-        }
-
-        void RefreshAllViews()
-        {
-            _entriesView?.ForceCommitRefresh();
-            _variantsView?.ForceCommitRefresh();
-            _textLinesView?.ForceCommitRefresh();
-        }
-
-        public bool CanCheckDataConsistency()
-        {
-            return true;
-        }
+        public void Redo() => _commandStack.Redo();
 
         public void CheckDataConsistency() => CheckDataConsistencyAsync();
-
-        /// <summary>
-        /// Performs the following checks:
-        /// - GUID duplication
-        /// - mismatching languages (language field is set different than the one recognized by the translation cloud).
-        /// - language is empty
-        /// - variant's name is empty (impossible to auto fix)
-        /// - speaker is empty (impossible to auto fix)
-        /// </summary>
-        async void CheckDataConsistencyAsync()
-        {
-
-        }
-
-        public bool CanHealDocument()
-        {
-            return true;
-        }
 
         public void HealDocument()
         {
@@ -369,33 +283,11 @@ namespace DataViewer.ViewModels
             RefreshAllViews();
         }
 
-        public bool CanAddEntry => Entries != null;
+        public void AddEntry() => Entries.AddWithUndoRedoTracking(new LocalizationEntry());
 
-        public void AddEntry()
-        {
-            var entry = new LocalizationEntry();
-            Entries.Add(entry);
-            _commandController.Push(new AddCommand<LocalizationEntry>(Entries, Entries.Count - 1, entry));
+        public void AddVariant() => (SelectedEntry.Variants as UndoRedoList<Variant>).AddWithUndoRedoTracking(new Variant());
 
-            _entriesView.ForceCommitRefresh();
-        }
-
-        public bool CanAddVariant => SelectedEntry != null;
-
-        public void AddVariant()
-        {
-            SelectedEntry.Variants.Add(new Variant());
-            _variantsView.ForceCommitRefresh();
-        }
-
-        public bool CanAddTextLine => SelectedVariant != null;
-
-        public void AddTextLine()
-        {
-            SelectedVariant.TextLines.Add(new TextLine());
-            _textLinesView.ForceCommitRefresh();
-        }
-        #endregion
+        public void AddTextLine() => (SelectedVariant.TextLines as UndoRedoList<TextLine>).AddWithUndoRedoTracking(new TextLine());
 
         public void Entries_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
@@ -404,13 +296,18 @@ namespace DataViewer.ViewModels
 
             if (e.Column.Header.ToString() == "Speaker")
             {
-                var undoCmd = new UndoRedoCommand(
+                string newSpeaker = ((TextBox)e.EditingElement).Text;
+
+                var undoCmd = new EditCommand(
                     objRef: SelectedEntry,
                     oldValue: new LocalizationEntry { Speaker = SelectedEntry.Speaker },
-                    newValue: new LocalizationEntry { Speaker = ((TextBox)e.EditingElement).Text });
-
-                _commandController.Push(undoCmd);
+                    newValue: new LocalizationEntry { Speaker = newSpeaker });
+                
+                SelectedEntry.Speaker = newSpeaker;
+                _commandStack.Push(undoCmd);
             }
+
+            _entriesView.ForceCommitRefresh();
         }
 
         public void Variants_CellEditEnding(DataGridCellEditEndingEventArgs e)
@@ -420,13 +317,17 @@ namespace DataViewer.ViewModels
 
             if (e.Column.Header.ToString() == "Name")
             {
-                var undoCmd = new UndoRedoCommand(
+                string newName = ((TextBox)e.EditingElement).Text;
+                var undoCmd = new EditCommand(
                     objRef: SelectedVariant,
                     oldValue: new Variant { Name = SelectedVariant.Name },
-                    newValue: new Variant { Name = ((TextBox)e.EditingElement).Text });
+                    newValue: new Variant { Name = newName });
 
-                _commandController.Push(undoCmd);
+                SelectedVariant.Name = newName;
+                _commandStack.Push(undoCmd);
             }
+
+           _variantsView.ForceCommitRefresh();
         }
 
         // doesn't work for now something is wrong with the XAML structure
@@ -435,40 +336,44 @@ namespace DataViewer.ViewModels
             if (e.EditAction != DataGridEditAction.Commit)
                 return;
 
-            if (e.Column.Header.ToString() == "Text")
-            {
-                var undoCmd = new UndoRedoCommand(
-                    objRef: SelectedTextLine,
-                    oldValue: new TextLine { Text = SelectedTextLine.Text },
-                    newValue: new TextLine { Text = SelectedTextLine.Text });
+            _tempHeader = e.Column.Header.ToString();
+            if (_tempHeader == "Text")
+                _tempOldTextLine = new TextLine { Text = SelectedTextLine.Text };
+            else if (_tempHeader == "Language")
+                _tempOldTextLine = new TextLine { Language = Enum.Parse<Language>(((ComboBox)e.EditingElement).Text) };
 
-                _commandController.Push(undoCmd);
-            }
+            _textLinesView.ForceCommitRefresh();
         }
 
-        #region Filters
-        bool EntryFilter(object item)
+        public void TextLines_SelectedCellsChanged()
         {
-            var entry = item as LocalizationEntry;
+            if (_tempHeader == "Text")
+            {
+                var undoCmd = new EditCommand(
+                    objRef: SelectedTextLine,
+                    oldValue: new TextLine { Text = _tempOldTextLine.Text },
+                    newValue: new TextLine { Text = SelectedVariant.TextLines[TextLinesSelectedIndex].Text });
 
-            if (!string.IsNullOrWhiteSpace(SpeakerFilter)
-                && entry.Speaker.IndexOf(SpeakerFilter, StringComparison.OrdinalIgnoreCase) < 0)
-                return false;
+                _commandStack.Push(undoCmd);
+            }
+            else if (_tempHeader == "Language")
+            {
+                var undoCmd = new EditCommand(
+                    objRef: SelectedTextLine,
+                    oldValue: new TextLine { Language = _tempOldTextLine.Language },
+                    newValue: new TextLine { Language = SelectedVariant.TextLines[TextLinesSelectedIndex].Language });
 
-            if (!string.IsNullOrWhiteSpace(GUIDFilter)
-                && entry.GUID.IndexOf(GUIDFilter, StringComparison.OrdinalIgnoreCase) < 0)
-                return false;
+                _commandStack.Push(undoCmd);
+            }
 
-            return true;
+            _tempHeader = null;
         }
 
-        bool VariantFilter(object item)
-            => string.IsNullOrWhiteSpace(NameFilter)
-            || (item as Variant).Name.IndexOf(NameFilter, StringComparison.OrdinalIgnoreCase) >= 0;
+        public void DeleteEntry() => Entries.RemoveWithUndoRedoTracking(SelectedEntry);
 
-        bool TextLineFilter(object item)
-            => string.IsNullOrWhiteSpace(TextFilter)
-            || (item as TextLine).Text.IndexOf(TextFilter, StringComparison.OrdinalIgnoreCase) >= 0;
+        public void DeleteVariant() => (SelectedEntry.Variants as UndoRedoList<Variant>).RemoveWithUndoRedoTracking(SelectedVariant);
+
+        public void DeleteTextLine() => (SelectedVariant.TextLines as UndoRedoList<TextLine>).RemoveWithUndoRedoTracking(SelectedTextLine);
         #endregion
     }
 }

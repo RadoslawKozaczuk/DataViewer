@@ -1,6 +1,6 @@
 ﻿namespace DataViewer.UndoRedoCommands
 {
-    interface IUndoRedoCommand
+    public interface IUndoRedoCommand
     {
         UndoRedoCommandState State { get; }
         void Undo();

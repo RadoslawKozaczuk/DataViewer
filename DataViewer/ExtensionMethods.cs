@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DataViewer.UndoRedoCommands;
+using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Data;
 
@@ -77,5 +79,8 @@ namespace DataViewer
         /// </summary>
         public static string ToPlainUpper(this Guid guid) 
             => guid.ToString().Replace("-", "").ToUpper();
+
+        public static UndoRedoList<T> ConvertToUndoRedoList<T>(this IEnumerable<T> list, CommandStack<IUndoRedoCommand> commandStack) 
+            => new UndoRedoList<T>(list, commandStack);
     }
 }

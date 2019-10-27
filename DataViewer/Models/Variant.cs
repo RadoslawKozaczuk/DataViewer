@@ -6,6 +6,6 @@ namespace DataViewer.Models
     {
         public string Name { get; set; } = "";
 
-        public List<TextLine> TextLines { get; set; } = new List<TextLine>(0);
+        public IList<TextLine> TextLines { get; set; } = new List<TextLine>(0);
     }
 }

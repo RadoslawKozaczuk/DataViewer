@@ -15,7 +15,7 @@ namespace DataViewer.Models
             {
                 _text = value;
                 TranslatedText = null;
-                TranslationLanguage = null; // notify property change should be fired here (or in VM)
+                TranslationLanguage = null;
             }
         }
 
@@ -33,5 +33,15 @@ namespace DataViewer.Models
             : "";
 
         public bool LanguageUnrecognizedOrInconsistent;
+
+        public TextLine() { }
+
+        public TextLine(TextLine copy)
+        {
+            Text = copy.Text;
+            Language = copy.Language;
+            TranslatedText = copy.TranslatedText;
+            TranslationLanguage = copy.TranslationLanguage;
+        }
     }
 }
