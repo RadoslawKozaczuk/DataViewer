@@ -1,0 +1,10 @@
+﻿using System.Collections.Generic;
+
+namespace DataViewer.UndoRedo
+{
+    static class ExtensionMethods
+    {
+        public static UndoRedoList<T> ConvertToUndoRedoList<T>(this IEnumerable<T> list, CommandStack<IUndoRedoCommand> commandStack)
+            => new UndoRedoList<T>(list, commandStack);
+    }
+}

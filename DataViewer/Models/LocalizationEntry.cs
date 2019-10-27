@@ -16,6 +16,7 @@ namespace DataViewer.Models
             {
                 _speaker = value;
                 Scanned = false;
+                SpeakerIsValid = true;
             }
         }
 
@@ -28,6 +29,7 @@ namespace DataViewer.Models
             {
                 _guid = value;
                 Scanned = false;
+                GUIDIsValid = true;
             }
         }
 

@@ -6,7 +6,6 @@ namespace DataViewer.Models
     public class TextLine
     {
         string _text = "";
-
         [JsonProperty]
         public string Text
         {
@@ -14,7 +13,7 @@ namespace DataViewer.Models
             set
             {
                 _text = value;
-                TranslatedText = null;
+                TranslatedText = "";
                 TranslationLanguage = null;
             }
         }
@@ -31,8 +30,6 @@ namespace DataViewer.Models
             => TranslationLanguage.HasValue
             ? TranslationLanguage.Value.ToGoogleLangId()
             : "";
-
-        public bool LanguageUnrecognizedOrInconsistent;
 
         public TextLine() { }
 

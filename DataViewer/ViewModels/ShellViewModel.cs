@@ -1,6 +1,7 @@
 ﻿using DataViewer.Interfaces;
 using DataViewer.Models;
 using DataViewer.UndoRedo;
+using DataViewer.UndoRedo.Commands;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;

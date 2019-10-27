@@ -1,4 +1,4 @@
-﻿namespace DataViewer.UndoRedo
+﻿namespace DataViewer.UndoRedo.Commands
 {
     abstract class AbstractUndoRedoCommand : IUndoRedoCommand
     {

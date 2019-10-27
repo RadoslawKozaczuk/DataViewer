@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DataViewer.UndoRedo
+namespace DataViewer.UndoRedo.Commands
 {
     sealed class AddCommand<T> : AbstractUndoRedoCommand
     {

@@ -1,7 +1,7 @@
 ﻿using DataViewer.Models;
 using System;
 
-namespace DataViewer.UndoRedo
+namespace DataViewer.UndoRedo.Commands
 {
     /// <summary>
     /// A command is Undo or Redo based on context.
