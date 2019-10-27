@@ -289,6 +289,14 @@ namespace DataViewer.ViewModels
 
         public void AddTextLine() => (SelectedVariant.TextLines as UndoRedoList<TextLine>).AddWithUndoRedoTracking(new TextLine());
 
+        public void DeleteEntry() => Entries.RemoveWithUndoRedoTracking(SelectedEntry);
+
+        public void DeleteVariant() => (SelectedEntry.Variants as UndoRedoList<Variant>).RemoveWithUndoRedoTracking(SelectedVariant);
+
+        public void DeleteTextLine() => (SelectedVariant.TextLines as UndoRedoList<TextLine>).RemoveWithUndoRedoTracking(SelectedTextLine);
+        #endregion
+
+        #region Event Handlers
         public void Entries_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
             if (e.EditAction != DataGridEditAction.Commit)
@@ -302,7 +310,7 @@ namespace DataViewer.ViewModels
                     objRef: SelectedEntry,
                     oldValue: new LocalizationEntry { Speaker = SelectedEntry.Speaker },
                     newValue: new LocalizationEntry { Speaker = newSpeaker });
-                
+
                 SelectedEntry.Speaker = newSpeaker;
                 _commandStack.Push(undoCmd);
             }
@@ -327,53 +335,52 @@ namespace DataViewer.ViewModels
                 _commandStack.Push(undoCmd);
             }
 
-           _variantsView.ForceCommitRefresh();
+            _variantsView.ForceCommitRefresh();
         }
-
+        
         // doesn't work for now something is wrong with the XAML structure
         public void TextLines_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
             if (e.EditAction != DataGridEditAction.Commit)
                 return;
 
-            _tempHeader = e.Column.Header.ToString();
-            if (_tempHeader == "Text")
-                _tempOldTextLine = new TextLine { Text = SelectedTextLine.Text };
-            else if (_tempHeader == "Language")
-                _tempOldTextLine = new TextLine { Language = Enum.Parse<Language>(((ComboBox)e.EditingElement).Text) };
-
-            _textLinesView.ForceCommitRefresh();
+            var entry = Entries[Entries.IndexOf(SelectedEntry)];
+            var variant = entry.Variants[entry.Variants.IndexOf(SelectedVariant)];
+            _tempValues.textLine = variant.TextLines[variant.TextLines.IndexOf(SelectedTextLine)];
+            _tempValues.oldTextLineCopy = new TextLine(_tempValues.textLine);
+            _tempValues.header = e.Column.Header.ToString();
         }
 
         public void TextLines_SelectedCellsChanged()
         {
-            if (_tempHeader == "Text")
+            if (_tempValues.header == null)
+                return;
+
+            if (_tempValues.header == "Text")
             {
                 var undoCmd = new EditCommand(
-                    objRef: SelectedTextLine,
-                    oldValue: new TextLine { Text = _tempOldTextLine.Text },
-                    newValue: new TextLine { Text = SelectedVariant.TextLines[TextLinesSelectedIndex].Text });
+                    objRef: _tempValues.textLine,
+                    oldValue: new TextLine { Text = _tempValues.oldTextLineCopy.Text },
+                    newValue: new TextLine { Text = _tempValues.textLine.Text });
 
                 _commandStack.Push(undoCmd);
             }
-            else if (_tempHeader == "Language")
+            else if (_tempValues.header == "Language")
             {
                 var undoCmd = new EditCommand(
-                    objRef: SelectedTextLine,
-                    oldValue: new TextLine { Language = _tempOldTextLine.Language },
-                    newValue: new TextLine { Language = SelectedVariant.TextLines[TextLinesSelectedIndex].Language });
+                    objRef: _tempValues.textLine,
+                    oldValue: new TextLine { Language = _tempValues.oldTextLineCopy.Language },
+                    newValue: new TextLine { Language = _tempValues.textLine.Language });
 
                 _commandStack.Push(undoCmd);
             }
 
-            _tempHeader = null;
+            _tempValues.textLine = null;
+            _tempValues.oldTextLineCopy = null;
+            _tempValues.header = null;
+
+            _textLinesView.ForceCommitRefresh();
         }
-
-        public void DeleteEntry() => Entries.RemoveWithUndoRedoTracking(SelectedEntry);
-
-        public void DeleteVariant() => (SelectedEntry.Variants as UndoRedoList<Variant>).RemoveWithUndoRedoTracking(SelectedVariant);
-
-        public void DeleteTextLine() => (SelectedVariant.TextLines as UndoRedoList<TextLine>).RemoveWithUndoRedoTracking(SelectedTextLine);
         #endregion
     }
 }

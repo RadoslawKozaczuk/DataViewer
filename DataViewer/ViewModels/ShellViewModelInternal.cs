@@ -24,21 +24,19 @@ namespace DataViewer.ViewModels
         ListCollectionView _textLinesView;
 
         // models
-        //UndoRedoList<LocalizationEntry> _entries;
         UndoRedoList<LocalizationEntry> _entries;
         LocalizationEntry _selectedEntry;
         Variant _selectedVariant;
         TextLine _selectedTextLine;
-
-        TextLine _tempOldTextLine;
         Language _translationLanguage;
         string _speakerFilter;
         string _guidFilter;
         string _nameFilter;
         string _textFilter;
         bool _isTranslating;
-        bool _dataInconsistencyDetected;
-        string _tempHeader;
+
+        // this is necessary to circumnavigate custom data template limitations
+        (TextLine textLine, TextLine oldTextLineCopy, string header) _tempValues;
 
         protected override IEnumerable<InputBindingCommand> GetInputBindingCommands()
         {
