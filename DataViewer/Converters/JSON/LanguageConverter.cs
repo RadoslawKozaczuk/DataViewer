@@ -5,23 +5,8 @@ namespace DataViewer.Converters.JSON
 {
     public class LanguageConverter : JsonConverter
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            switch ((Language)value)
-            {
-                case Language.English_US:
-                    writer.WriteValue("en_us");
-                    break;
-                case Language.French:
-                    writer.WriteValue("fr_fr");
-                    break;
-                case Language.Japanease:
-                    writer.WriteValue("jp_jp");
-                    break;
-                default:
-                    throw new ArgumentException("Not supported language. Please extend LanguageConverter functionality.");
-            }
-        }
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) 
+            => throw new NotImplementedException();
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         => ((string)reader.Value) switch
@@ -29,7 +14,7 @@ namespace DataViewer.Converters.JSON
             "en_us" => Language.English_US,
             "fr_fr" => Language.French,
             "jp_jp" => Language.Japanease,
-            _ => throw new ArgumentException("Not supported language. Please extend LanguageConverter functionality.")
+            _ => (Language?)null
         };
 
         public override bool CanConvert(Type objectType) => objectType == typeof(string);

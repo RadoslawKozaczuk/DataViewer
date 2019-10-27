@@ -1,15 +1,14 @@
-﻿using DataViewer.UndoRedo;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Windows;
 using System.Windows.Data;
 
 namespace DataViewer
 {
     static class ExtensionMethods
-    {
+    { 
         /// <summary>
-        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at https://cloud.google.com/translate/docs/languages
+        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at
+        /// <a href="https://cloud.google.com/translate/docs/languages">https://cloud.google.com/translate/docs/languages</a>
         /// </summary>
         public static string ToGoogleLangId(this Language? lang) => lang switch
         {
@@ -20,7 +19,8 @@ namespace DataViewer
         };
 
         /// <summary>
-        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at https://cloud.google.com/translate/docs/languages
+        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at
+        /// <a href="https://cloud.google.com/translate/docs/languages">https://cloud.google.com/translate/docs/languages</a>
         /// </summary>
         public static string ToGoogleLangId(this Language lang) => lang switch
         {
@@ -31,7 +31,8 @@ namespace DataViewer
         };
 
         /// <summary>
-        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at https://cloud.google.com/translate/docs/languages
+        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at
+        /// <a href="https://cloud.google.com/translate/docs/languages">https://cloud.google.com/translate/docs/languages</a>
         /// If throwExceptionWhenNotSupported is set to true method will throw an exception is there is no match in the <see cref="Language"/> enumerator
         /// for the given Google language id, other wise it will be set to None.
         /// </summary>

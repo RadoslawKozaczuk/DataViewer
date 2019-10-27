@@ -43,31 +43,44 @@ namespace DataViewer.Controllers
 
         public bool PerformFullScan(IList<LocalizationEntry> entries)
         {
+            bool valid = true;
             foreach (LocalizationEntry entry in entries)
             {
-                ScanLocalizationEntry(entry);
+                if (valid && !ScanLocalizationEntry(entry))
+                    valid = false;
 
                 foreach (Variant variant in entry.Variants)
                     foreach (TextLine textLine in variant.TextLines)
                     {
-                        ScanRextLine(textLine);
+                        if (valid && !ScanRextLine(textLine))
+                            valid = false;
                     }
             }
+
+            return valid;
         }
 
         public bool ScanLocalizationEntry(LocalizationEntry entry)
         {
+            bool valid = true;
+
             if (!Guid.TryParse(entry.GUID, out Guid _))
-                entry.GUIDIsValid = false;
+                entry.GUIDIsValid = valid = false;
             if (string.IsNullOrWhiteSpace(entry.Speaker))
-                entry.SpeakerIsValid = false;
+                entry.SpeakerIsValid = valid = false;
+
+            return valid;
         }
 
         public bool ScanRextLine(TextLine textLine)
         {
+            bool valid = true;
+
             bool languageNullOrInconsistent = false;
             if (languageNullOrInconsistent)
                 textLine.IsValid = false;
+
+            return valid;
         }
 
         public void HealDocument(IList<LocalizationEntry> entries)
