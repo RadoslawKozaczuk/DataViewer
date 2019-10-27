@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DataViewer.UndoRedoCommands
+namespace DataViewer.UndoRedo
 {
     /// <summary>
     /// Extends normal <see cref="IList{T}"/> by adding undo/redo functionality.

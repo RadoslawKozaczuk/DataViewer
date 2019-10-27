@@ -1,4 +1,4 @@
-﻿namespace DataViewer.UndoRedoCommands
+﻿namespace DataViewer.UndoRedo
 {
     public interface IUndoRedoCommand
     {

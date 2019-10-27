@@ -1,7 +1,7 @@
 ﻿using DataViewer.Input;
 using DataViewer.Interfaces;
 using DataViewer.Models;
-using DataViewer.UndoRedoCommands;
+using DataViewer.UndoRedo;
 using System;
 using System.Collections.Generic;
 using System.Windows;

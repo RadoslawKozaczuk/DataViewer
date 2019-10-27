@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DataViewer.UndoRedoCommands
+namespace DataViewer.UndoRedo
 {
     public class CommandStack<T> where T : IUndoRedoCommand
     {
