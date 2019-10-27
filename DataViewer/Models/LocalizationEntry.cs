@@ -15,7 +15,6 @@ namespace DataViewer.Models
             set
             {
                 _speaker = value;
-                Scanned = false;
                 SpeakerIsValid = true;
             }
         }
@@ -28,7 +27,6 @@ namespace DataViewer.Models
             set
             {
                 _guid = value;
-                Scanned = false;
                 GUIDIsValid = true;
             }
         }
@@ -41,9 +39,6 @@ namespace DataViewer.Models
 
         [JsonIgnore]
         public bool GUIDIsValid { get; set; } = true;
-
-        // like IsDirty pattern. When ever an edit occurs this value turns to false and Scanner validates the whole model again
-        public bool Scanned;
 
         public LocalizationEntry()
         {

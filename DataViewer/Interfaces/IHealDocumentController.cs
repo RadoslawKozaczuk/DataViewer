@@ -7,6 +7,6 @@ namespace DataViewer.Interfaces
     {
         string Translate(string text, Language source, Language target);
         void HealDocument(IList<LocalizationEntry> entries);
-        void ScanDocument(IList<LocalizationEntry> entries);
+        bool PerformFullScan(IList<LocalizationEntry> entries);
     }
 }

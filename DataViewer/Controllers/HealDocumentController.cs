@@ -41,34 +41,33 @@ namespace DataViewer.Controllers
             }
         }
 
-        public void ScanDocument(IList<LocalizationEntry> entries)
-        {
-            ValidateEntries(entries);
-            ValidateTextLines(entries);
-        }
-
-        void ValidateEntries(IList<LocalizationEntry> entries)
-        {
-            foreach(LocalizationEntry entry in entries)
-            {
-                if (!Guid.TryParse(entry.GUID, out Guid _))
-                    entry.GUIDIsValid = false;
-                if (string.IsNullOrWhiteSpace(entry.Speaker))
-                    entry.SpeakerIsValid = false;
-                entry.Scanned = true;
-            }
-        }
-
-        void ValidateTextLines(IList<LocalizationEntry> entries)
+        public bool PerformFullScan(IList<LocalizationEntry> entries)
         {
             foreach (LocalizationEntry entry in entries)
             {
-                if (!Guid.TryParse(entry.GUID, out Guid _))
-                    entry.GUIDIsValid = false;
-                if (string.IsNullOrWhiteSpace(entry.Speaker))
-                    entry.SpeakerIsValid = false;
-                entry.Scanned = true;
+                ScanLocalizationEntry(entry);
+
+                foreach (Variant variant in entry.Variants)
+                    foreach (TextLine textLine in variant.TextLines)
+                    {
+                        ScanRextLine(textLine);
+                    }
             }
+        }
+
+        public bool ScanLocalizationEntry(LocalizationEntry entry)
+        {
+            if (!Guid.TryParse(entry.GUID, out Guid _))
+                entry.GUIDIsValid = false;
+            if (string.IsNullOrWhiteSpace(entry.Speaker))
+                entry.SpeakerIsValid = false;
+        }
+
+        public bool ScanRextLine(TextLine textLine)
+        {
+            bool languageNullOrInconsistent = false;
+            if (languageNullOrInconsistent)
+                textLine.IsValid = false;
         }
 
         public void HealDocument(IList<LocalizationEntry> entries)

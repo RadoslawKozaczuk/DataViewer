@@ -277,7 +277,7 @@ namespace DataViewer.ViewModels
 
         public void CheckDataConsistency()
         {
-            _healDocumentController.ScanDocument(Entries);
+            _healDocumentController.PerformFullScan(Entries);
             RefreshAllViews();
         }
 

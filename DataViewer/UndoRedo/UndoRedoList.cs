@@ -49,19 +49,28 @@ namespace DataViewer.UndoRedo
         {
             _commandStack = commandStack;
         }
-        
+
+        /// <summary>
+        /// Adds element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/>
+        /// </summary>
         public void AddWithUndoRedoTracking(T item)
         {
             Add(item);
             _commandStack.Push(new AddCommand<T>(this, Count - 1, item));
         }
 
+        /// <summary>
+        /// Removes element from the list and adds<see cref="RemoveCommand{T}"/> to the corresponding<see cref= "CommandStack{T}" />
+        /// </summary>
         public void RemoveWithUndoRedoTracking(T item)
         {
             Remove(item);
             _commandStack.Push(new RemoveCommand<T>(this, Count - 1, item));
         }
 
+        /// <summary>
+        /// Removes element from the list and adds <see cref="RemoveCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/>
+        /// </summary>
         public void RemoveAtWithUndoRedoTracking(int index)
         {
             T item = base[index];
@@ -69,6 +78,9 @@ namespace DataViewer.UndoRedo
             _commandStack.Push(new RemoveCommand<T>(this, index, item));
         }
 
+        /// <summary>
+        /// Inserts element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/>
+        /// </summary>
         public void InsertWithUndoRedoTracking(int index, T item) 
             => _commandStack.Push(new AddCommand<T>(this, index, item));
     }

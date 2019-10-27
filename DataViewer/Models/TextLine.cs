@@ -28,9 +28,11 @@ namespace DataViewer.Models
 
         public string TranslationLanguageShortId
             => TranslationLanguage.HasValue
-            ? TranslationLanguage.Value.ToGoogleLangId()
-            : "";
+                ? TranslationLanguage.Value.ToGoogleLangId()
+                : "";
 
+        public bool IsValid { get; set; }
+        
         public TextLine() { }
 
         public TextLine(TextLine copy)
