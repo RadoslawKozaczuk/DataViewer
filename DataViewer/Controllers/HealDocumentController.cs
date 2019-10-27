@@ -46,15 +46,20 @@ namespace DataViewer.Controllers
             bool valid = true;
             foreach (LocalizationEntry entry in entries)
             {
-                if (valid && !ScanLocalizationEntry(entry))
+                if (!ScanLocalizationEntry(entry))
                     valid = false;
 
                 foreach (Variant variant in entry.Variants)
+                {
+                    if (!ScanVariant(variant))
+                        valid = false;
+
                     foreach (TextLine textLine in variant.TextLines)
                     {
-                        if (valid && !ScanRextLine(textLine))
+                        if (!ScanTextLine(textLine))
                             valid = false;
                     }
+                }
             }
 
             return valid;
@@ -72,13 +77,25 @@ namespace DataViewer.Controllers
             return valid;
         }
 
-        public bool ScanRextLine(TextLine textLine)
+        public bool ScanVariant(Variant variant)
         {
             bool valid = true;
 
-            bool languageNullOrInconsistent = false;
-            if (languageNullOrInconsistent)
-                textLine.IsValid = false;
+            if (string.IsNullOrWhiteSpace(variant.Name))
+                variant.NameIsValid = valid = false;
+
+            return valid;
+        }
+
+        public bool ScanTextLine(TextLine textLine)
+        {
+            bool valid = true;
+
+            if (string.IsNullOrWhiteSpace(textLine.Text))
+                textLine.TextIsValid = valid = false;
+
+            if (textLine.Language == null)
+                textLine.LanguageIsValid = valid = false;
 
             return valid;
         }

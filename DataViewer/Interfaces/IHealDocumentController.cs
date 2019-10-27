@@ -8,5 +8,8 @@ namespace DataViewer.Interfaces
         string Translate(string text, Language source, Language target);
         void HealDocument(IList<LocalizationEntry> entries);
         bool PerformFullScan(IList<LocalizationEntry> entries);
+        public bool ScanLocalizationEntry(LocalizationEntry entry);
+        public bool ScanVariant(Variant variant);
+        public bool ScanTextLine(TextLine textLine);
     }
 }

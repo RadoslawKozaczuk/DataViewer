@@ -190,7 +190,7 @@
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Background" 
-                                            Value="{Binding Path=IsValid, Converter={StaticResource IsValidConverter}}"/>
+                                            Value="{Binding Path=NameIsValid, Converter={StaticResource IsValidConverter}}"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
@@ -215,23 +215,31 @@
                         <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
                     <Label Margin="10, 0, 10, 0">Text Filter</Label>
+                    <ComboBox x:Name="TranslationLanguage" Grid.Column="1" Grid.Row="0" Margin="10, 3, 10, 0" SelectedIndex="0" 
+                              ItemsSource="{Binding Source={StaticResource LanguageValues}}" SelectedItem="{Binding TranslationLanguage}"
+                              MinWidth="80" MinHeight="20" FontSize="12"/>
                     <TextBox x:Name="TextFilter" Grid.Row="1" Margin="10, 5, 10, 0"></TextBox>
                     <Button x:Name="Translate" Grid.Column="1" Grid.Row="1" Margin="10, 5, 10, 0" Content="Translate"/>
-                    <ComboBox x:Name="TranslationLanguage" Grid.Column="1" Grid.Row="0" Margin="10, 5, 10, 0" SelectedIndex="0" 
-                              ItemsSource="{Binding Source={StaticResource LanguageValues}}" SelectedItem="{Binding TranslationLanguage}"
-                              MinWidth="80"/>
                 </Grid>
                 <DataGrid x:Name="TextLines" Style="{StaticResource GrayForegroundWhenDisabled}" Width="340"
                           IsHitTestVisible="{Binding IsTranslating, Converter={StaticResource InverseBoolConverter}}"
                           ItemsSource="{Binding SelectedVariant.TextLines, Mode=TwoWay}" SelectedItem="{Binding SelectedTextLine, Mode=TwoWay}"
                           SelectedIndex="{Binding TextLinesSelectedIndex}" CurrentCell="{Binding TextLinesCurrentCell}"
                           cal:Message.Attach="[Event CellEditEnding] = [Action TextLines_CellEditEnding($eventArgs)]; [Event SelectedCellsChanged] = [Action TextLines_SelectedCellsChanged]">
+                    <DataGrid.Resources>
+                        <Style x:Key="TextLineTextStyle" TargetType="{x:Type TextBlock}">
+                            <Setter Property="Background" Value="{Binding Path=TextIsValid, Converter={StaticResource IsValidConverter}}"/>
+                        </Style>
+                        <Style x:Key="TextLineLanguageStyle" TargetType="{x:Type TextBlock}">
+                            <Setter Property="Background" Value="{Binding Path=LanguageIsValid, Converter={StaticResource IsValidConverter}}"/>
+                        </Style>
+                    </DataGrid.Resources>
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Header="Text" Width="*" SortMemberPath="Text">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock TextWrapping="Wrap" Text="{Binding Path=Text}" />
+                                        <TextBlock TextWrapping="Wrap" Text="{Binding Path=Text}" Style="{StaticResource TextLineTextStyle}"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -240,11 +248,12 @@
                                     <TextBox TextWrapping="Wrap" Text="{Binding Path=Text}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellEditingTemplate>
+                            
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Language" Width="80" SortMemberPath="Language">
+                        <DataGridTemplateColumn Header="Language" Width="100" SortMemberPath="Language">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Path=Language}"/>
+                                    <TextBlock Text="{Binding Path=Language}" Style="{StaticResource TextLineLanguageStyle}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                             <DataGridTemplateColumn.CellEditingTemplate>

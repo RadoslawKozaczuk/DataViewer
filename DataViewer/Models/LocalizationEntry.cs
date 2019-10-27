@@ -7,7 +7,6 @@ namespace DataViewer.Models
 {
     public class LocalizationEntry
     {
-        string _speaker = "";
         [JsonProperty("Speaker")]
         public string Speaker 
         {
@@ -18,8 +17,8 @@ namespace DataViewer.Models
                 SpeakerIsValid = true;
             }
         }
+        string _speaker = "";
 
-        string _guid = "";
         [JsonProperty("GUID")]
         public string GUID 
         {
@@ -30,6 +29,7 @@ namespace DataViewer.Models
                 GUIDIsValid = true;
             }
         }
+        string _guid = "";
 
         [JsonConverter(typeof(VariantConverter))]
         public IList<Variant> Variants { get; set; } = new List<Variant>(0);

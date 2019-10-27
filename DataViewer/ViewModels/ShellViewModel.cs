@@ -230,7 +230,11 @@ namespace DataViewer.ViewModels
             // we don't want models or JSON serializer to know anything undo/redo specific so this conversion needs to be done here
             Entries = entries.ConvertToUndoRedoList(_commandStack);
             foreach (LocalizationEntry entry in Entries)
+            {
                 entry.Variants = entry.Variants.ConvertToUndoRedoList(_commandStack);
+                foreach (Variant variant in entry.Variants)
+                    variant.TextLines = variant.TextLines.ConvertToUndoRedoList(_commandStack);
+            }
 
             _entriesView = (ListCollectionView)CollectionViewSource.GetDefaultView(Entries);
             _entriesView.Filter = EntryFilter;
