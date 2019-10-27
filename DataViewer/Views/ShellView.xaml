@@ -141,8 +141,22 @@
                         </GroupStyle>
                     </DataGrid.GroupStyle>
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Speaker" Width="60" Binding="{Binding Path=Speaker}"/>
-                        <DataGridTextColumn Header="GUID" Width="250" IsReadOnly="True" Binding="{Binding Path=GUID}"/>
+                        <DataGridTextColumn Header="Speaker" Width="60" Binding="{Binding Path=Speaker}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Background" 
+                                            Value="{Binding Path=SpeakerIsValid, Converter={StaticResource IsValidConverter}}"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="GUID" Width="250" IsReadOnly="True" Binding="{Binding Path=GUID}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Background" 
+                                            Value="{Binding Path=GUIDIsValid, Converter={StaticResource IsValidConverter}}"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
 
@@ -172,7 +186,14 @@
                           ItemsSource="{Binding SelectedEntry.Variants}" SelectedItem="{Binding SelectedVariant}"
                           cal:Message.Attach="[Event CellEditEnding] = [Action Variants_CellEditEnding($eventArgs)]">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Background" 
+                                            Value="{Binding Path=IsValid, Converter={StaticResource IsValidConverter}}"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
 

@@ -7,16 +7,41 @@ namespace DataViewer.Models
 {
     public class LocalizationEntry
     {
+        string _speaker = "";
         [JsonProperty("Speaker")]
-        public string Speaker { get; set; } = "";
+        public string Speaker 
+        {
+            get => _speaker;
+            set
+            {
+                _speaker = value;
+                Scanned = false;
+            }
+        }
 
+        string _guid = "";
         [JsonProperty("GUID")]
-        public string GUID { get; set; } = "";
+        public string GUID 
+        {
+            get => _guid;
+            set
+            {
+                _guid = value;
+                Scanned = false;
+            }
+        }
 
         [JsonConverter(typeof(VariantConverter))]
         public IList<Variant> Variants { get; set; } = new List<Variant>(0);
 
-        public override string ToString() => $"Speaker {Speaker} GUID:{GUID}";
+        [JsonIgnore]
+        public bool SpeakerIsValid { get; set; } = true;
+
+        [JsonIgnore]
+        public bool GUIDIsValid { get; set; } = true;
+
+        // like IsDirty pattern. When ever an edit occurs this value turns to false and Scanner validates the whole model again
+        public bool Scanned;
 
         public LocalizationEntry()
         {

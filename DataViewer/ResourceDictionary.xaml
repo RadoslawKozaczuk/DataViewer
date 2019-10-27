@@ -53,8 +53,22 @@
         </Style.Triggers>
     </Style>
 
+    <!--<Style TargetType="{x:Type TextBlock}">
+        <Style.Triggers>
+            <Trigger Property="Text" Value="John">
+                <Setter Property="Background" Value="IndianRed"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>-->
+
+    <!--<Style TargetType="{x:Type TextBlock}">
+        <Setter Property="Background" 
+                                            Value="{Binding Path=IsValid, Converter={IsValidConverter}}"/>
+    </Style>-->
+
     <!-- converters -->
     <uiConverters:TextToVisibilityConverter x:Key="TextToVisibilityConverter" />
     <uiConverters:InverseBoolConverter x:Key="InverseBoolConverter" />
     <uiConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    <uiConverters:IsValidConverter x:Key="IsValidConverter" />
 </ResourceDictionary>

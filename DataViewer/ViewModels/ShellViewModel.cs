@@ -274,7 +274,11 @@ namespace DataViewer.ViewModels
 
         public void Redo() => _commandStack.Redo();
 
-        public void CheckDataConsistency() => CheckDataConsistencyAsync();
+        public void CheckDataConsistency()
+        {
+            _healDocumentController.ScanDocument(Entries);
+            RefreshAllViews();
+        }
 
         public void HealDocument()
         {

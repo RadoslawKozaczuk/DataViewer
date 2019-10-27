@@ -16,9 +16,9 @@ namespace DataViewer.Controllers
             = "Invalid or unrecognized Translation Method in appconfig. Allowed values are 'ServiceDefault', 'Base' or 'NeuralMachineTranslation'";
 
         // true - let Google decide, false - manual threshold
-        (bool apiDefault, float threshold) _cofidencyThreshold;
+        (bool apiDefault, float threshold) _confidenceThreshold;
 
-        List<LocalizationEntry> _entries;
+        IList<LocalizationEntry> _entries;
         readonly TranslationModel _translationModel;
 
         public HealDocumentController()
@@ -28,20 +28,50 @@ namespace DataViewer.Controllers
 
             string langugeDetectionThresholdValue = ConfigurationManager.AppSettings["LanguageDetectionThreshold"];
 
-            _cofidencyThreshold.apiDefault = langugeDetectionThresholdValue.ToLower() == "api_default";
+            _confidenceThreshold.apiDefault = langugeDetectionThresholdValue.ToLower() == "api_default";
 
-            if (!_cofidencyThreshold.apiDefault)
+            if (!_confidenceThreshold.apiDefault)
             {
                 if (!float.TryParse(langugeDetectionThresholdValue, out float val)
                     || val < 0
                     || val > 1)
                     throw new ArgumentException(INVALID_LANG_DET_THRESHOLD_MSG);
 
-                _cofidencyThreshold.threshold = val;
+                _confidenceThreshold.threshold = val;
             }
         }
 
-        public void HealDocument(List<LocalizationEntry> entries)
+        public void ScanDocument(IList<LocalizationEntry> entries)
+        {
+            ValidateEntries(entries);
+            ValidateTextLines(entries);
+        }
+
+        void ValidateEntries(IList<LocalizationEntry> entries)
+        {
+            foreach(LocalizationEntry entry in entries)
+            {
+                if (!Guid.TryParse(entry.GUID, out Guid _))
+                    entry.GUIDIsValid = false;
+                if (string.IsNullOrWhiteSpace(entry.Speaker))
+                    entry.SpeakerIsValid = false;
+                entry.Scanned = true;
+            }
+        }
+
+        void ValidateTextLines(IList<LocalizationEntry> entries)
+        {
+            foreach (LocalizationEntry entry in entries)
+            {
+                if (!Guid.TryParse(entry.GUID, out Guid _))
+                    entry.GUIDIsValid = false;
+                if (string.IsNullOrWhiteSpace(entry.Speaker))
+                    entry.SpeakerIsValid = false;
+                entry.Scanned = true;
+            }
+        }
+
+        public void HealDocument(IList<LocalizationEntry> entries)
         {
             if (entries == null || entries.Count == 0)
                 return;
@@ -123,7 +153,7 @@ namespace DataViewer.Controllers
                 if (!detectedLang.HasValue)
                     continue; // ignore it, detected language is not supported in our system
 
-                if (_cofidencyThreshold.apiDefault)
+                if (_confidenceThreshold.apiDefault)
                 {
                     // we let Google decide what's reliable and what's not
                     if (d.IsReliable)
@@ -132,7 +162,7 @@ namespace DataViewer.Controllers
                 else
                 {
                     // we manually set the certain threshold above which we treat results as valid
-                    if (d.Confidence > _cofidencyThreshold.threshold)
+                    if (d.Confidence > _confidenceThreshold.threshold)
                         translationDataList[i].Language = detectedLang.Value;
                 }
             }

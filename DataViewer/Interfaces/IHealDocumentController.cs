@@ -6,6 +6,7 @@ namespace DataViewer.Interfaces
     public interface IHealDocumentController
     {
         string Translate(string text, Language source, Language target);
-        void HealDocument(List<LocalizationEntry> entries);
+        void HealDocument(IList<LocalizationEntry> entries);
+        void ScanDocument(IList<LocalizationEntry> entries);
     }
 }

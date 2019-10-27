@@ -101,19 +101,6 @@ namespace DataViewer.ViewModels
             Application.Current.Dispatcher.Invoke(() => _textLinesView.ForceCommitRefresh());
         }
 
-        /// <summary>
-        /// Performs the following checks:
-        /// - GUID duplication
-        /// - mismatching languages (language field is set different than the one recognized by the translation cloud).
-        /// - language is empty
-        /// - variant's name is empty (impossible to auto fix)
-        /// - speaker is empty (impossible to auto fix)
-        /// </summary>
-        async void CheckDataConsistencyAsync()
-        {
-
-        }
-
         void RefreshAllViews()
         {
             _entriesView?.ForceCommitRefresh();
