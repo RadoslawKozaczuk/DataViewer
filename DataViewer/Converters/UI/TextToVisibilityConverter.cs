@@ -19,6 +19,6 @@ namespace DataViewer.Converters.UI
         /// Returns empty string
         /// </summary>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => "";
+            => throw new NotImplementedException("Not implemented yet");
     }
 }

@@ -43,8 +43,9 @@ namespace DataViewer
         {
             _container.Singleton<IWindowManager, WindowManager>();
             _container.Singleton<IEventAggregator, EventAggregator>();
-            _container.PerRequest<IHealDocumentController, HealDocumentController>();
+            _container.PerRequest<IDataIntegrityController, DataIntegrityController>();
             _container.PerRequest<IShellViewModel, ShellViewModel>();
+            _container.Singleton<ITranslationCloudAdapter, TranslationCloudAdapter>();
         }
 
         /// <summary>

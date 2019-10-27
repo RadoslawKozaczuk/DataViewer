@@ -6,7 +6,7 @@ namespace DataViewer.Converters.JSON
     public class LanguageConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) 
-            => throw new NotImplementedException();
+            => throw new NotImplementedException("Not implemented yet");
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         => ((string)reader.Value) switch

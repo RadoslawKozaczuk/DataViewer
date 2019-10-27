@@ -235,12 +235,10 @@
                         </Style>
                     </DataGrid.Resources>
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Text" Width="*" SortMemberPath="Text">
+                        <DataGridTemplateColumn Header="Text" Width="260" SortMemberPath="Text">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock TextWrapping="Wrap" Text="{Binding Path=Text}" Style="{StaticResource TextLineTextStyle}"/>
-                                    </StackPanel>
+                                    <TextBlock TextWrapping="Wrap" Text="{Binding Path=Text}" Style="{StaticResource TextLineTextStyle}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                             <DataGridTemplateColumn.CellEditingTemplate>
@@ -250,7 +248,7 @@
                             </DataGridTemplateColumn.CellEditingTemplate>
                             
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Language" Width="100" SortMemberPath="Language">
+                        <DataGridTemplateColumn Header="Language" Width="*" SortMemberPath="Language">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Path=Language}" Style="{StaticResource TextLineLanguageStyle}"/>
@@ -266,7 +264,7 @@
                     </DataGrid.Columns>
                     <DataGrid.RowDetailsTemplate>
                         <DataTemplate>
-                            <TextBlock FontStyle="Italic" TextWrapping="Wrap" Margin="10">
+                            <TextBlock FontStyle="Italic" Width="310" TextWrapping="Wrap" Margin="10">
                                 <TextBlock.Text>
                                     <MultiBinding StringFormat='Translation ({0}): {1}'>
                                         <Binding Path="TranslationLanguageShortId" />

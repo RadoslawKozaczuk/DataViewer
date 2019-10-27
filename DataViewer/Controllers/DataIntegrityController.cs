@@ -1,44 +1,18 @@
 ﻿using DataViewer.Interfaces;
 using DataViewer.Models;
-using Google.Cloud.Translation.V2;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 
 namespace DataViewer.Controllers
 {
-    class HealDocumentController : IHealDocumentController
+    class DataIntegrityController : IDataIntegrityController
     {
-        const string INVALID_LANG_DET_THRESHOLD_MSG
-            = "Invalid LanguageDetectionThreshold value in appconfig. The value should be either from 0 to 1 inclusive or 'API_default'.";
-
-        const string INVALID_TRANSLATION_METHOD_MSG
-            = "Invalid or unrecognized Translation Method in appconfig. Allowed values are 'ServiceDefault', 'Base' or 'NeuralMachineTranslation'";
-
-        // true - let Google decide, false - manual threshold
-        (bool apiDefault, float threshold) _confidenceThreshold;
-
+        readonly ITranslationCloudAdapter _cloud;
         IList<LocalizationEntry> _entries;
-        readonly TranslationModel _translationModel;
 
-        public HealDocumentController()
+        public DataIntegrityController(ITranslationCloudAdapter translationCloudAdapter)
         {
-            if (!Enum.TryParse(ConfigurationManager.AppSettings["TranslationMethod"], out _translationModel))
-                throw new ArgumentException(INVALID_TRANSLATION_METHOD_MSG);
-
-            string langugeDetectionThresholdValue = ConfigurationManager.AppSettings["LanguageDetectionThreshold"];
-
-            _confidenceThreshold.apiDefault = langugeDetectionThresholdValue.ToLower() == "api_default";
-
-            if (!_confidenceThreshold.apiDefault)
-            {
-                if (!float.TryParse(langugeDetectionThresholdValue, out float val)
-                    || val < 0
-                    || val > 1)
-                    throw new ArgumentException(INVALID_LANG_DET_THRESHOLD_MSG);
-
-                _confidenceThreshold.threshold = val;
-            }
+            _cloud = translationCloudAdapter;
         }
 
         public bool PerformFullScan(IList<LocalizationEntry> entries)
@@ -113,30 +87,10 @@ namespace DataViewer.Controllers
         }
 
         /// <summary>
-        /// Returns null in case of error or no connection.
+        /// Returns false in case of error or no connection.
         /// </summary>
-        public string Translate(string text, Language source, Language target)
-        {
-            // assertions
-            if (string.IsNullOrWhiteSpace(text))
-                throw new ArgumentNullException("text");
-            if (source == target)
-                throw new ArgumentException("The source language and the target language can not be the same.");
-
-            TranslationResult result;
-
-            try
-            {
-                using TranslationClient client = TranslationClient.Create();
-                result = client.TranslateText(text, target.ToGoogleLangId(), source.ToGoogleLangId(), _translationModel);
-
-                return result.TranslatedText;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
+        public bool Translate(string text, Language source, Language target, out string translation) 
+            => _cloud.Translate(text, source, target, out translation);
 
         void RemoveEntriesWithInvalidGUID()
         {
@@ -157,6 +111,9 @@ namespace DataViewer.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns false in case of error (for example due to the Internet connection).
+        /// </summary>
         void CorrectLanguageEntries()
         {
             var translationDataList = new List<TextLine>();
@@ -170,30 +127,17 @@ namespace DataViewer.Controllers
                         languagesToCheck.Add(textLine.Language.ToGoogleLangId());
                     }
 
-            using TranslationClient client = TranslationClient.Create();
-            IList<Detection> detections = client.DetectLanguages(languagesToCheck);
+            bool success = _cloud.DetectLanguages(languagesToCheck, out IList<Language?> detections);
 
             // apply detected data
             for (int i = 0; i < detections.Count; i++)
             {
-                Detection d = detections[i];
+                Language? d = detections[i];
 
-                Language? detectedLang = detections[i].Language.ConvertGoogleLanguageIdToLanguageEnum();
-                if (!detectedLang.HasValue)
+                if (d == null)
                     continue; // ignore it, detected language is not supported in our system
 
-                if (_confidenceThreshold.apiDefault)
-                {
-                    // we let Google decide what's reliable and what's not
-                    if (d.IsReliable)
-                        translationDataList[i].Language = detectedLang.Value;
-                }
-                else
-                {
-                    // we manually set the certain threshold above which we treat results as valid
-                    if (d.Confidence > _confidenceThreshold.threshold)
-                        translationDataList[i].Language = detectedLang.Value;
-                }
+                translationDataList[i].Language = d;
             }
         }
     }

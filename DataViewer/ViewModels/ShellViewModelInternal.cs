@@ -15,7 +15,8 @@ namespace DataViewer.ViewModels
     public partial class ShellViewModel : ViewModelBase, IShellViewModel
     {
         // controllers
-        readonly IHealDocumentController _healDocumentController;
+        readonly IDataIntegrityController _dataIntegrityController;
+        readonly ITranslationCloudAdapter _translationCloud;
         readonly CommandStack<IUndoRedoCommand> _commandStack;
 
         // views
@@ -74,23 +75,24 @@ namespace DataViewer.ViewModels
             TextLine selectedLine = SelectedTextLine;
             Language targetLanguage = TranslationLanguage;
 
-            string translation = _healDocumentController.Translate(
+            bool success = _translationCloud.Translate(
                 text: selectedLine.Text,
                 source: selectedLine.Language.Value,
-                target: targetLanguage);
+                target: targetLanguage,
+                out string translation);
 
-            if (translation == null)
+            if (success)
+            {
+                selectedLine.TranslatedText = translation;
+                selectedLine.TranslationLanguage = targetLanguage;
+            }
+            else
             {
                 MessageBox.Show(
                     "Translation error. No Internet connection or Google Translation Cloud is inactive.",
                     "Translation Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
-            }
-            else
-            {
-                selectedLine.TranslatedText = translation;
-                selectedLine.TranslationLanguage = targetLanguage;
             }
 
             // enable button

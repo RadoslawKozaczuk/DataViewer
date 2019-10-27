@@ -181,10 +181,11 @@ namespace DataViewer.ViewModels
         public bool CanDeleteTextLine => SelectedTextLine != null;
         #endregion
 
-        public ShellViewModel(IHealDocumentController healDocumentController)
+        public ShellViewModel(IDataIntegrityController dataIntegrityController, ITranslationCloudAdapter translationCloudAdapter)
             : base()
         {
-            _healDocumentController = healDocumentController;
+            _dataIntegrityController = dataIntegrityController;
+            _translationCloud = translationCloudAdapter;
 
             // for convenience we pass notifiers to command stack so whenever an operation is executed on it, notifiers will also be called
             _commandStack = new CommandStack<IUndoRedoCommand>(
@@ -281,13 +282,13 @@ namespace DataViewer.ViewModels
 
         public void CheckDataConsistency()
         {
-            _healDocumentController.PerformFullScan(Entries);
+            _dataIntegrityController.PerformFullScan(Entries);
             RefreshAllViews();
         }
 
         public void HealDocument()
         {
-            _healDocumentController.HealDocument(_entries);
+            _dataIntegrityController.HealDocument(_entries);
 
             RefreshAllViews();
         }
