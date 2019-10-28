@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Data;
 
@@ -80,5 +81,18 @@ namespace DataViewer
         /// </summary>
         public static string ToPlainUpper(this Guid guid) 
             => guid.ToString().Replace("-", "").ToUpper();
+
+        /// <summary>
+        /// Executes the given function on every cell in the given area. 
+        /// Immediately returns true once the function return value is true.
+        /// </summary>
+        internal static bool Any<T>(this IEnumerable<T> colleciton, Func<T, bool> func)
+        {
+            foreach(T item in colleciton)
+                if (func(item))
+                    return true;
+
+            return false;
+        }
     }
 }

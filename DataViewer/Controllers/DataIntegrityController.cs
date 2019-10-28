@@ -1,5 +1,6 @@
 ﻿using DataViewer.Interfaces;
 using DataViewer.Models;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 
@@ -17,8 +18,10 @@ namespace DataViewer.Controllers
 
         public bool? PerformFullScan(IList<LocalizationEntry> entries)
         {
+            _entries = entries;
+
             bool valid = true;
-            foreach (LocalizationEntry entry in entries)
+            foreach (LocalizationEntry entry in _entries)
             {
                 if (!ScanLocalizationEntry(entry))
                     valid = false;
@@ -29,10 +32,35 @@ namespace DataViewer.Controllers
                         valid = false;
 
                     foreach (TextLine textLine in variant.TextLines)
-                    {
                         if (!ScanTextLine(textLine))
                             valid = false;
-                    }
+                }
+            }
+
+            var referenceList = new List<TextLine>();
+            var textsToCheck = new List<string>();
+
+            _entries.ForEach(e => e.Variants.ForEach(v => v.TextLines.ForEach(t => 
+            { 
+                referenceList.Add(t); 
+                textsToCheck.Add(t.Text); 
+            })));
+
+            if (_cloud.DetectLanguages(textsToCheck, out IList<Language?> detections))
+            {
+                // apply detected data
+                for (int i = 0; i < detections.Count; i++)
+                {
+                    Language? d = detections[i];
+
+                    if (d == null)
+                        continue; // null means either detection not possible or detected language not supported by out system
+
+                    if (!referenceList[i].Language.HasValue) // no value in the model
+                        continue;
+
+                    if (referenceList[i].Language.Value != d.Value)
+                        referenceList[i].LanguageIsValid = valid = false;
                 }
             }
 
@@ -75,7 +103,7 @@ namespace DataViewer.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Restores data integrity.
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when entries parameter is null.</exception>
         /// <exception cref="ArgumentException">Thrown when entries parameter is empty.</exception>

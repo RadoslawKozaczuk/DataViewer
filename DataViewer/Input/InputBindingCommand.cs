@@ -3,6 +3,7 @@ using System.Windows.Input;
 
 namespace DataViewer.Input
 {
+    // this class is needed to support key binding
     public class InputBindingCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;

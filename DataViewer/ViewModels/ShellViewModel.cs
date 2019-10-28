@@ -3,6 +3,7 @@ using DataViewer.Models;
 using DataViewer.UndoRedo;
 using DataViewer.UndoRedo.Commands;
 using Microsoft.Win32;
+using MoreLinq;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -241,8 +242,7 @@ namespace DataViewer.ViewModels
             foreach (LocalizationEntry entry in Entries)
             {
                 entry.Variants = entry.Variants.ConvertToUndoRedoList(_commandStack);
-                foreach (Variant variant in entry.Variants)
-                    variant.TextLines = variant.TextLines.ConvertToUndoRedoList(_commandStack);
+                entry.Variants.ForEach(v => v.TextLines = v.TextLines.ConvertToUndoRedoList(_commandStack));
             }
 
             _entriesView = (ListCollectionView)CollectionViewSource.GetDefaultView(Entries);
@@ -374,6 +374,8 @@ namespace DataViewer.ViewModels
                     oldValue: new TextLine { Text = _tempValues.oldTextLineCopy.Text },
                     newValue: new TextLine { Text = _tempValues.textLine.Text });
 
+                _tempValues.textLine.Text = _tempValues.textLine.Text;
+
                 _commandStack.Push(undoCmd);
             }
             else if (_tempValues.header == "Language")
@@ -383,8 +385,12 @@ namespace DataViewer.ViewModels
                     oldValue: new TextLine { Language = _tempValues.oldTextLineCopy.Language },
                     newValue: new TextLine { Language = _tempValues.textLine.Language });
 
+                _tempValues.textLine.Language = _tempValues.textLine.Language;
+
                 _commandStack.Push(undoCmd);
             }
+
+            NotifyOfPropertyChange(() => SelectedTextLine);
 
             _tempValues.textLine = null;
             _tempValues.oldTextLineCopy = null;

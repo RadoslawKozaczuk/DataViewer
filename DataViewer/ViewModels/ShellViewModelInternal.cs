@@ -191,7 +191,7 @@ namespace DataViewer.ViewModels
             IsProcessingBackgroundTask = false;
 
             // in order to update UI form a different thread than the main thread we need to call Dispatcher
-            Application.Current.Dispatcher.Invoke(() => _textLinesView.ForceCommitRefresh());
+            Application.Current.Dispatcher.Invoke(() => RefreshAllViews());
         }
 
         void RefreshAllViews()

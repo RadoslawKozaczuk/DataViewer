@@ -4,6 +4,7 @@ using System.Windows.Input;
 
 namespace DataViewer.Input
 {
+    // this class is needed to support key binding
     public class InputBindings
     {
         readonly InputBindingCollection _inputBindings;

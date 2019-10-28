@@ -14,6 +14,7 @@ namespace DataViewer.Models
                 _text = value;
                 TranslatedText = "";
                 TranslationLanguage = null;
+                TextIsValid = true;
             }
         }
         string _text = "";
