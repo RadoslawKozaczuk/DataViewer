@@ -285,9 +285,19 @@ namespace DataViewer.ViewModels
 
         public void Heal() => Task.Run(() => HealAction());
 
-        public void AddEntry() => Entries.AddWithUndoRedoTracking(new LocalizationEntry());
+        public void AddEntry()
+        {
+            var entry = new LocalizationEntry();
+            entry.Variants = entry.Variants.ConvertToUndoRedoList(_commandStack);
+            Entries.AddWithUndoRedoTracking(entry);
+        }
 
-        public void AddVariant() => (SelectedEntry.Variants as UndoRedoList<Variant>).AddWithUndoRedoTracking(new Variant());
+        public void AddVariant()
+        {
+            var variant = new Variant();
+            variant.TextLines = variant.TextLines.ConvertToUndoRedoList(_commandStack);
+            (SelectedEntry.Variants as UndoRedoList<Variant>).AddWithUndoRedoTracking(variant);
+        }
 
         public void AddTextLine() => (SelectedVariant.TextLines as UndoRedoList<TextLine>).AddWithUndoRedoTracking(new TextLine());
 
