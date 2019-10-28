@@ -51,8 +51,7 @@ namespace DataViewer
         /// <summary>
         /// Retrieves credentials necessary to use the cloud. 
         /// Requires GOOGLE_APPLICATION_CREDENTIALS environment variable to be set.
-        /// <code></code>
-        /// Official Google documentation: <a href="https://cloud.google.com/translate/docs/quickstart-client-libraries">https://cloud.google.com/translate/docs/quickstart-client-libraries</a>
+        /// <code/>Official Google documentation: <a href="https://cloud.google.com/translate/docs/quickstart-client-libraries">https://cloud.google.com/translate/docs/quickstart-client-libraries</a>
         /// </summary>
         void GoogleTranslationCloudAuth()
         {

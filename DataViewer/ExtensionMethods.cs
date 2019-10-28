@@ -7,7 +7,7 @@ namespace DataViewer
     static class ExtensionMethods
     { 
         /// <summary>
-        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at
+        /// In order to extend this list extend <see cref="Language"/> enumerator and check the corresponding code at
         /// <a href="https://cloud.google.com/translate/docs/languages">https://cloud.google.com/translate/docs/languages</a>
         /// </summary>
         public static string ToGoogleLangId(this Language? lang) => lang switch
@@ -19,7 +19,7 @@ namespace DataViewer
         };
 
         /// <summary>
-        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at
+        /// In order to extend this list extend <see cref="Language"/> enumerator and check the corresponding code at
         /// <a href="https://cloud.google.com/translate/docs/languages">https://cloud.google.com/translate/docs/languages</a>
         /// </summary>
         public static string ToGoogleLangId(this Language lang) => lang switch
@@ -31,10 +31,10 @@ namespace DataViewer
         };
 
         /// <summary>
-        /// In order to extend this list extend the <see cref="Language"/> enumerator and check the corresponding code at
+        /// In order to extend this list extend <see cref="Language"/> enumerator and check the corresponding code at
         /// <a href="https://cloud.google.com/translate/docs/languages">https://cloud.google.com/translate/docs/languages</a>
-        /// If throwExceptionWhenNotSupported is set to true method will throw an exception is there is no match in the <see cref="Language"/> enumerator
-        /// for the given Google language id, other wise it will be set to None.
+        /// <code/>If throwExceptionWhenNotSupported is set to true method will throw an exception is there is no match in the <see cref="Language"/> enumerator
+        /// for the given Google language id, other wise it will be set to null.
         /// </summary>
         public static Language? ConvertGoogleLanguageIdToLanguageEnum(this string lang, bool throwExceptionWhenNotSupported = false) => lang switch
         {
@@ -45,7 +45,7 @@ namespace DataViewer
         };
 
         /// <summary>
-        /// Performs normal refresh but before that makes sure if view is not in Editing or Adding mode and if so commits changes.
+        /// Commits any 'edit' or 'new' transaction and after that refreshes the view.
         /// </summary>
         public static void ForceCommitRefresh(this ListCollectionView view)
         {
@@ -76,7 +76,7 @@ namespace DataViewer
         }
 
         /// <summary>
-        /// Returns for example 'E751F84EDCD7437F9F4BC89CEEDC5118'
+        /// Returns for example 'E751F84EDCD7437F9F4BC89CEEDC5118'.
         /// </summary>
         public static string ToPlainUpper(this Guid guid) 
             => guid.ToString().Replace("-", "").ToUpper();

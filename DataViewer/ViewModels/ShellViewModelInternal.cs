@@ -35,6 +35,7 @@ namespace DataViewer.ViewModels
         string _nameFilter;
         string _textFilter;
         bool _isTranslating;
+        bool _isDataConsistent = true;
 
         // this is necessary to circumnavigate custom data template limitations
         (TextLine textLine, TextLine oldTextLineCopy, string header) _tempValues;

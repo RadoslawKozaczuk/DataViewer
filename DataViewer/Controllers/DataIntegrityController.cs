@@ -112,33 +112,38 @@ namespace DataViewer.Controllers
         }
 
         /// <summary>
-        /// Returns false in case of error (for example due to the Internet connection).
+        /// Returns false in case of error (for example due to no Internet connection).
         /// </summary>
-        void CorrectLanguageEntries()
+        bool CorrectLanguageEntries()
         {
             var translationDataList = new List<TextLine>();
-            var languagesToCheck = new List<string>();
+            var textsToCheck = new List<string>();
 
             foreach (LocalizationEntry entry in _entries)
                 foreach (Variant variant in entry.Variants)
                     foreach (TextLine textLine in variant.TextLines)
                     {
                         translationDataList.Add(textLine);
-                        languagesToCheck.Add(textLine.Language.ToGoogleLangId());
+                        textsToCheck.Add(textLine.Text);
                     }
 
-            bool success = _cloud.DetectLanguages(languagesToCheck, out IList<Language?> detections);
-
-            // apply detected data
-            for (int i = 0; i < detections.Count; i++)
+            if(_cloud.DetectLanguages(textsToCheck, out IList<Language?> detections))
             {
-                Language? d = detections[i];
+                // apply detected data
+                for (int i = 0; i < detections.Count; i++)
+                {
+                    Language? d = detections[i];
 
-                if (d == null)
-                    continue; // ignore it, detected language is not supported in our system
+                    if (d == null)
+                        continue; // null means either detection not possible or detected language not supported by out system
 
-                translationDataList[i].Language = d;
+                    translationDataList[i].Language = d;
+                }
+
+                return true;
             }
+
+            return false;
         }
     }
 }

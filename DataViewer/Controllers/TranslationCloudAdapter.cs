@@ -106,12 +106,12 @@ namespace DataViewer.Controllers
                 if (_confidenceThreshold.apiDefault)
                 {
                     if (d.IsReliable) // we let Google decide what's reliable and what's not
-                        results[i] = d.Language.ConvertGoogleLanguageIdToLanguageEnum();
+                        results.Add(d.Language.ConvertGoogleLanguageIdToLanguageEnum());
                 }
                 else
                 {
                     if (d.Confidence > _confidenceThreshold.threshold) // based on the threshold set in appconfig
-                        results[i] = d.Language.ConvertGoogleLanguageIdToLanguageEnum();
+                        results.Add(d.Language.ConvertGoogleLanguageIdToLanguageEnum());
                 }
             }
 

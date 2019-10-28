@@ -84,10 +84,10 @@
                     </StackPanel>
                 </Button.ToolTip>
             </Button>
-            <Button x:Name="CheckDataConsistency" Style="{StaticResource ToolBarButton}">
+            <Button x:Name="Scan" Style="{StaticResource ToolBarButton}">
                 Scan
             </Button>
-            <Button x:Name="HealDocument" Style="{StaticResource ToolBarButton}">
+            <Button x:Name="Heal" Style="{StaticResource ToolBarButton}">
                 Heal
             </Button>
         </ToolBar>
@@ -162,7 +162,7 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="AddEntry" HorizontalAlignment="Center" Width="60" Margin="10, 0, 10, 0">Add</Button>
-                    <Button x:Name="DeleteEntry" HorizontalAlignment="Center" Width="60" Margin="10, 0, 10, 0">Del</Button>
+                    <Button x:Name="DeleteEntry" HorizontalAlignment="Center" Width="60" Margin="10, 0, 10, 0">Delete</Button>
                 </StackPanel>
             </StackPanel>
 
@@ -199,7 +199,7 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="AddVariant" HorizontalAlignment="Center" Width="60" Margin="10, 0, 10, 0">Add</Button>
-                    <Button x:Name="DeleteVariant" HorizontalAlignment="Center" Width="60" Margin="10, 0, 10, 0">Del</Button>
+                    <Button x:Name="DeleteVariant" HorizontalAlignment="Center" Width="60" Margin="10, 0, 10, 0">Delete</Button>
                 </StackPanel>
             </StackPanel>
 
@@ -283,7 +283,7 @@
                 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="AddTextLine" HorizontalAlignment="Center" Width="60" Margin="10, 0, 10, 0">Add</Button>
-                    <Button x:Name="DeleteTextLine" HorizontalAlignment="Center" Width="60" Margin="10, 0, 10, 0">Del</Button>
+                    <Button x:Name="DeleteTextLine" HorizontalAlignment="Center" Width="60" Margin="10, 0, 10, 0">Delete</Button>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

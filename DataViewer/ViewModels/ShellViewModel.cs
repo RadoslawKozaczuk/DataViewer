@@ -158,15 +158,17 @@ namespace DataViewer.ViewModels
 
         public bool CanTranslate
             => !IsTranslating
-            && SelectedTextLine != null && SelectedTextLine.Language != TranslationLanguage;
+            && SelectedTextLine != null 
+            && SelectedTextLine.Language != TranslationLanguage
+            && !string.IsNullOrWhiteSpace(SelectedTextLine.Text);
 
         public bool CanUndo => _commandStack.UndoCount > 0;
 
         public bool CanRedo => _commandStack.RedoCount > 0;
 
-        public bool CanCheckDataConsistency => true;
+        public bool CanScan => Entries != null && Entries.Count > 0;
 
-        public bool CanHealDocument => true;
+        public bool CanHeal => !_isDataConsistent;
 
         public bool CanAddEntry => Entries != null;
 
@@ -228,7 +230,8 @@ namespace DataViewer.ViewModels
             if (entries == null || entries.Count == 0)
                 return;
 
-            // we don't want models or JSON serializer to know anything undo/redo specific so this conversion needs to be done here
+            // we don't want models or serializers to know anything undo/redo specific therefore 
+            // the list conversion needs to be done here
             Entries = entries.ConvertToUndoRedoList(_commandStack);
             foreach (LocalizationEntry entry in Entries)
             {
@@ -244,6 +247,7 @@ namespace DataViewer.ViewModels
             _entriesView.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
 
             NotifyOfPropertyChange(() => CanExportToExcel);
+            NotifyOfPropertyChange(() => CanScan);
         }
 
         public void ExportToExcel()
@@ -272,7 +276,7 @@ namespace DataViewer.ViewModels
             IsTranslating = true;
             NotifyOfPropertyChange(() => CanTranslate);
 
-            Task translationJob = new Task(TranslateAction);
+            var translationJob = new Task(TranslateAction);
             translationJob.Start();
         }
 
@@ -280,17 +284,19 @@ namespace DataViewer.ViewModels
 
         public void Redo() => _commandStack.Redo();
 
-        public void CheckDataConsistency()
+        public void Scan()
         {
-            _dataIntegrityController.PerformFullScan(Entries);
+            _isDataConsistent = _dataIntegrityController.PerformFullScan(Entries);
             RefreshAllViews();
+            NotifyOfPropertyChange(() => CanHeal);
         }
 
-        public void HealDocument()
+        public void Heal()
         {
             _dataIntegrityController.HealDocument(_entries);
-
+            _isDataConsistent = true;
             RefreshAllViews();
+            NotifyOfPropertyChange(() => CanHeal);
         }
 
         public void AddEntry() => Entries.AddWithUndoRedoTracking(new LocalizationEntry());
@@ -348,7 +354,6 @@ namespace DataViewer.ViewModels
             _variantsView.ForceCommitRefresh();
         }
         
-        // doesn't work for now something is wrong with the XAML structure
         public void TextLines_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
             if (e.EditAction != DataGridEditAction.Commit)

@@ -19,7 +19,7 @@ namespace DataViewer
             if (string.IsNullOrWhiteSpace(fullpath))
                 throw new ArgumentNullException("fullpath");
 
-            var dt = new DataTable("Fruit Sales");
+            var dt = new DataTable("Exported Data");
             dt.Columns.Add("ID", typeof(int));
             dt.Columns.Add("Speaker", typeof(string));
             dt.Columns.Add("GUID", typeof(string));

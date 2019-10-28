@@ -8,7 +8,9 @@ namespace DataViewer.Input
         public event EventHandler CanExecuteChanged;
 
         public Key GestureKey { get; set; }
+
         public ModifierKeys GestureModifier { get; set; }
+
         public MouseAction MouseGesture { get; set; }
 
         readonly Action<object> _executeDelegate;
