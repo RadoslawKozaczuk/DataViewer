@@ -24,7 +24,7 @@ namespace DataViewer.ViewModels
         ListCollectionView _variantsView;
         ListCollectionView _textLinesView;
 
-        // models
+        // property internal fields
         UndoRedoList<LocalizationEntry> _entries;
         LocalizationEntry _selectedEntry;
         Variant _selectedVariant;
@@ -34,7 +34,10 @@ namespace DataViewer.ViewModels
         string _guidFilter;
         string _nameFilter;
         string _textFilter;
-        bool _isTranslating;
+        bool _isProcessingBackgroundTask;
+        string _statusBarInfo;
+
+        // private fields
         bool _isDataConsistent = true;
 
         // this is necessary to circumnavigate custom data template limitations
@@ -65,6 +68,18 @@ namespace DataViewer.ViewModels
                 GestureModifier = ModifierKeys.Control,
                 GestureKey = Key.R
             }.If(() => CanRedo);
+
+            yield return new InputBindingCommand(Scan)
+            {
+                GestureModifier = ModifierKeys.Control,
+                GestureKey = Key.S
+            }.If(() => CanScan);
+
+            yield return new InputBindingCommand(Heal)
+            {
+                GestureModifier = ModifierKeys.Control,
+                GestureKey = Key.H
+            }.If(() => CanHeal);
         }
 
         /// <summary>
@@ -72,6 +87,9 @@ namespace DataViewer.ViewModels
         /// </summary>
         void TranslateAction()
         {
+            StatusBarInfo = "Translating...";
+            IsProcessingBackgroundTask = true;
+
             // we cache these values in case user changed the selected line before the cloud responded
             TextLine selectedLine = SelectedTextLine;
             Language targetLanguage = TranslationLanguage;
@@ -97,8 +115,80 @@ namespace DataViewer.ViewModels
             }
 
             // enable button
-            IsTranslating = false;
-            NotifyOfPropertyChange(() => CanTranslate);
+            IsProcessingBackgroundTask = false;
+
+            // in order to update UI form a different thread than the main thread we need to call Dispatcher
+            Application.Current.Dispatcher.Invoke(() => _textLinesView.ForceCommitRefresh());
+        }
+
+        void ScanAction()
+        {
+            StatusBarInfo = "Scanning...";
+            IsProcessingBackgroundTask = true;
+
+            // we cache these values in case user changed the selected line before the cloud responded
+            bool? success = _dataIntegrityController.PerformFullScan(Entries);
+            _isDataConsistent = success != null && success == true;
+
+            if (success == null) // no value means error
+            {
+                MessageBox.Show(
+                    "Scan error. No Internet connection or Google Translation Cloud is inactive.",
+                    "Scan Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            else if (success.Value)
+            {
+                MessageBox.Show(
+                    "No data inconsistencies found.",
+                    "Scan Completed",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Asterisk);
+            }
+            else
+            {
+                MessageBox.Show(
+                    "Data inconsistencies found.",
+                    "Scan Completed",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+
+            // enable button
+            IsProcessingBackgroundTask = false;
+
+            // in order to update UI form a different thread than the main thread we need to call Dispatcher
+            Application.Current.Dispatcher.Invoke(() => RefreshAllViews());
+        }
+
+        void HealAction()
+        {
+            StatusBarInfo = "Healing...";
+            IsProcessingBackgroundTask = true;
+
+            bool success = _dataIntegrityController.HealDocument(Entries);
+            _isDataConsistent = success;
+
+            if (success) // heal completed without errors
+            {
+                MessageBox.Show(
+                    "Heal Completed.",
+                    "Heal Completed",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Asterisk);
+            }
+            else
+            {
+                MessageBox.Show(
+                    "Scan error. No Internet connection or Google Translation Cloud is inactive.",
+                    "Scan Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+
+            // enable button
+            IsProcessingBackgroundTask = false;
 
             // in order to update UI form a different thread than the main thread we need to call Dispatcher
             Application.Current.Dispatcher.Invoke(() => _textLinesView.ForceCommitRefresh());

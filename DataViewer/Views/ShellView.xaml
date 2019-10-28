@@ -86,9 +86,37 @@
             </Button>
             <Button x:Name="Scan" Style="{StaticResource ToolBarButton}">
                 Scan
+                <Button.ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">Data Integrity Check</TextBlock>
+                        <TextBlock>
+                        Performs full data integrity check (if all columns have value,
+                        <LineBreak/>
+                         GUID is valid and if Language matches the recognized Text language)
+                        </TextBlock>
+                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                        <WrapPanel>
+                            <TextBlock FontStyle="Italic">shortcut: Ctrl + S</TextBlock>
+                        </WrapPanel>
+                    </StackPanel>
+                </Button.ToolTip>
             </Button>
             <Button x:Name="Heal" Style="{StaticResource ToolBarButton}">
                 Heal
+                <Button.ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">Restore Data Integrity</TextBlock>
+                        <TextBlock>
+                        Restores data integrity (deletes entries with empty or invalid GUID,
+                        <LineBreak/>
+                        changes Language to the actual Text's language)
+                        </TextBlock>
+                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                        <WrapPanel>
+                            <TextBlock FontStyle="Italic">shortcut: Ctrl + H</TextBlock>
+                        </WrapPanel>
+                    </StackPanel>
+                </Button.ToolTip>
             </Button>
         </ToolBar>
 
@@ -290,9 +318,9 @@
 
         <StatusBar Grid.Row="2" Height="30">
             <StatusBarItem Margin="5, 0, 0, 0">
-                <StackPanel Orientation="Horizontal" Visibility="{Binding IsTranslating, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal" Visibility="{Binding IsProcessingBackgroundTask, Converter={StaticResource BoolToVisibilityConverter}}">
                     <ProgressBar x:Name="StatusProgressBar" Width="100" Height="15" Orientation="Horizontal" IsIndeterminate="True"/>
-                    <TextBlock Text="Translating..." />
+                    <TextBlock Text="{Binding StatusBarInfo}" Margin="5,0,5,0" />
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>

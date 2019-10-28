@@ -88,6 +88,16 @@ namespace DataViewer.ViewModels
             }
         }
 
+        public Language TranslationLanguage
+        {
+            get => _translationLanguage;
+            set
+            {
+                _translationLanguage = value;
+                NotifyOfPropertyChange(() => CanTranslate);
+            }
+        }
+
         public string SpeakerFilter
         {
             get => _speakerFilter;
@@ -128,36 +138,31 @@ namespace DataViewer.ViewModels
             }
         }
 
-        public Language TranslationLanguage
+        public bool IsProcessingBackgroundTask
         {
-            get => _translationLanguage;
+            get => _isProcessingBackgroundTask;
             set
             {
-                _translationLanguage = value;
+                Set(ref _isProcessingBackgroundTask, value);
                 NotifyOfPropertyChange(() => CanTranslate);
+                NotifyOfPropertyChange(() => CanScan);
+                NotifyOfPropertyChange(() => CanHeal);
             }
         }
 
-        public bool IsTranslating
+        public string StatusBarInfo
         {
-            get => _isTranslating;
-            set
-            {
-                Set(ref _isTranslating, value);
-                NotifyOfPropertyChange(() => CanTranslate);
-            }
+            get => _statusBarInfo;
+            private set => Set(ref _statusBarInfo, value);
         }
 
-        public int TextLinesSelectedIndex { get; set; }
-
-        public object TextLinesCurrentCell { get; set; }
         #endregion
 
         #region Guard Methods (properties)
         public bool CanExportToExcel => Entries != null && Entries.Count != 0;
 
         public bool CanTranslate
-            => !IsTranslating
+            => !IsProcessingBackgroundTask
             && SelectedTextLine != null 
             && SelectedTextLine.Language != TranslationLanguage
             && !string.IsNullOrWhiteSpace(SelectedTextLine.Text);
@@ -270,34 +275,15 @@ namespace DataViewer.ViewModels
             exporter.ExportToExcel(Entries, fullPath);
         }
 
-        public void Translate()
-        {
-            // disable Translate button
-            IsTranslating = true;
-            NotifyOfPropertyChange(() => CanTranslate);
-
-            var translationJob = new Task(TranslateAction);
-            translationJob.Start();
-        }
+        public void Translate() => Task.Run(() => TranslateAction());
 
         public void Undo() => _commandStack.Undo();
 
         public void Redo() => _commandStack.Redo();
 
-        public void Scan()
-        {
-            _isDataConsistent = _dataIntegrityController.PerformFullScan(Entries);
-            RefreshAllViews();
-            NotifyOfPropertyChange(() => CanHeal);
-        }
+        public void Scan() => Task.Run(() => ScanAction());
 
-        public void Heal()
-        {
-            _dataIntegrityController.HealDocument(_entries);
-            _isDataConsistent = true;
-            RefreshAllViews();
-            NotifyOfPropertyChange(() => CanHeal);
-        }
+        public void Heal() => Task.Run(() => HealAction());
 
         public void AddEntry() => Entries.AddWithUndoRedoTracking(new LocalizationEntry());
 

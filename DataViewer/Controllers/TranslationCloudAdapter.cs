@@ -38,11 +38,11 @@ namespace DataViewer.Controllers
         }
 
         /// <summary>
-        /// Translates the given text. 
+        /// This method may take up to few seconds to complete. 
         /// Returns false if the result could not be obtained (for example due to no Internet connection).
         /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when the text parameter is null.</exception>
-        /// <exception cref="ArgumentException">Thrown when the text parameter is empty or contains only white spaces, 
+        /// <exception cref="ArgumentNullException">Thrown when text parameter is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when text parameter is empty or contains only white spaces, 
         /// or when the source and target languages are the same.</exception>
         public bool Translate(string text, Language source, Language target, out string translation)
         {
@@ -76,8 +76,8 @@ namespace DataViewer.Controllers
         /// This method may take up to few seconds to complete. 
         /// Returns false if the result could not be obtained (for example due to no Internet connection).
         /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when the texts parameter is null.</exception>
-        /// <exception cref="ArgumentException">Thrown when the texts parameter is empty.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when texts parameter is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when texts parameter is empty.</exception>
         public bool DetectLanguages(IList<string> texts, out IList<Language?> results)
         {
             // assertions
@@ -124,8 +124,8 @@ namespace DataViewer.Controllers
         /// Do not use it multiple times at once (for example in a loop) as it is inefficient both in terms of money and time. 
         /// If you have a set of data to recognize, use <see cref="DetectLanguages"/> instead.
         /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when the text parameter is null.</exception>
-        /// <exception cref="ArgumentException">Thrown when the text parameter is empty or contains only white spaces.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when text parameter is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when text parameter is empty or contains only white spaces.</exception>
         public bool DetectLanguage(string text, out Language? result)
         {
             // assertion

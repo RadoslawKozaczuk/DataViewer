@@ -15,7 +15,7 @@ namespace DataViewer.Controllers
             _cloud = translationCloudAdapter;
         }
 
-        public bool PerformFullScan(IList<LocalizationEntry> entries)
+        public bool? PerformFullScan(IList<LocalizationEntry> entries)
         {
             bool valid = true;
             foreach (LocalizationEntry entry in entries)
@@ -74,23 +74,27 @@ namespace DataViewer.Controllers
             return valid;
         }
 
-        public void HealDocument(IList<LocalizationEntry> entries)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when entries parameter is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when entries parameter is empty.</exception>
+        public bool HealDocument(IList<LocalizationEntry> entries)
         {
-            if (entries == null || entries.Count == 0)
-                return;
+            // assertions
+            if (entries == null)
+                throw new ArgumentNullException("entries");
+            if (entries.Count == 0)
+                throw new ArgumentException("entry list cannot be empty", "entries");
 
             _entries = entries;
 
             RemoveEntriesWithInvalidGUID();
             RemoveEntriesWithDuplicatedGUID();
             CorrectLanguageEntries();
-        }
 
-        /// <summary>
-        /// Returns false in case of error or no connection.
-        /// </summary>
-        public bool Translate(string text, Language source, Language target, out string translation) 
-            => _cloud.Translate(text, source, target, out translation);
+            return true;
+        }
 
         void RemoveEntriesWithInvalidGUID()
         {
