@@ -92,7 +92,7 @@
                         <TextBlock>
                         Performs full data integrity check (if all columns have value,
                         <LineBreak/>
-                         GUID is valid and if Language matches the recognized Text language)
+                        if GUID is valid, and if Language matches the recognized Text language).
                         </TextBlock>
                         <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
                         <WrapPanel>
@@ -109,7 +109,7 @@
                         <TextBlock>
                         Restores data integrity (deletes entries with empty or invalid GUID,
                         <LineBreak/>
-                        changes Language to the actual Text's language)
+                        changes Language to the actual Text's language).
                         </TextBlock>
                         <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
                         <WrapPanel>

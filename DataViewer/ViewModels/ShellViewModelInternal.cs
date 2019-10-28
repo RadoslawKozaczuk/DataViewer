@@ -127,18 +127,10 @@ namespace DataViewer.ViewModels
             IsProcessingBackgroundTask = true;
 
             // we cache these values in case user changed the selected line before the cloud responded
-            bool? success = _dataIntegrityController.PerformFullScan(Entries);
-            _isDataConsistent = success != null && success == true;
+            bool success = _dataIntegrityController.PerformFullScan(Entries);
+            _isDataConsistent = success;
 
-            if (success == null) // no value means error
-            {
-                MessageBox.Show(
-                    "Scan error. No Internet connection or Google Translation Cloud is inactive.",
-                    "Scan Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-            else if (success.Value)
+            if (success) // no value means error
             {
                 MessageBox.Show(
                     "No data inconsistencies found.",

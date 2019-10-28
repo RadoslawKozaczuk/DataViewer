@@ -234,7 +234,10 @@ namespace DataViewer.ViewModels
             }
 
             if (entries == null || entries.Count == 0)
+            {
+                MessageBox.Show("File is empty.", "No data", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
+            }
 
             // we don't want models or serializers to know anything undo/redo specific therefore 
             // the list conversion needs to be done here

@@ -16,11 +16,45 @@ namespace DataViewer.Controllers
             _cloud = translationCloudAdapter;
         }
 
-        public bool? PerformFullScan(IList<LocalizationEntry> entries)
+        /// <summary>
+        /// Returns null when scan could not be completed, false when data is invalid, and true when data is valid.
+        /// </summary>
+        public bool PerformFullScan(IList<LocalizationEntry> entries)
         {
             _entries = entries;
-
             bool valid = true;
+
+            ScanEachDataModelIndividually(ref valid);
+            MarkDuplicatedGUIDs(ref valid);
+            CheckLanguageMatching(ref valid);
+
+            return valid;
+        }
+
+        /// <summary>
+        /// Restores data integrity.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when entries parameter is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when entries parameter is empty.</exception>
+        public bool HealDocument(IList<LocalizationEntry> entries)
+        {
+            // assertions
+            if (entries == null)
+                throw new ArgumentNullException("entries");
+            if (entries.Count == 0)
+                throw new ArgumentException("entry list cannot be empty", "entries");
+            
+            _entries = entries;
+
+            RemoveEntriesWithInvalidGUID();
+            RemoveEntriesWithDuplicatedGUID();
+            CorrectLanguageEntries();
+
+            return true;
+        }
+
+        void ScanEachDataModelIndividually(ref bool valid)
+        {
             foreach (LocalizationEntry entry in _entries)
             {
                 if (!ScanLocalizationEntry(entry))
@@ -36,14 +70,33 @@ namespace DataViewer.Controllers
                             valid = false;
                 }
             }
+        }
 
+        void MarkDuplicatedGUIDs(ref bool valid)
+        {
+            var guidsSeen = new Dictionary<string, LocalizationEntry>();
+            foreach (LocalizationEntry entry in _entries)
+            {
+                if (guidsSeen.TryGetValue(entry.GUID, out LocalizationEntry objRef))
+                {
+                    objRef.GUIDIsValid = false;
+                    entry.GUIDIsValid = false;
+                    valid = false;
+                }
+                else
+                    guidsSeen.Add(entry.GUID, entry);
+            }
+        }
+
+        void CheckLanguageMatching(ref bool valid)
+        {
             var referenceList = new List<TextLine>();
             var textsToCheck = new List<string>();
 
-            _entries.ForEach(e => e.Variants.ForEach(v => v.TextLines.ForEach(t => 
-            { 
-                referenceList.Add(t); 
-                textsToCheck.Add(t.Text); 
+            _entries.ForEach(e => e.Variants.ForEach(v => v.TextLines.ForEach(t =>
+            {
+                referenceList.Add(t);
+                textsToCheck.Add(t.Text);
             })));
 
             if (_cloud.DetectLanguages(textsToCheck, out IList<Language?> detections))
@@ -63,11 +116,9 @@ namespace DataViewer.Controllers
                         referenceList[i].LanguageIsValid = valid = false;
                 }
             }
-
-            return valid;
         }
 
-        public bool ScanLocalizationEntry(LocalizationEntry entry)
+        bool ScanLocalizationEntry(LocalizationEntry entry)
         {
             bool valid = true;
 
@@ -79,7 +130,7 @@ namespace DataViewer.Controllers
             return valid;
         }
 
-        public bool ScanVariant(Variant variant)
+        bool ScanVariant(Variant variant)
         {
             bool valid = true;
 
@@ -89,7 +140,7 @@ namespace DataViewer.Controllers
             return valid;
         }
 
-        public bool ScanTextLine(TextLine textLine)
+        bool ScanTextLine(TextLine textLine)
         {
             bool valid = true;
 
@@ -102,28 +153,6 @@ namespace DataViewer.Controllers
             return valid;
         }
 
-        /// <summary>
-        /// Restores data integrity.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when entries parameter is null.</exception>
-        /// <exception cref="ArgumentException">Thrown when entries parameter is empty.</exception>
-        public bool HealDocument(IList<LocalizationEntry> entries)
-        {
-            // assertions
-            if (entries == null)
-                throw new ArgumentNullException("entries");
-            if (entries.Count == 0)
-                throw new ArgumentException("entry list cannot be empty", "entries");
-
-            _entries = entries;
-
-            RemoveEntriesWithInvalidGUID();
-            RemoveEntriesWithDuplicatedGUID();
-            CorrectLanguageEntries();
-
-            return true;
-        }
-
         void RemoveEntriesWithInvalidGUID()
         {
             for (int i = 0; i < _entries.Count; i++)
@@ -133,13 +162,16 @@ namespace DataViewer.Controllers
 
         void RemoveEntriesWithDuplicatedGUID()
         {
-            var guidsSeen = new HashSet<string>();
+            var guidsSeen = new Dictionary<string, LocalizationEntry>();
             for (int i = 0; i < _entries.Count; i++)
             {
-                if (guidsSeen.Contains(_entries[i].GUID))
+                if (guidsSeen.TryGetValue(_entries[i].GUID, out LocalizationEntry objRef))
+                {
+                    objRef.GUIDIsValid = true;
                     _entries.RemoveAt(i--);
+                }
                 else
-                    guidsSeen.Add(_entries[i].GUID);
+                    guidsSeen.Add(_entries[i].GUID, _entries[i]);
             }
         }
 
