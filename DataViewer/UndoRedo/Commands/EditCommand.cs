@@ -92,16 +92,22 @@ namespace DataViewer.UndoRedo.Commands
         {
             TextLine obj = _objRef as TextLine;
             TextLine old = _oldVal as TextLine;
-            obj.Text = old.Text;
-            obj.Language = old.Language;
+            TextLine @new = _newVal as TextLine;
+            if (old.Text != @new.Text)
+                obj.Text = old.Text;
+            if (old.Language != @new.Language)
+                obj.Language = old.Language;
         }
 
         void RedoForTextLine()
         {
             TextLine obj = _objRef as TextLine;
+            TextLine old = _oldVal as TextLine;
             TextLine @new  = _newVal as TextLine;
-            obj.Text = @new.Text;
-            obj.Language = @new.Language;
+            if (old.Text != @new.Text)
+                obj.Text = @new.Text;
+            if (old.Language != @new.Language)
+                obj.Language = @new.Language;
         }
     }
 }
