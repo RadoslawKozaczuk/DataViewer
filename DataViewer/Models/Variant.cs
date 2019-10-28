@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using DataViewer.Interfaces;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace DataViewer.Models
 {
-    public class Variant
+    public class Variant : IModel
     {
         [JsonProperty("Name")]
         public string Name

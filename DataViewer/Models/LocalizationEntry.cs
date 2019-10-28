@@ -1,11 +1,12 @@
 ﻿using DataViewer.Converters.JSON;
+using DataViewer.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
 namespace DataViewer.Models
 {
-    public class LocalizationEntry
+    public class LocalizationEntry : IModel
     {
         [JsonProperty("Speaker")]
         public string Speaker 

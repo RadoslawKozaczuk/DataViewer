@@ -1,4 +1,5 @@
-﻿using DataViewer.UndoRedo.Commands;
+﻿using DataViewer.Interfaces;
+using DataViewer.UndoRedo.Commands;
 using System.Collections.Generic;
 
 namespace DataViewer.UndoRedo
@@ -29,22 +30,23 @@ namespace DataViewer.UndoRedo
     /// </list>
     /// </summary>
     public class UndoRedoList<T> : List<T>
+        where T : IModel
     {
-        readonly CommandStack<IUndoRedoCommand> _commandStack;
+        readonly CommandStack _commandStack;
 
-        public UndoRedoList(CommandStack<IUndoRedoCommand> commandStack) 
+        public UndoRedoList(CommandStack commandStack) 
             : base()
         {
             _commandStack = commandStack;
         }
 
-        public UndoRedoList(int capacity, CommandStack<IUndoRedoCommand> commandStack) 
+        public UndoRedoList(int capacity, CommandStack commandStack) 
             : base(capacity)
         {
             _commandStack = commandStack;
         }
 
-        public UndoRedoList(IEnumerable<T> enumerable,  CommandStack<IUndoRedoCommand> commandStack) 
+        public UndoRedoList(IEnumerable<T> enumerable,  CommandStack commandStack) 
             : base(enumerable)
         {
             _commandStack = commandStack;

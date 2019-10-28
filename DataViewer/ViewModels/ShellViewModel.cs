@@ -70,11 +70,12 @@ namespace DataViewer.ViewModels
                     {
                         _textLinesView = (ListCollectionView)CollectionViewSource.GetDefaultView(SelectedVariant.TextLines);
                         _textLinesView.Filter = TextLineFilter;
-                        NotifyOfPropertyChange(() => CanAddTextLine);
                     }
 
                     NotifyOfPropertyChange(() => CanDeleteVariant);
                 }
+
+                NotifyOfPropertyChange(() => CanAddTextLine);
             }
         }
 
@@ -196,7 +197,7 @@ namespace DataViewer.ViewModels
             _translationCloud = translationCloudAdapter;
 
             // for convenience we pass notifiers to command stack so whenever an operation is executed on it, notifiers will also be called
-            _commandStack = new CommandStack<IUndoRedoCommand>(
+            _commandStack = new CommandStack(
                 notifyUndoAction: () =>
                 {
                     NotifyOfPropertyChange(() => CanUndo);
@@ -232,6 +233,8 @@ namespace DataViewer.ViewModels
                 MessageBox.Show("File is corrupted and impossible to read.", "File corrupted", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            _commandStack.Clear();
 
             if (entries == null || entries.Count == 0)
             {
@@ -321,10 +324,10 @@ namespace DataViewer.ViewModels
             {
                 string newSpeaker = ((TextBox)e.EditingElement).Text;
 
-                var undoCmd = new EditCommand(
-                    objRef: SelectedEntry,
+                var undoCmd = new EditCommand<LocalizationEntry>(
                     oldValue: new LocalizationEntry { Speaker = SelectedEntry.Speaker },
-                    newValue: new LocalizationEntry { Speaker = newSpeaker });
+                    newValue: new LocalizationEntry { Speaker = newSpeaker },
+                    objRef: SelectedEntry);
 
                 SelectedEntry.Speaker = newSpeaker;
                 _commandStack.Push(undoCmd);
@@ -341,10 +344,10 @@ namespace DataViewer.ViewModels
             if (e.Column.Header.ToString() == "Name")
             {
                 string newName = ((TextBox)e.EditingElement).Text;
-                var undoCmd = new EditCommand(
-                    objRef: SelectedVariant,
+                var undoCmd = new EditCommand<Variant>(
                     oldValue: new Variant { Name = SelectedVariant.Name },
-                    newValue: new Variant { Name = newName });
+                    newValue: new Variant { Name = newName },
+                    objRef: SelectedVariant);
 
                 SelectedVariant.Name = newName;
                 _commandStack.Push(undoCmd);
@@ -372,10 +375,10 @@ namespace DataViewer.ViewModels
 
             if (_tempValues.header == "Text")
             {
-                var undoCmd = new EditCommand(
-                    objRef: _tempValues.textLine,
+                var undoCmd = new EditCommand<TextLine>(
                     oldValue: new TextLine { Text = _tempValues.oldTextLineCopy.Text },
-                    newValue: new TextLine { Text = _tempValues.textLine.Text });
+                    newValue: new TextLine { Text = _tempValues.textLine.Text },
+                    objRef: _tempValues.textLine);
 
                 _tempValues.textLine.Text = _tempValues.textLine.Text;
 
@@ -383,10 +386,10 @@ namespace DataViewer.ViewModels
             }
             else if (_tempValues.header == "Language")
             {
-                var undoCmd = new EditCommand(
-                    objRef: _tempValues.textLine,
+                var undoCmd = new EditCommand<TextLine>(
                     oldValue: new TextLine { Language = _tempValues.oldTextLineCopy.Language },
-                    newValue: new TextLine { Language = _tempValues.textLine.Language });
+                    newValue: new TextLine { Language = _tempValues.textLine.Language },
+                    objRef: _tempValues.textLine);
 
                 _tempValues.textLine.Language = _tempValues.textLine.Language;
 

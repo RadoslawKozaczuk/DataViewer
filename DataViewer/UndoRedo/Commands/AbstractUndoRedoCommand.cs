@@ -1,4 +1,6 @@
-﻿namespace DataViewer.UndoRedo.Commands
+﻿using DataViewer.Interfaces;
+
+namespace DataViewer.UndoRedo.Commands
 {
     abstract class AbstractUndoRedoCommand : IUndoRedoCommand
     {
@@ -7,8 +9,10 @@
 
         public UndoRedoCommandState State { get; protected set; } = UndoRedoCommandState.Undo;
 
-        public abstract void Redo();
+        public abstract IModel TargetObject { get; }
 
+        public abstract bool CheckExecutionContext();
         public abstract void Undo();
+        public abstract void Redo();
     }
 }

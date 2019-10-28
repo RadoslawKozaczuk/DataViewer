@@ -17,7 +17,7 @@ namespace DataViewer.ViewModels
         // controllers
         readonly IDataIntegrityController _dataIntegrityController;
         readonly ITranslationCloudAdapter _translationCloud;
-        readonly CommandStack<IUndoRedoCommand> _commandStack;
+        readonly CommandStack _commandStack;
 
         // views
         ListCollectionView _entriesView;
@@ -183,7 +183,11 @@ namespace DataViewer.ViewModels
             IsProcessingBackgroundTask = false;
 
             // in order to update UI form a different thread than the main thread we need to call Dispatcher
-            Application.Current.Dispatcher.Invoke(() => RefreshAllViews());
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                RefreshAllViews();
+                _commandStack.Refresh();
+            });
         }
 
         void RefreshAllViews()

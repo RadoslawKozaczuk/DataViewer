@@ -1,15 +1,18 @@
-﻿using System;
+﻿using DataViewer.Interfaces;
+using DataViewer.UndoRedo.Commands;
+using System;
 using System.Collections.Generic;
 
 namespace DataViewer.UndoRedo
 {
-    public class CommandStack<T> where T : IUndoRedoCommand
+    public class CommandStack
     {
-        public int UndoCount => _undoStack.Count;
-        public int RedoCount => _redoStack.Count;
+        public int UndoCount => _pointer;
+        public int RedoCount => _undoRedoStack.Count - _pointer;
 
-        readonly Stack<T> _undoStack = new Stack<T>();
-        readonly Stack<T> _redoStack = new Stack<T>();
+        readonly IList<IUndoRedoCommand> _undoRedoStack = new List<IUndoRedoCommand>();
+        int _pointer; // points at first redo - so first undo will be _pointer - 1
+
         readonly Action _notifyUndoAction;
         readonly Action _notifyRedoAction;
 
@@ -26,19 +29,32 @@ namespace DataViewer.UndoRedo
         /// Automatically pushes given <see cref="IUndoRedoCommand"/> command on the Undo stack.
         /// Whenever a new commands is pushed all Redo stack commands are cleared.
         /// </summary>
-        public void Push(T cmd)
+        public void Push(IUndoRedoCommand cmd)
         {
-            _undoStack.Push(cmd);
-            _redoStack.Clear();
+            if(cmd is EditCommand<IModel>)
+            {
+                // check if rely on anything else (only Edit and Remove)
+                for (int i = 0; i < _undoRedoStack.Count; i++)
+                {
+                    IUndoRedoCommand c = _undoRedoStack[i];
+                    if (c is AddCommand<IModel> || c is RemoveCommand<IModel>)
+                        if(cmd.TargetObject == c.TargetObject)
+                            (cmd as EditCommand<IModel>).RelyOn = c;
+                }
+            }
+
+            _undoRedoStack.Insert(_pointer++, cmd);
             _notifyUndoAction?.Invoke();
             _notifyRedoAction?.Invoke();
         }
 
         public void Undo()
         {
-            T cmd = _undoStack.Pop();
-            cmd.Undo();
-            _redoStack.Push(cmd);
+            IUndoRedoCommand cmd = _undoRedoStack[--_pointer];
+            if (cmd.CheckExecutionContext()) // if commands failed dispose it
+                cmd.Undo();
+            else
+                _undoRedoStack.RemoveAt(_pointer);
 
             _notifyUndoAction?.Invoke();
             _notifyRedoAction?.Invoke();
@@ -46,12 +62,53 @@ namespace DataViewer.UndoRedo
 
         public void Redo()
         {
-            T cmd = _redoStack.Pop();
-            cmd.Redo();
-            _undoStack.Push(cmd);
+            IUndoRedoCommand cmd = _undoRedoStack[_pointer];
+            if (cmd.CheckExecutionContext()) // if command is no longer valid dispose it
+            {
+                cmd.Redo();
+                _pointer++;
+            }
+            else
+                _undoRedoStack.RemoveAt(_pointer);
 
             _notifyUndoAction?.Invoke();
             _notifyRedoAction?.Invoke();
+        }
+
+        /// <summary>
+        /// Iterate over all commands and delete those no longer valid.
+        /// Call it whenever data set was modified externally without undo/redo tracking.
+        /// </summary>
+        public void Refresh()
+        {
+            // edit command relies on add and remove so we have to first iterate over these
+            for(int i = 0; i < _undoRedoStack.Count; i++)
+            {
+                IUndoRedoCommand cmd = _undoRedoStack[i];
+                if (cmd is AddCommand<IModel> || cmd is RemoveCommand<IModel>)
+                    if (!cmd.CheckExecutionContext())
+                    {
+                        _undoRedoStack.RemoveAt(i--);
+                        _pointer--;
+                    }
+            }
+
+            for (int i = 0; i < _undoRedoStack.Count; i++)
+            {
+                IUndoRedoCommand cmd = _undoRedoStack[i];
+                if (cmd is EditCommand<IModel>)
+                    if (!cmd.CheckExecutionContext())
+                    {
+                        _undoRedoStack.RemoveAt(i--);
+                        _pointer--;
+                    }
+            }
+        }
+
+        public void Clear()
+        {
+            _undoRedoStack.Clear();
+            _pointer = 0;
         }
     }
 }

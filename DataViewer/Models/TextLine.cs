@@ -1,9 +1,10 @@
 ﻿using DataViewer.Converters.JSON;
+using DataViewer.Interfaces;
 using Newtonsoft.Json;
 
 namespace DataViewer.Models
 {
-    public class TextLine
+    public class TextLine : IModel
     {
         [JsonProperty]
         public string Text

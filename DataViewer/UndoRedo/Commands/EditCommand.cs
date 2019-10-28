@@ -1,47 +1,43 @@
-﻿using DataViewer.Models;
+﻿using DataViewer.Interfaces;
+using DataViewer.Models;
 using System;
 
 namespace DataViewer.UndoRedo.Commands
 {
-    /// <summary>
-    /// A command is Undo or Redo based on context.
-    /// </summary>
-    sealed class EditCommand : AbstractUndoRedoCommand
+    sealed class EditCommand<T> : AbstractUndoRedoCommand
+        where T : IModel
     {
-        // if something is null then it was not modified by the command
-        readonly LocalizationEntry _localizationEntryRef;
-        readonly Variant _variantRef;
-        readonly TextLine _textLineRef;
+        public override IModel TargetObject => _objRef;
 
-        // values before change
-        readonly LocalizationEntry _oldEntry;
-        readonly Variant _oldVariant;
-        readonly TextLine _oldTextLine;
+        readonly IModel _objRef;
+        public IUndoRedoCommand RelyOn; // set by CommandStack
 
-        // values after change
-        readonly LocalizationEntry _newEntry;
-        readonly Variant _newVariant;
-        readonly TextLine _newTextLine;
+        readonly IModel _oldVal;
+        readonly IModel _newVal;
+        readonly Type _type;
 
-        public EditCommand(LocalizationEntry objRef, LocalizationEntry oldValue, LocalizationEntry newValue)
+        public EditCommand(IModel oldValue, IModel newValue, IModel objRef)
         {
-            _localizationEntryRef = objRef;
-            _oldEntry = oldValue;
-            _newEntry = newValue;
+            _oldVal = oldValue;
+            _newVal = newValue;
+            _objRef = objRef;
+            _type = typeof(T);
         }
 
-        public EditCommand(Variant objRef, Variant oldValue, Variant newValue)
+        public override bool CheckExecutionContext()
         {
-            _variantRef = objRef;
-            _oldVariant = oldValue;
-            _newVariant = newValue;
-        }
+            // if I have any Add/Remove command that I rely on
+            // check if it exists
+            if(RelyOn != null)
+                return true;
 
-        public EditCommand(TextLine objRef, TextLine oldValue, TextLine newValue)
-        {
-            _textLineRef = objRef;
-            _oldTextLine = oldValue;
-            _newTextLine = newValue;
+            // if I target data that no Edit/Remove command targets
+            // check if that data exists
+            if (_objRef != null)
+                return true;
+
+            // otherwise false
+            return false;
         }
 
         /// <summary>
@@ -52,26 +48,12 @@ namespace DataViewer.UndoRedo.Commands
             if (State == UndoRedoCommandState.Redo)
                 throw new Exception(UNDO_CONSECUTIVE_CALL_ERROR);
 
-            if (_oldEntry != null)
-            {
-                if (_oldEntry.Speaker != null)
-                    _localizationEntryRef.Speaker = _oldEntry.Speaker;
-            }
-
-            if (_oldVariant != null)
-            {
-                if (_oldVariant.Name != null)
-                    _variantRef.Name = _oldVariant.Name;
-            }
-
-            if (_oldTextLine != null)
-            {
-                if (_oldTextLine.Language != null)
-                    _textLineRef.Language = _oldTextLine.Language;
-
-                if (_oldTextLine.Text != null)
-                    _textLineRef.Text = _oldTextLine.Text;
-            }
+            if (_type == typeof(LocalizationEntry))
+                UndoForLocalizationEntry();
+            else if (_type == typeof(Variant))
+                UndoForVariant();
+            else
+                UndoForTextLine();
 
             State = UndoRedoCommandState.Redo;
         }
@@ -84,28 +66,42 @@ namespace DataViewer.UndoRedo.Commands
             if (State == UndoRedoCommandState.Undo)
                 throw new Exception(REDO_CONSECUTIVE_CALL_ERROR);
 
-            if (_newEntry != null)
-            {
-                if (_newEntry.Speaker != null)
-                    _localizationEntryRef.Speaker = _newEntry.Speaker;
-            }
-
-            if (_newVariant != null)
-            {
-                if (_newVariant.Name != null)
-                    _variantRef.Name = _newVariant.Name;
-            }
-
-            if (_newTextLine != null)
-            {
-                if (_newTextLine.Language != null)
-                    _textLineRef.Language = _newTextLine.Language;
-
-                if (_newTextLine.Text != null)
-                    _textLineRef.Text = _newTextLine.Text;
-            }
+            if(_type == typeof(LocalizationEntry))
+                RedoForLocalizationEntry();
+            else if (_type == typeof(Variant))
+                RedoForVariant();
+            else
+                RedoForTextLine();
 
             State = UndoRedoCommandState.Undo;
+        }
+
+        void UndoForLocalizationEntry() 
+            => (_objRef as LocalizationEntry).Speaker = (_oldVal as LocalizationEntry).Speaker;
+
+        void RedoForLocalizationEntry() 
+            => (_objRef as LocalizationEntry).Speaker = (_newVal as LocalizationEntry).Speaker;
+
+        void UndoForVariant()
+            => (_objRef as Variant).Name = (_oldVal as Variant).Name;
+
+        void RedoForVariant()
+            => (_objRef as Variant).Name = (_newVal as Variant).Name;
+
+        void UndoForTextLine()
+        {
+            TextLine obj = _objRef as TextLine;
+            TextLine old = _oldVal as TextLine;
+            obj.Text = old.Text;
+            obj.Language = old.Language;
+        }
+
+        void RedoForTextLine()
+        {
+            TextLine obj = _objRef as TextLine;
+            TextLine @new  = _newVal as TextLine;
+            obj.Text = @new.Text;
+            obj.Language = @new.Language;
         }
     }
 }
