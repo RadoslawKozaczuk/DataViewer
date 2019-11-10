@@ -8,8 +8,8 @@ namespace DataViewer.Converters.JSON
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) 
             => throw new NotImplementedException("Not implemented yet");
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        => ((string)reader.Value) switch
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) 
+            => ((string)reader.Value) switch
         {
             "en_us" => Language.English_US,
             "fr_fr" => Language.French,

@@ -34,7 +34,7 @@ namespace DataViewer
         /// <summary>
         /// In order to extend this list extend <see cref="Language"/> enumerator and check the corresponding code at
         /// <a href="https://cloud.google.com/translate/docs/languages">https://cloud.google.com/translate/docs/languages</a>
-        /// <code/>If throwExceptionWhenNotSupported is set to true method will throw an exception is there is no match in the <see cref="Language"/> enumerator
+        /// <code/>If throwExceptionWhenNotSupported is set to true method will throw an exception if there is no match in the <see cref="Language"/> enumerator
         /// for the given Google language id, other wise it will be set to null.
         /// </summary>
         public static Language? ConvertGoogleLanguageIdToLanguageEnum(this string lang, bool throwExceptionWhenNotSupported = false) => lang switch

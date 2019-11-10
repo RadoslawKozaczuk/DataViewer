@@ -27,7 +27,6 @@ namespace DataViewer.UndoRedo
 
         /// <summary>
         /// Automatically pushes given <see cref="IUndoRedoCommand"/> command on the Undo stack.
-        /// Whenever a new commands is pushed all Redo stack commands are cleared.
         /// </summary>
         public void Push(IUndoRedoCommand cmd)
         {
@@ -37,9 +36,15 @@ namespace DataViewer.UndoRedo
                 for (int i = 0; i < _undoRedoStack.Count; i++)
                 {
                     IUndoRedoCommand c = _undoRedoStack[i];
-                    if (c is AddCommand<IModel> || c is RemoveCommand<IModel>)
-                        if(cmd.TargetObject == c.TargetObject)
+                    if (cmd.GetType().GetGenericTypeDefinition() == typeof(AddCommand<>)
+                        || cmd.GetType().GetGenericTypeDefinition() == typeof(RemoveCommand<>))
+                    {
+                        if (cmd.TargetObject == c.TargetObject)
                             (cmd as EditCommand<IModel>).RelyOn = c;
+                    }
+
+                    // this would not work
+                    //if (cmd is AddCommand<IModel>)
                 }
             }
 
@@ -51,7 +56,7 @@ namespace DataViewer.UndoRedo
         public void Undo()
         {
             IUndoRedoCommand cmd = _undoRedoStack[--_pointer];
-            if (cmd.CheckExecutionContext()) // if commands failed dispose it
+            if (cmd.CheckExecutionContext()) // if command is no longer valid dispose it
                 cmd.Undo();
             else
                 _undoRedoStack.RemoveAt(_pointer);

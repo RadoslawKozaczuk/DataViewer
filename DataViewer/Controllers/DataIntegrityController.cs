@@ -17,7 +17,7 @@ namespace DataViewer.Controllers
         }
 
         /// <summary>
-        /// Returns null when scan could not be completed, false when data is invalid, and true when data is valid.
+        /// Returns false when data is invalid, and true when data is valid.
         /// </summary>
         public bool PerformFullScan(IList<LocalizationEntry> entries)
         {
@@ -107,7 +107,7 @@ namespace DataViewer.Controllers
                     Language? d = detections[i];
 
                     if (d == null)
-                        continue; // null means either detection not possible or detected language not supported by out system
+                        continue; // null means either detection not possible or detected language not supported by our system
 
                     if (!referenceList[i].Language.HasValue) // no value in the model
                         continue;
@@ -146,7 +146,6 @@ namespace DataViewer.Controllers
 
             if (string.IsNullOrWhiteSpace(textLine.Text))
                 textLine.TextIsValid = valid = false;
-
             if (textLine.Language == null)
                 textLine.LanguageIsValid = valid = false;
 

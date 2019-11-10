@@ -15,11 +15,12 @@ namespace DataViewer.Controllers
             = "Invalid or unrecognized Translation Method in appconfig. Allowed values are 'ServiceDefault', 'Base' or 'NeuralMachineTranslation'";
 
         // true - let Google decide, false - manual threshold
-        (bool apiDefault, float threshold) _confidenceThreshold;
+        readonly (bool apiDefault, float threshold) _confidenceThreshold;
         readonly TranslationModel _translationModel;
 
         public TranslationCloudAdapter()
         {
+            // assertion
             if (!Enum.TryParse(ConfigurationManager.AppSettings["TranslationMethod"], out _translationModel))
                 throw new ArgumentException(INVALID_TRANSLATION_METHOD_MSG);
 
@@ -28,12 +29,12 @@ namespace DataViewer.Controllers
 
             if (!_confidenceThreshold.apiDefault)
             {
-                if (!float.TryParse(langugeDetectionThresholdValue, out float val)
-                    || val < 0
-                    || val > 1)
+                if (!float.TryParse(langugeDetectionThresholdValue, out float value)
+                    || value < 0
+                    || value > 1)
                     throw new ArgumentException(INVALID_LANG_DET_THRESHOLD_MSG);
 
-                _confidenceThreshold.threshold = val;
+                _confidenceThreshold.threshold = value;
             }
         }
 
@@ -101,18 +102,9 @@ namespace DataViewer.Controllers
 
             for (int i = 0; i < detections.Count; i++)
             {
-                Detection d = detections[i];
-
-                if (_confidenceThreshold.apiDefault)
-                {
-                    if (d.IsReliable) // we let Google decide what's reliable and what's not
-                        results.Add(d.Language.ConvertGoogleLanguageIdToLanguageEnum());
-                }
-                else
-                {
-                    if (d.Confidence > _confidenceThreshold.threshold) // based on the threshold set in appconfig
-                        results.Add(d.Language.ConvertGoogleLanguageIdToLanguageEnum());
-                }
+                var l = GetLanguage(detections[i]);
+                if (l != null) 
+                    results.Add(l);
             }
 
             return true;
@@ -148,18 +140,25 @@ namespace DataViewer.Controllers
                 return false;
             }
 
+            result = GetLanguage(d);
+
+            return true;
+        }
+
+        Language? GetLanguage(Detection d)
+        {
             if (_confidenceThreshold.apiDefault)
             {
                 if (d.IsReliable) // we let Google decide what's reliable and what's not
-                    result = d.Language.ConvertGoogleLanguageIdToLanguageEnum();
+                    return d.Language.ConvertGoogleLanguageIdToLanguageEnum();
             }
             else
             {
                 if (d.Confidence > _confidenceThreshold.threshold) // based on the threshold set in appconfig
-                    result = d.Language.ConvertGoogleLanguageIdToLanguageEnum();
+                    return d.Language.ConvertGoogleLanguageIdToLanguageEnum();
             }
 
-            return true;
+            return null;
         }
     }
 }

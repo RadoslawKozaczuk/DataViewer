@@ -7,9 +7,9 @@ namespace DataViewer.UndoRedo.Commands
     sealed class RemoveCommand<T> : AbstractUndoRedoCommand
         where T : IModel
     {
-        public override IModel TargetObject => _objRef;
+        public override IModel TargetObject => ObjRef;
+        public readonly T ObjRef;
 
-        public readonly T _objRef;
         readonly IList<T> _list;
         readonly int _idInSequence;
 
@@ -17,7 +17,7 @@ namespace DataViewer.UndoRedo.Commands
         {
             _list = list;
             _idInSequence = idInSequence;
-            _objRef = objRef;
+            ObjRef = objRef;
         }
 
         public override bool CheckExecutionContext()
@@ -29,7 +29,7 @@ namespace DataViewer.UndoRedo.Commands
             }
             else if (State == UndoRedoCommandState.Redo)
             {
-                if (!_list.Contains(_objRef)) // object no longer exists (was removed externally without undo/redo tracking)
+                if (!_list.Contains(ObjRef)) // object no longer exists (was removed externally without undo/redo tracking)
                     return false;
             }
 
@@ -44,9 +44,9 @@ namespace DataViewer.UndoRedo.Commands
 
             // insert object back into the collection or add it at the end if the previous relative position is out of bounds
             if (_list.Count > _idInSequence)
-                _list.Insert(_idInSequence, _objRef);
+                _list.Insert(_idInSequence, ObjRef);
             else
-                _list.Add(_objRef);
+                _list.Add(ObjRef);
 
             State = UndoRedoCommandState.Redo;
         }
@@ -57,7 +57,7 @@ namespace DataViewer.UndoRedo.Commands
             if (State == UndoRedoCommandState.Undo)
                 throw new Exception(REDO_CONSECUTIVE_CALL_ERROR);
 
-            _list.Remove(_objRef);
+            _list.Remove(ObjRef);
             State = UndoRedoCommandState.Undo;
         }
     }

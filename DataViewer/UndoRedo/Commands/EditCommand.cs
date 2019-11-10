@@ -8,10 +8,9 @@ namespace DataViewer.UndoRedo.Commands
         where T : IModel
     {
         public override IModel TargetObject => _objRef;
-
-        readonly IModel _objRef;
         public IUndoRedoCommand RelyOn; // set by CommandStack
 
+        readonly IModel _objRef;
         readonly IModel _oldVal;
         readonly IModel _newVal;
         readonly Type _type;

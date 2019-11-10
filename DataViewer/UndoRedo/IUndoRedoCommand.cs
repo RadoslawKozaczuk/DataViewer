@@ -13,13 +13,11 @@ namespace DataViewer.UndoRedo
         /// </summary>
         bool CheckExecutionContext();
         /// <summary>
-        /// Returns true if all went OK, false if the referenced object or the collection 
-        /// is no longer available (was removed/cleared without undo/redo tracking).
+        /// Undo the last command.
         /// </summary>
         void Undo();
         /// <summary>
-        /// Returns true if all went OK, false if the referenced object or the collection 
-        /// is no longer available (was removed/cleared without undo/redo tracking).
+        /// Redo the last command.
         /// </summary>
         void Redo();
     }

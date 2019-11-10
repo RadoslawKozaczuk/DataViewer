@@ -11,7 +11,7 @@ using System.Windows.Input;
 namespace DataViewer.ViewModels
 {
     // this partial class contains all non-public members of the ShellViewModel
-    // the division to increase the code readability
+    // the division is done to increase the code readability
     public partial class ShellViewModel : ViewModelBase, IShellViewModel
     {
         // controllers
@@ -130,7 +130,7 @@ namespace DataViewer.ViewModels
             bool success = _dataIntegrityController.PerformFullScan(Entries);
             _isDataConsistent = success;
 
-            if (success) // no value means error
+            if (success)
             {
                 MessageBox.Show(
                     "No data inconsistencies found.",
@@ -150,7 +150,7 @@ namespace DataViewer.ViewModels
             // enable button
             IsProcessingBackgroundTask = false;
 
-            // in order to update UI form a different thread than the main thread we need to call Dispatcher
+            // in order to update UI from a different thread than the main thread we need to call Dispatcher
             Application.Current.Dispatcher.Invoke(() => RefreshAllViews());
         }
 
@@ -182,7 +182,7 @@ namespace DataViewer.ViewModels
             // enable button
             IsProcessingBackgroundTask = false;
 
-            // in order to update UI form a different thread than the main thread we need to call Dispatcher
+            // in order to update UI from a different thread than the main thread we need to call Dispatcher
             Application.Current.Dispatcher.Invoke(() =>
             {
                 RefreshAllViews();
