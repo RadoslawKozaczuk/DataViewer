@@ -1,0 +1,736 @@
+[
+  {
+    "Speaker": "Carrie",
+    "GUID": "E751F84EDCD7437F9F4BC89CEEDC5118",
+    "Variants": {
+      "Neutral": [
+        {
+          "Text": "I really want to go to work, but I am too sick to drive.",
+          "Language": "fr_fr"
+        },
+        {
+          "Text": "The sky is clear; the stars are twinkling.",
+          "Language": "fr_fr"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "Rock music approaches at high velocity.",
+          "Language": "jp_jp"
+        }
+      ],
+      "Female": [
+        {
+          "Text": "I want more detailed information.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Hershel",
+    "GUID": "38576BCE808D4647A563336A1916201C",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "If you like tuna and tomato sauce- try combining the two. It’s really not as bad as it sounds.",
+          "Language": "en_us"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "Lets all be unique together until we realise we are all the same.",
+          "Language": "en_us"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Holly",
+    "GUID": "A12C7CAC36B24A8AB0A709116FB88ED3",
+    "Variants": {
+      "Dream": [
+        {
+          "Text": "A song can make or ruin a person’s day if they let it get to them.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "We have never been to Asia, nor have we visited Africa.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Katrice",
+    "GUID": "951852FB8D0141B197AA693071105FF0",
+    "Variants": {
+      "Female": [
+        {
+          "Text": "Christmas is coming.",
+          "Language": "jp_jp"
+        },
+        {
+          "Text": "The memory we used to share is no longer coherent.",
+          "Language": "en_us"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Holly",
+    "GUID": "A2B123DE41ED4F8F85D36976C4A323E2",
+    "Variants": {
+      "Neutral": [
+        {
+          "Text": "Abstraction is often one floor above you.",
+          "Language": "jp_jp"
+        }
+      ],
+      "Female": [
+        {
+          "Text": "I want to buy a onesie… but know it won’t suit me.",
+          "Language": "en_us"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Carlyn",
+    "GUID": "D0C60D580D334BA59E310F9C018F5393",
+    "Variants": {
+      "Neutral": [
+        {
+          "Text": "The old apple revels in its authority.",
+          "Language": "en_us"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "April",
+    "GUID": "8885555EE4984E32B0552BDBA36CAEC5",
+    "Variants": {
+      "Dream": [
+        {
+          "Text": "I hear that Nancy is very pretty.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "Where do random thoughts come from?",
+          "Language": "en_us"
+        }
+      ],
+      "Male": [
+        {
+          "Text": "She wrote him a long letter, but he didn't read it.",
+          "Language": "en_us"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "They got there early, and they got really good seats.",
+          "Language": "en_us"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Carrie",
+    "GUID": "C5F007404CDF4E5DB79106F4BDD20610",
+    "Variants": {
+      "Female": [
+        {
+          "Text": "If Purple People Eaters are real… where do they find purple people to eat?",
+          "Language": "jp_jp"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "Yeah, I think it's a good environment for learning English.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Michaele",
+    "GUID": "5BBA6C8ADC8B40B494E77C745C72B39E",
+    "Variants": {
+      "Dream": [
+        {
+          "Text": "He turned in the research paper on Friday; otherwise, he would have not passed the class.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Lesha",
+    "GUID": "3D3927B4079040F9B2C2609625218FFB",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "I am happy to take your donation; any amount will be greatly appreciated.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Katrice",
+    "GUID": "AD2C2F0B977B48B696B8EF92D44837F5",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.",
+          "Language": "fr_fr"
+        },
+        {
+          "Text": "It was getting dark, and we weren’t there yet.",
+          "Language": "fr_fr"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "Cats are good pets, for they are clean and are not noisy.",
+          "Language": "fr_fr"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "Everyone was busy, so I went to the movie alone.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Derick",
+    "GUID": "096DE55A785348D49ACE328B89299E41",
+    "Variants": {
+      "Female": [
+        {
+          "Text": "We need to rent a room for our party.",
+          "Language": "jp_jp"
+        },
+        {
+          "Text": "I love eating toasted cheese and tuna sandwiches.",
+          "Language": "en_us"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "The mysterious diary records the voice.",
+          "Language": "en_us"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "She did her best to help him.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Carrie",
+    "GUID": "B96FDB3D2418452DAD0B338099A7344A",
+    "Variants": {
+      "Neutral": [
+        {
+          "Text": "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?",
+          "Language": "en_us"
+        },
+        {
+          "Text": "Let me help you with your baggage.",
+          "Language": "en_us"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "Sometimes it is better to just walk away from things and go back to them later when you’re in a better frame of mind.",
+          "Language": "jp_jp"
+        }
+      ],
+      "Male": [
+        {
+          "Text": "Please wait outside of the house.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Marg",
+    "GUID": "E0A11CA1CEA14C3E9A48665778045E42",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "Writing a list of random sentences is harder than I initially thought it would be.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "I will never be this young again. Ever. Oh damn… I just got older.",
+          "Language": "jp_jp"
+        },
+        {
+          "Text": "Italy is my favorite country; in fact, I plan to spend two weeks there next year.",
+          "Language": "fr_fr"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "Wednesday is hump day, but has anyone asked the camel if he’s happy about it?",
+          "Language": "en_us"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Alonzo",
+    "GUID": "3C19C9565D4C4CAB9163EC06630DA0C5",
+    "Variants": {
+      "Female": [
+        {
+          "Text": "A glittering gem is not enough.",
+          "Language": "en_us"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "The body may perhaps compensates for the loss of a true metaphysics.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Carrie",
+    "GUID": "F53E4F1361644DF28E3B7946099982EC",
+    "Variants": {
+      "Neutral": [
+        {
+          "Text": "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn’t so bad after all.",
+          "Language": "jp_jp"
+        },
+        {
+          "Text": "Malls are great places to shop; I can find everything I need under one roof.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Katrice",
+    "GUID": "2AC02EAEEE10471A9CE258C6FB1B4A4A",
+    "Variants": {
+      "Dream": [
+        {
+          "Text": "She was too short to see over the fence.",
+          "Language": "fr_fr"
+        }
+      ],
+      "Female": [
+        {
+          "Text": "My Mum tries to be cool by saying that she likes all the same things that I do.",
+          "Language": "fr_fr"
+        },
+        {
+          "Text": "The river stole the gods.",
+          "Language": "en_us"
+        }
+      ],
+      "Male": [
+        {
+          "Text": "Wow, does that work?",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Michaele",
+    "GUID": "DF19717BC916476DA3A63C2E1C99DC18",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "I was very proud of my nickname throughout high school but today- I couldn’t be any different to what my nickname was.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "I am counting my calories, yet I really want dessert.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "I think I will buy the red car, or I will lease the blue one.",
+          "Language": "jp_jp"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "I would have gotten the promotion, but my attendance wasn’t good enough.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Jessi",
+    "GUID": "54832B526A9F431F9236714A6A5BC9AD",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "Tom got a small piece of pie.",
+          "Language": "jp_jp"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "She did not cheat on the test, for it was not the right thing to do.",
+          "Language": "en_us"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "If I don’t like something, I’ll stay away from it.",
+          "Language": "en_us"
+        }
+      ],
+      "Female": [
+        {
+          "Text": "What was the person thinking when they discovered cow’s milk was fine for human consumption… and why did they do it in the first place!?",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Marg",
+    "GUID": "C3F64C52BD7A45AEA9CDDA7DEC4FDEAE",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "She borrowed the book from him many years ago and hasn't yet returned it.",
+          "Language": "jp_jp"
+        },
+        {
+          "Text": "Hurry!",
+          "Language": "en_us"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "Last Friday in three week’s time I saw a spotted striped blue worm shake hands with a legless lizard.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "How was the math test?",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Holly",
+    "GUID": "48C92517D71342B29F2F380AEAFD5F08",
+    "Variants": {
+      "Neutral": [
+        {
+          "Text": "She always speaks to him in a loud voice.",
+          "Language": "en_us"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Alonzo",
+    "GUID": "77268475C2A24E1581478377C2500461",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "I am never at home on Sundays.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "The book is in front of the table.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Hershel",
+    "GUID": "956E31CF42A0450B9EE08E3000E2A4BC",
+    "Variants": {
+      "Neutral": [
+        {
+          "Text": "Two seats were vacant.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "He told us a very exciting adventure story.",
+          "Language": "fr_fr"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.",
+          "Language": "en_us"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Carrie",
+    "GUID": "F3814C520F844710A6CEF30B0939ADB0",
+    "Variants": {
+      "Female": [
+        {
+          "Text": "I currently have 4 windows open up… and I don’t know why.",
+          "Language": "fr_fr"
+        },
+        {
+          "Text": "She folded her handkerchief neatly.",
+          "Language": "fr_fr"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "I checked to make sure that he was still alive.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Katrice",
+    "GUID": "935553D626324242A63903CAB0A5E823",
+    "Variants": {
+      "Dream": [
+        {
+          "Text": "I'd rather be a bird than a fish.",
+          "Language": "jp_jp"
+        }
+      ],
+      "Female": [
+        {
+          "Text": "Don't step on the broken glass.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Felicitas",
+    "GUID": "FE5750F9A83C4F818DA63D1587F36621",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "There were white out conditions in the town; subsequently, the roads were impassable.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "Joe made the sugar cookies; Susan decorated them.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Wonda",
+    "GUID": "247E7B513D444570A9559C8E58E5CDD2",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "The stranger officiates the meal.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "Sixty-Four comes asking for bread.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Hershel",
+    "GUID": "E6BC80EF92A34F3D8A659B128D7DC7DA",
+    "Variants": {
+      "Dream": [
+        {
+          "Text": "The lake is a long way from here.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Holly",
+    "GUID": "470E8CA752F54F5B96053B5FDEA9FBE3",
+    "Variants": {
+      "Neutral": [
+        {
+          "Text": "He didn’t want to go to the dentist, yet he went anyway.",
+          "Language": "jp_jp"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "He said he was not there yesterday; however, many people saw him there.",
+          "Language": "fr_fr"
+        },
+        {
+          "Text": "She only paints with bold colors; she does not like pastels.",
+          "Language": "fr_fr"
+        }
+      ],
+      "Female": [
+        {
+          "Text": "We have a lot of rain in June.",
+          "Language": "fr_fr"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Jessi",
+    "GUID": "C194D98C46B447C2A85999C2B77B0FBA",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "This is a Japanese doll.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Katrice",
+    "GUID": "DD1A76C03C17415B9E10EE40F8CF1D09",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Derick",
+    "GUID": "809C58C3E74D41C090EBCDEF7878B30F",
+    "Variants": {
+      "Male": [
+        {
+          "Text": "The clock within this blog and the clock on my laptop are 1 hour different from each other.",
+          "Language": "en_us"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "Is it free?",
+          "Language": "fr_fr"
+        },
+        {
+          "Text": "This is the last random sentence I will be writing and I am going to stop mid-sent",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Michaele",
+    "GUID": "BAF66604899E4A56826E3056E81F7AE5",
+    "Variants": {
+      "Dream": [
+        {
+          "Text": "Check back tomorrow; I will see if the book has arrived.",
+          "Language": "jp_jp"
+        },
+        {
+          "Text": "The waves were crashing on the shore; it was a lovely sight.",
+          "Language": "en_us"
+        }
+      ],
+      "Male": [
+        {
+          "Text": "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn’t and they don’t recommend anyone else do it either.",
+          "Language": "en_us"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Carrie",
+    "GUID": "EC3F40C11B1A41F8B80AEEC5BF559D3B",
+    "Variants": {
+      "Dream": [
+        {
+          "Text": "There was no ice cream in the freezer, nor did they have money to go to the store.",
+          "Language": "fr_fr"
+        },
+        {
+          "Text": "He ran out of money, so he had to stop playing poker.",
+          "Language": "en_us"
+        },
+        {
+          "Text": "The quick brown fox jumps over the lazy dog.",
+          "Language": "en_us"
+        }
+      ],
+      "Male": [
+        {
+          "Text": "Mary plays the piano.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Marg",
+    "GUID": "AB05F125FAA443679AAD861AF8858444",
+    "Variants": {
+      "Neutral": [
+        {
+          "Text": "She advised him to come back at once.",
+          "Language": "jp_jp"
+        },
+        {
+          "Text": "The shooter says goodbye to his love.",
+          "Language": "jp_jp"
+        }
+      ]
+    }
+  },
+  {
+    "Speaker": "Chanell",
+    "GUID": "6F0F79495CF74C4298EAF2F6FDBA1E7C",
+    "Variants": {
+      "Female": [
+        {
+          "Text": "She always speaks to him in a loud voice.",
+          "Language": "en_us"
+        }
+      ],
+      "Male": [
+        {
+          "Text": "I am never at home on Sundays.",
+          "Language": "jp_jp"
+        }
+      ],
+      "Dream": [
+        {
+          "Text": "The book is in front of the table.",
+          "Language": "fr_fr"
+        }
+      ],
+      "Neutral": [
+        {
+          "Text": "Two seats were vacant.",
+          "Language": "en_us"
+        }
+      ]
+    }
+  }
+]
