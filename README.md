@@ -13,7 +13,8 @@ This project's intention is to show my ability to write modern desktop applicati
 
 Example documents to play around with are in the repository itself.
 
-![Application Demo](DataViewerDemo.gif)
+![Application Demo](DataViewer/DataViewerDemo.gif)
 
 Kind Regards
+
 Radek
