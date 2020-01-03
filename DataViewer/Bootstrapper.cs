@@ -55,8 +55,8 @@ namespace DataViewer
         /// </summary>
         void GoogleTranslationCloudAuth()
         {
-            // If you don't specify credentials when constructing the client, the
-            // client library will look for credentials in the environment.
+            // If you don't specify credentials when constructing the client, 
+            // the client library will look for credentials in the environment.
             var credential = GoogleCredential.GetApplicationDefault();
             using var storage = StorageClient.Create(credential);
         }

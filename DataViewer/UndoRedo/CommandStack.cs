@@ -30,7 +30,13 @@ namespace DataViewer.UndoRedo
         /// </summary>
         public void Push(IUndoRedoCommand cmd)
         {
-            if(cmd is EditCommand<IModel>)
+#if DEBUG
+            // assertion
+            if (cmd == null)
+                throw new ArgumentNullException("cmd");
+#endif
+
+            if (cmd is EditCommand<IModel>)
             {
                 // check if rely on anything else (only Edit and Remove)
                 for (int i = 0; i < _undoRedoStack.Count; i++)

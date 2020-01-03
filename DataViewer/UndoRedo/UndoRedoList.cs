@@ -37,18 +37,36 @@ namespace DataViewer.UndoRedo
         public UndoRedoList(CommandStack commandStack) 
             : base()
         {
+#if DEBUG
+            // assertion
+            if (commandStack == null)
+                throw new System.ArgumentNullException("commandStack");
+#endif
+
             _commandStack = commandStack;
         }
 
         public UndoRedoList(int capacity, CommandStack commandStack) 
             : base(capacity)
         {
+#if DEBUG
+            // assertion
+            if (commandStack == null)
+                throw new System.ArgumentNullException("commandStack");
+#endif
+
             _commandStack = commandStack;
         }
 
         public UndoRedoList(IEnumerable<T> enumerable,  CommandStack commandStack) 
             : base(enumerable)
         {
+#if DEBUG
+            // assertion
+            if (commandStack == null)
+                throw new System.ArgumentNullException("commandStack");
+#endif
+
             _commandStack = commandStack;
         }
 

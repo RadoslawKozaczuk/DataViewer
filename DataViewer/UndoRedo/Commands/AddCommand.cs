@@ -42,9 +42,11 @@ namespace DataViewer.UndoRedo.Commands
         /// </summary>
         public override void Undo()
         {
+#if DEBUG
             // assertion
             if (State == UndoRedoCommandState.Redo)
                 throw new Exception(UNDO_CONSECUTIVE_CALL_ERROR);
+#endif
 
             _list.Remove(_objRef);
             State = UndoRedoCommandState.Redo;
@@ -52,9 +54,11 @@ namespace DataViewer.UndoRedo.Commands
 
         public override void Redo()
         {
+#if DEBUG
             // assertion
             if (State == UndoRedoCommandState.Undo)
                 throw new Exception(REDO_CONSECUTIVE_CALL_ERROR);
+#endif
 
             if (_list.Count > _idInSequence)
                 _list.Insert(_idInSequence, _objRef);

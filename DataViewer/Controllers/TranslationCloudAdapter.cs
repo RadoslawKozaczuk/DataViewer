@@ -20,9 +20,12 @@ namespace DataViewer.Controllers
 
         public TranslationCloudAdapter()
         {
+
+#if DEBUG
             // assertion
             if (!Enum.TryParse(ConfigurationManager.AppSettings["TranslationMethod"], out _translationModel))
                 throw new ArgumentException(INVALID_TRANSLATION_METHOD_MSG);
+#endif
 
             string langugeDetectionThresholdValue = ConfigurationManager.AppSettings["LanguageDetectionThreshold"];
             _confidenceThreshold.apiDefault = langugeDetectionThresholdValue.ToLower() == "api_default";
@@ -47,6 +50,7 @@ namespace DataViewer.Controllers
         /// or when the source and target languages are the same.</exception>
         public bool Translate(string text, Language source, Language target, out string translation)
         {
+#if DEBUG
             // assertions
             if (text == null)
                 throw new ArgumentNullException("texts");
@@ -54,6 +58,7 @@ namespace DataViewer.Controllers
                 throw new ArgumentException("text cannot be empty", "texts");
             if (source == target)
                 throw new ArgumentException("The source the target languages cannot be the same.");
+#endif
 
             translation = null;
             using TranslationClient client = TranslationClient.Create();
@@ -81,11 +86,13 @@ namespace DataViewer.Controllers
         /// <exception cref="ArgumentException">Thrown when texts parameter is empty.</exception>
         public bool DetectLanguages(IList<string> texts, out IList<Language?> results)
         {
+#if DEBUG
             // assertions
             if (texts == null)
                 throw new ArgumentNullException("texts");
             if (texts.Count == 0)
                 throw new ArgumentException("texts list cannot be empty", "texts");
+#endif
 
             using TranslationClient client = TranslationClient.Create();
             results = new List<Language?>(texts.Count);
@@ -120,11 +127,13 @@ namespace DataViewer.Controllers
         /// <exception cref="ArgumentException">Thrown when text parameter is empty or contains only white spaces.</exception>
         public bool DetectLanguage(string text, out Language? result)
         {
-            // assertion
+#if DEBUG
+            // assertions
             if (text == null)
                 throw new ArgumentNullException("texts");
             if (string.IsNullOrWhiteSpace(text))
                 throw new ArgumentException("text cannot be empty", "texts");
+#endif
 
             result = null;
 

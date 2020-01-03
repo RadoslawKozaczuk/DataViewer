@@ -38,11 +38,13 @@ namespace DataViewer.Controllers
         /// <exception cref="ArgumentException">Thrown when entries parameter is empty.</exception>
         public bool HealDocument(IList<LocalizationEntry> entries)
         {
+#if DEBUG
             // assertions
             if (entries == null)
                 throw new ArgumentNullException("entries");
             if (entries.Count == 0)
                 throw new ArgumentException("entry list cannot be empty", "entries");
+#endif
             
             _entries = entries;
 
@@ -99,22 +101,22 @@ namespace DataViewer.Controllers
                 textsToCheck.Add(t.Text);
             })));
 
-            if (_cloud.DetectLanguages(textsToCheck, out IList<Language?> detections))
+            if (!_cloud.DetectLanguages(textsToCheck, out IList<Language?> detections))
+                return; // detection not possible, return control
+
+            // apply detected data
+            for (int i = 0; i < detections.Count; i++)
             {
-                // apply detected data
-                for (int i = 0; i < detections.Count; i++)
-                {
-                    Language? d = detections[i];
+                Language? d = detections[i];
 
-                    if (d == null)
-                        continue; // null means either detection not possible or detected language not supported by our system
+                if (d == null)
+                    continue; // null means either detection not possible or detected language not supported by our system
 
-                    if (!referenceList[i].Language.HasValue) // no value in the model
-                        continue;
+                if (!referenceList[i].Language.HasValue) // no value in the model
+                    continue;
 
-                    if (referenceList[i].Language.Value != d.Value)
-                        referenceList[i].LanguageIsValid = valid = false;
-                }
+                if (referenceList[i].Language.Value != d.Value)
+                    referenceList[i].LanguageIsValid = valid = false;
             }
         }
 
@@ -190,23 +192,21 @@ namespace DataViewer.Controllers
                         textsToCheck.Add(textLine.Text);
                     }
 
-            if(_cloud.DetectLanguages(textsToCheck, out IList<Language?> detections))
+            if(!_cloud.DetectLanguages(textsToCheck, out IList<Language?> detections))
+                return false; // detection not possible, return control
+
+            // apply detected data
+            for (int i = 0; i < detections.Count; i++)
             {
-                // apply detected data
-                for (int i = 0; i < detections.Count; i++)
-                {
-                    Language? d = detections[i];
+                Language? d = detections[i];
 
-                    if (d == null)
-                        continue; // null means either detection not possible or detected language not supported by out system
+                if (d == null)
+                    continue; // null means either detection not possible or detected language not supported by out system
 
-                    translationDataList[i].Language = d;
-                }
-
-                return true;
+                translationDataList[i].Language = d;
             }
 
-            return false;
+            return true;
         }
     }
 }

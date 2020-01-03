@@ -14,7 +14,7 @@ namespace DataViewer.Converters.JSON
             "en_us" => Language.English_US,
             "fr_fr" => Language.French,
             "jp_jp" => Language.Japanease,
-            _ => (Language?)null
+            _ => null
         };
 
         public override bool CanConvert(Type objectType) => objectType == typeof(string);

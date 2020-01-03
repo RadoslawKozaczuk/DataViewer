@@ -8,6 +8,7 @@ namespace DataViewer.UndoRedo.Commands
         where T : IModel
     {
         public override IModel TargetObject => ObjRef;
+
         public readonly T ObjRef;
 
         readonly IList<T> _list;
@@ -38,9 +39,11 @@ namespace DataViewer.UndoRedo.Commands
 
         public override void Undo()
         {
+#if DEBUG
             // assertion
             if (State == UndoRedoCommandState.Redo)
                 throw new Exception(UNDO_CONSECUTIVE_CALL_ERROR);
+#endif
 
             // insert object back into the collection or add it at the end if the previous relative position is out of bounds
             if (_list.Count > _idInSequence)
@@ -53,9 +56,11 @@ namespace DataViewer.UndoRedo.Commands
 
         public override void Redo()
         {
+#if DEBUG
             // assertion
             if (State == UndoRedoCommandState.Undo)
                 throw new Exception(REDO_CONSECUTIVE_CALL_ERROR);
+#endif
 
             _list.Remove(ObjRef);
             State = UndoRedoCommandState.Undo;
