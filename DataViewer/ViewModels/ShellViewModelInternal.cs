@@ -131,21 +131,9 @@ namespace DataViewer.ViewModels
             _isDataConsistent = success;
 
             if (success)
-            {
-                MessageBox.Show(
-                    "No data inconsistencies found.",
-                    "Scan Completed",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Asterisk);
-            }
+                MessageBox.Show("No data inconsistencies found.", "Scan Completed", MessageBoxButton.OK, MessageBoxImage.Asterisk);
             else
-            {
-                MessageBox.Show(
-                    "Data inconsistencies found.",
-                    "Scan Completed",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-            }
+                MessageBox.Show("Data inconsistencies found.", "Scan Completed", MessageBoxButton.OK, MessageBoxImage.Warning);
 
             // enable button
             IsProcessingBackgroundTask = false;
@@ -154,30 +142,18 @@ namespace DataViewer.ViewModels
             Application.Current.Dispatcher.Invoke(() => RefreshAllViews());
         }
 
+        /// <summary>
+        /// Restores data integrity.
+        /// </summary>
         void HealAction()
         {
             StatusBarInfo = "Healing...";
             IsProcessingBackgroundTask = true;
 
-            bool success = _dataIntegrityController.HealDocument(Entries);
-            _isDataConsistent = success;
+            _dataIntegrityController.HealDocument(Entries);
+            _isDataConsistent = true;
 
-            if (success) // heal completed without errors
-            {
-                MessageBox.Show(
-                    "Heal Completed.",
-                    "Heal Completed",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Asterisk);
-            }
-            else
-            {
-                MessageBox.Show(
-                    "Scan error. No Internet connection or Google Translation Cloud is inactive.",
-                    "Scan Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
+            MessageBox.Show("Heal Completed.", "Heal Completed", MessageBoxButton.OK, MessageBoxImage.Asterisk);
 
             // enable button
             IsProcessingBackgroundTask = false;

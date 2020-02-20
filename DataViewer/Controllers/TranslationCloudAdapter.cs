@@ -20,7 +20,6 @@ namespace DataViewer.Controllers
 
         public TranslationCloudAdapter()
         {
-
 #if DEBUG
             // assertion
             if (!Enum.TryParse(ConfigurationManager.AppSettings["TranslationMethod"], out _translationModel))
@@ -109,7 +108,7 @@ namespace DataViewer.Controllers
 
             for (int i = 0; i < detections.Count; i++)
             {
-                var l = GetLanguage(detections[i]);
+                Language? l = GetLanguage(detections[i]);
                 if (l != null) 
                     results.Add(l);
             }
@@ -138,33 +137,33 @@ namespace DataViewer.Controllers
             result = null;
 
             using TranslationClient client = TranslationClient.Create();
-            Detection d;
+            Detection detection;
 
             try
             {
-                d = client.DetectLanguage(text);
+                detection = client.DetectLanguage(text);
             }
             catch
             {
                 return false;
             }
 
-            result = GetLanguage(d);
+            result = GetLanguage(detection);
 
             return true;
         }
 
-        Language? GetLanguage(Detection d)
+        Language? GetLanguage(Detection detection)
         {
             if (_confidenceThreshold.apiDefault)
             {
-                if (d.IsReliable) // we let Google decide what's reliable and what's not
-                    return d.Language.ConvertGoogleLanguageIdToLanguageEnum();
+                if (detection.IsReliable) // we let Google decide what's reliable and what's not
+                    return detection.Language.ConvertGoogleLanguageIdToLanguageEnum();
             }
             else
             {
-                if (d.Confidence > _confidenceThreshold.threshold) // based on the threshold set in appconfig
-                    return d.Language.ConvertGoogleLanguageIdToLanguageEnum();
+                if (detection.Confidence > _confidenceThreshold.threshold) // based on the threshold set in appconfig
+                    return detection.Language.ConvertGoogleLanguageIdToLanguageEnum();
             }
 
             return null;

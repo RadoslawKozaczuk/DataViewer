@@ -13,16 +13,16 @@ namespace DataViewer.UndoRedo
         readonly IList<IUndoRedoCommand> _undoRedoStack = new List<IUndoRedoCommand>();
         int _pointer; // points at first redo - so first undo will be _pointer - 1
 
-        readonly Action _notifyUndoAction;
-        readonly Action _notifyRedoAction;
+        readonly Action _onUndoAction;
+        readonly Action _onRedoAction;
 
         /// <summary>
         /// Optional parameters allow to pass an action that should be executed each time command stack's state is changed.
         /// </summary>
-        public CommandStack(Action notifyUndoAction = null, Action notifyRedoAction = null)
+        public CommandStack(Action onUndoAction = null, Action onRedoAction = null)
         {
-            _notifyUndoAction = notifyUndoAction;
-            _notifyRedoAction = notifyRedoAction;
+            _onUndoAction = onUndoAction;
+            _onRedoAction = onRedoAction;
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace DataViewer.UndoRedo
 #if DEBUG
             // assertion
             if (cmd == null)
-                throw new ArgumentNullException("cmd");
+                throw new ArgumentNullException("cmd", "cmd parameter cannot be null.");
 #endif
 
             if (cmd is EditCommand<IModel>)
@@ -55,8 +55,8 @@ namespace DataViewer.UndoRedo
             }
 
             _undoRedoStack.Insert(_pointer++, cmd);
-            _notifyUndoAction?.Invoke();
-            _notifyRedoAction?.Invoke();
+            _onUndoAction?.Invoke();
+            _onRedoAction?.Invoke();
         }
 
         public void Undo()
@@ -67,8 +67,8 @@ namespace DataViewer.UndoRedo
             else
                 _undoRedoStack.RemoveAt(_pointer);
 
-            _notifyUndoAction?.Invoke();
-            _notifyRedoAction?.Invoke();
+            _onUndoAction?.Invoke();
+            _onRedoAction?.Invoke();
         }
 
         public void Redo()
@@ -82,8 +82,8 @@ namespace DataViewer.UndoRedo
             else
                 _undoRedoStack.RemoveAt(_pointer);
 
-            _notifyUndoAction?.Invoke();
-            _notifyRedoAction?.Invoke();
+            _onUndoAction?.Invoke();
+            _onRedoAction?.Invoke();
         }
 
         /// <summary>

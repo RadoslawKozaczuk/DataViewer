@@ -36,10 +36,6 @@ namespace DataViewer.UndoRedo.Commands
             return true;
         }
 
-        /// <summary>
-        /// Returns true if all went OK, false if the referenced object is no longer available 
-        /// (was removed without undo/redo tracking).
-        /// </summary>
         public override void Undo()
         {
 #if DEBUG

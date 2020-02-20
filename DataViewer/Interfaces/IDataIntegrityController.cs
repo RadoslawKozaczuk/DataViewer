@@ -9,6 +9,6 @@ namespace DataViewer.Interfaces
         /// Returns false when data is invalid, and true when data is valid.
         /// </summary>
         bool PerformFullScan(IList<LocalizationEntry> entries);
-        bool HealDocument(IList<LocalizationEntry> entries);
+        void HealDocument(IList<LocalizationEntry> entries);
     }
 }

@@ -39,9 +39,6 @@ namespace DataViewer.UndoRedo.Commands
             return false;
         }
 
-        /// <summary>
-        /// Reverse the action performed by this action.
-        /// </summary>
         public override void Undo()
         {
             if (State == UndoRedoCommandState.Redo)
@@ -57,9 +54,6 @@ namespace DataViewer.UndoRedo.Commands
             State = UndoRedoCommandState.Redo;
         }
 
-        /// <summary>
-        /// Applies the changes performed by this action (only possible if the action was previously undone).
-        /// </summary>
         public override void Redo()
         {
             if (State == UndoRedoCommandState.Undo)

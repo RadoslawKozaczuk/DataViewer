@@ -36,7 +36,7 @@ namespace DataViewer.Controllers
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when entries parameter is null.</exception>
         /// <exception cref="ArgumentException">Thrown when entries parameter is empty.</exception>
-        public bool HealDocument(IList<LocalizationEntry> entries)
+        public void HealDocument(IList<LocalizationEntry> entries)
         {
 #if DEBUG
             // assertions
@@ -51,8 +51,6 @@ namespace DataViewer.Controllers
             RemoveEntriesWithInvalidGUID();
             RemoveEntriesWithDuplicatedGUID();
             CorrectLanguageEntries();
-
-            return true;
         }
 
         void ScanEachDataModelIndividually(ref bool valid)

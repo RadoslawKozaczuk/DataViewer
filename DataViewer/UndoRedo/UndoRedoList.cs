@@ -13,19 +13,19 @@ namespace DataViewer.UndoRedo
     /// <list type="table">
     /// <item>
     /// <term><see cref="AddWithUndoRedoTracking"/></term>
-    /// <description>Adds element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/></description>
+    /// <description>Adds element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack"/></description>
     /// </item>
     /// <item>
     /// <term><see cref="RemoveWithUndoRedoTracking"/></term>
-    /// <description>Removes element from the list and adds <see cref="RemoveCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/></description>
+    /// <description>Removes element from the list and adds <see cref="RemoveCommand{T}"/> to the corresponding <see cref="CommandStack"/></description>
     /// </item>
     /// <item>
     /// <term><see cref="RemoveAtWithUndoRedoTracking"/></term>
-    /// <description>Removes element from the list and adds <see cref="RemoveCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/></description>
+    /// <description>Removes element from the list and adds <see cref="RemoveCommand{T}"/> to the corresponding <see cref="CommandStack"/></description>
     /// </item>
     /// <item>
     /// <term><see cref="InsertWithUndoRedoTracking"/></term>
-    /// <description>Inserts element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/></description>
+    /// <description>Inserts element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack"/></description>
     /// </item>
     /// </list>
     /// </summary>
@@ -40,7 +40,7 @@ namespace DataViewer.UndoRedo
 #if DEBUG
             // assertion
             if (commandStack == null)
-                throw new System.ArgumentNullException("commandStack");
+                throw new System.ArgumentNullException("commandStack", "commandStack parameter cannot be null");
 #endif
 
             _commandStack = commandStack;
@@ -52,7 +52,7 @@ namespace DataViewer.UndoRedo
 #if DEBUG
             // assertion
             if (commandStack == null)
-                throw new System.ArgumentNullException("commandStack");
+                throw new System.ArgumentNullException("commandStack", "commandStack parameter cannot be null");
 #endif
 
             _commandStack = commandStack;
@@ -64,14 +64,14 @@ namespace DataViewer.UndoRedo
 #if DEBUG
             // assertion
             if (commandStack == null)
-                throw new System.ArgumentNullException("commandStack");
+                throw new System.ArgumentNullException("commandStack", "commandStack parameter cannot be null");
 #endif
 
             _commandStack = commandStack;
         }
 
         /// <summary>
-        /// Adds element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/>
+        /// Adds element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack"/>
         /// </summary>
         public void AddWithUndoRedoTracking(T item)
         {
@@ -80,7 +80,7 @@ namespace DataViewer.UndoRedo
         }
 
         /// <summary>
-        /// Removes element from the list and adds<see cref="RemoveCommand{T}"/> to the corresponding<see cref= "CommandStack{T}" />
+        /// Removes element from the list and adds<see cref="RemoveCommand{T}"/> to the corresponding<see cref= "CommandStack" />
         /// </summary>
         public void RemoveWithUndoRedoTracking(T item)
         {
@@ -89,7 +89,7 @@ namespace DataViewer.UndoRedo
         }
 
         /// <summary>
-        /// Removes element from the list and adds <see cref="RemoveCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/>
+        /// Removes element from the list and adds <see cref="RemoveCommand{T}"/> to the corresponding <see cref="CommandStack"/>
         /// </summary>
         public void RemoveAtWithUndoRedoTracking(int index)
         {
@@ -99,7 +99,7 @@ namespace DataViewer.UndoRedo
         }
 
         /// <summary>
-        /// Inserts element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack{T}"/>
+        /// Inserts element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack"/>
         /// </summary>
         public void InsertWithUndoRedoTracking(int index, T item) 
             => _commandStack.Push(new AddCommand<T>(this, index, item));

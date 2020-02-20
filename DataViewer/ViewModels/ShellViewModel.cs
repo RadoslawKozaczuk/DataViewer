@@ -198,12 +198,12 @@ namespace DataViewer.ViewModels
 
             // for convenience we pass notifiers to command stack so whenever an operation is executed on it, notifiers will also be called
             _commandStack = new CommandStack(
-                notifyUndoAction: () =>
+                onUndoAction: () =>
                 {
                     NotifyOfPropertyChange(() => CanUndo);
                     RefreshAllViews();
                 },
-                notifyRedoAction: () =>
+                onRedoAction: () =>
                 {
                     NotifyOfPropertyChange(() => CanRedo);
                     RefreshAllViews();
