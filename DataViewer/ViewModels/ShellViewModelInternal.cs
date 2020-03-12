@@ -14,6 +14,10 @@ namespace DataViewer.ViewModels
     // the division is done to increase the code readability
     public partial class ShellViewModel : ViewModelBase, IShellViewModel
     {
+        const string STATUS_BAR_INFO_SCANNING = "Scanning...";
+        const string STATUS_BAR_INFO_TRANSLATING = "Translating...";
+        const string STATUS_BAR_INFO_HEALING = "Healing...";
+
         // controllers
         readonly IDataIntegrityController _dataIntegrityController;
         readonly ITranslationCloudAdapter _translationCloud;
@@ -87,7 +91,7 @@ namespace DataViewer.ViewModels
         /// </summary>
         void TranslateAction()
         {
-            StatusBarInfo = "Translating...";
+            StatusBarInfo = STATUS_BAR_INFO_TRANSLATING;
             IsProcessingBackgroundTask = true;
 
             // we cache these values in case user changed the selected line before the cloud responded
@@ -123,7 +127,7 @@ namespace DataViewer.ViewModels
 
         void ScanAction()
         {
-            StatusBarInfo = "Scanning...";
+            StatusBarInfo = STATUS_BAR_INFO_SCANNING;
             IsProcessingBackgroundTask = true;
 
             // we cache these values in case user changed the selected line before the cloud responded
@@ -147,7 +151,7 @@ namespace DataViewer.ViewModels
         /// </summary>
         void HealAction()
         {
-            StatusBarInfo = "Healing...";
+            StatusBarInfo = STATUS_BAR_INFO_HEALING;
             IsProcessingBackgroundTask = true;
 
             _dataIntegrityController.HealDocument(Entries);

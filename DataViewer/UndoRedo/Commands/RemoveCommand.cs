@@ -39,8 +39,8 @@ namespace DataViewer.UndoRedo.Commands
 
         public override void Undo()
         {
-#if DEBUG
             // assertion
+#if DEBUG
             if (State == UndoRedoCommandState.Redo)
                 throw new Exception(UNDO_CONSECUTIVE_CALL_ERROR);
 #endif
@@ -56,8 +56,8 @@ namespace DataViewer.UndoRedo.Commands
 
         public override void Redo()
         {
-#if DEBUG
             // assertion
+#if DEBUG
             if (State == UndoRedoCommandState.Undo)
                 throw new Exception(REDO_CONSECUTIVE_CALL_ERROR);
 #endif

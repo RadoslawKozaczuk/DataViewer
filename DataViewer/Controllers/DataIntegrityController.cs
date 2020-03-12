@@ -38,8 +38,8 @@ namespace DataViewer.Controllers
         /// <exception cref="ArgumentException">Thrown when entries parameter is empty.</exception>
         public void HealDocument(IList<LocalizationEntry> entries)
         {
-#if DEBUG
             // assertions
+#if DEBUG
             if (entries == null)
                 throw new ArgumentNullException("entries");
             if (entries.Count == 0)

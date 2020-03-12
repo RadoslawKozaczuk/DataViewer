@@ -30,8 +30,8 @@ namespace DataViewer.UndoRedo
         /// </summary>
         public void Push(IUndoRedoCommand cmd)
         {
-#if DEBUG
             // assertion
+#if DEBUG
             if (cmd == null)
                 throw new ArgumentNullException("cmd", "cmd parameter cannot be null.");
 #endif

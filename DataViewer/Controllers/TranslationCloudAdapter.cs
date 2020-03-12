@@ -64,11 +64,9 @@ namespace DataViewer.Controllers
 
             try
             {
-                translation = client.TranslateText(
-                    text, 
-                    target.ToGoogleLangId(), 
-                    source.ToGoogleLangId(), 
-                    _translationModel).TranslatedText;
+                translation = client.TranslateText(text, target.ToGoogleLangId(), source.ToGoogleLangId(), _translationModel)
+                    .TranslatedText;
+
                 return true;
             }
             catch

@@ -46,10 +46,7 @@ namespace DataViewer.Models
         public Language? TranslationLanguage { get; set; }
 
         [JsonIgnore]
-        public string TranslationLanguageShortId
-            => TranslationLanguage.HasValue
-                ? TranslationLanguage.Value.ToGoogleLangId()
-                : "";
+        public string TranslationLanguageShortId => TranslationLanguage.HasValue ? TranslationLanguage.Value.ToGoogleLangId() : "";
 
         public TextLine() { }
 

@@ -18,7 +18,7 @@ namespace DataViewer.Input
 
         public void RegisterCommands(IEnumerable<InputBindingCommand> inputBindingCommands)
         {
-            foreach (var inputBindingCommand in inputBindingCommands)
+            foreach (InputBindingCommand inputBindingCommand in inputBindingCommands)
             {
                 var binding = new KeyBinding(inputBindingCommand, inputBindingCommand.GestureKey, inputBindingCommand.GestureModifier);
 

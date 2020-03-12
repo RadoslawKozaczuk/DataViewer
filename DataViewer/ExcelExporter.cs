@@ -11,8 +11,8 @@ namespace DataViewer
     {
         public void ExportToExcel(List<LocalizationEntry> entries, string fullpath)
         {
-#if DEBUG
             // assertions
+#if DEBUG
             if (entries == null)
                 throw new ArgumentNullException("entries", "ExportToExcel should not be called on empty set");
             else if (entries.Count == 0)

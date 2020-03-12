@@ -37,8 +37,8 @@ namespace DataViewer.UndoRedo
         public UndoRedoList(CommandStack commandStack) 
             : base()
         {
-#if DEBUG
             // assertion
+#if DEBUG
             if (commandStack == null)
                 throw new System.ArgumentNullException("commandStack", "commandStack parameter cannot be null");
 #endif
@@ -49,8 +49,8 @@ namespace DataViewer.UndoRedo
         public UndoRedoList(int capacity, CommandStack commandStack) 
             : base(capacity)
         {
-#if DEBUG
             // assertion
+#if DEBUG
             if (commandStack == null)
                 throw new System.ArgumentNullException("commandStack", "commandStack parameter cannot be null");
 #endif
@@ -61,8 +61,8 @@ namespace DataViewer.UndoRedo
         public UndoRedoList(IEnumerable<T> enumerable,  CommandStack commandStack) 
             : base(enumerable)
         {
-#if DEBUG
             // assertion
+#if DEBUG
             if (commandStack == null)
                 throw new System.ArgumentNullException("commandStack", "commandStack parameter cannot be null");
 #endif
