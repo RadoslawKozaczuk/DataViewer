@@ -124,8 +124,8 @@ namespace DataViewer.Controllers
         /// <exception cref="ArgumentException">Thrown when text parameter is empty or contains only white spaces.</exception>
         public bool DetectLanguage(string text, out Language? result)
         {
-#if DEBUG
             // assertions
+#if DEBUG
             if (text == null)
                 throw new ArgumentNullException("texts");
             if (string.IsNullOrWhiteSpace(text))
