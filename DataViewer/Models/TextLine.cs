@@ -25,7 +25,7 @@ namespace DataViewer.Models
 
         [JsonProperty("Language")]
         [JsonConverter(typeof(LanguageConverter))]
-        public Language? Language 
+        public Language? Language
         {
             get => _language;
             set

@@ -107,7 +107,7 @@ namespace DataViewer.Controllers
             for (int i = 0; i < detections.Count; i++)
             {
                 Language? l = GetLanguage(detections[i]);
-                if (l != null) 
+                if (l != null)
                     results.Add(l);
             }
 

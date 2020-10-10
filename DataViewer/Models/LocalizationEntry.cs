@@ -9,7 +9,7 @@ namespace DataViewer.Models
     public class LocalizationEntry : IModel
     {
         [JsonProperty("Speaker")]
-        public string Speaker 
+        public string Speaker
         {
             get => _speaker;
             set
@@ -21,7 +21,7 @@ namespace DataViewer.Models
         string _speaker = "";
 
         [JsonProperty("GUID")]
-        public string GUID 
+        public string GUID
         {
             get => _guid;
             set

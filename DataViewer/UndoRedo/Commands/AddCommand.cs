@@ -22,12 +22,12 @@ namespace DataViewer.UndoRedo.Commands
 
         public override bool CheckExecutionContext()
         {
-            if(State == UndoRedoCommandState.Undo)
+            if (State == UndoRedoCommandState.Undo)
             {
                 if (!_list.Contains(_objRef)) // object no longer exists (was removed externally without undo/redo tracking)
                     return false;
             }
-            else if(State == UndoRedoCommandState.Redo)
+            else if (State == UndoRedoCommandState.Redo)
             {
                 if (_list == null) // list no longer exists (was removed externally without undo/redo tracking)
                     return false;

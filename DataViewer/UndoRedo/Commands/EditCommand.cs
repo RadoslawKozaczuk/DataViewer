@@ -27,7 +27,7 @@ namespace DataViewer.UndoRedo.Commands
         {
             // if I have any Add/Remove command that I rely on
             // check if it exists
-            if(RelyOn != null)
+            if (RelyOn != null)
                 return true;
 
             // if I target data that no Edit/Remove command targets
@@ -59,7 +59,7 @@ namespace DataViewer.UndoRedo.Commands
             if (State == UndoRedoCommandState.Undo)
                 throw new Exception(REDO_CONSECUTIVE_CALL_ERROR);
 
-            if(_type == typeof(LocalizationEntry))
+            if (_type == typeof(LocalizationEntry))
                 RedoForLocalizationEntry();
             else if (_type == typeof(Variant))
                 RedoForVariant();
@@ -69,10 +69,10 @@ namespace DataViewer.UndoRedo.Commands
             State = UndoRedoCommandState.Undo;
         }
 
-        void UndoForLocalizationEntry() 
+        void UndoForLocalizationEntry()
             => (_objRef as LocalizationEntry).Speaker = (_oldVal as LocalizationEntry).Speaker;
 
-        void RedoForLocalizationEntry() 
+        void RedoForLocalizationEntry()
             => (_objRef as LocalizationEntry).Speaker = (_newVal as LocalizationEntry).Speaker;
 
         void UndoForVariant()
@@ -96,7 +96,7 @@ namespace DataViewer.UndoRedo.Commands
         {
             TextLine obj = _objRef as TextLine;
             TextLine old = _oldVal as TextLine;
-            TextLine @new  = _newVal as TextLine;
+            TextLine @new = _newVal as TextLine;
             if (old.Text != @new.Text)
                 obj.Text = @new.Text;
             if (old.Language != @new.Language)

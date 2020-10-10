@@ -6,7 +6,7 @@ using System.Windows.Data;
 namespace DataViewer
 {
     static class ExtensionMethods
-    { 
+    {
         /// <summary>
         /// In order to extend this list extend <see cref="Language"/> enumerator and check the corresponding code at
         /// <a href="https://cloud.google.com/translate/docs/languages">https://cloud.google.com/translate/docs/languages</a>
@@ -79,7 +79,7 @@ namespace DataViewer
         /// <summary>
         /// Returns for example 'E751F84EDCD7437F9F4BC89CEEDC5118'.
         /// </summary>
-        public static string ToPlainUpper(this Guid guid) 
+        public static string ToPlainUpper(this Guid guid)
             => guid.ToString().Replace("-", "").ToUpper();
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace DataViewer
         /// </summary>
         internal static bool Any<T>(this IEnumerable<T> colleciton, Func<T, bool> func)
         {
-            foreach(T item in colleciton)
+            foreach (T item in colleciton)
                 if (func(item))
                     return true;
 

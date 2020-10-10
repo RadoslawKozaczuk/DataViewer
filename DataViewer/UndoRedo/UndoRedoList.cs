@@ -34,7 +34,7 @@ namespace DataViewer.UndoRedo
     {
         readonly CommandStack _commandStack;
 
-        public UndoRedoList(CommandStack commandStack) 
+        public UndoRedoList(CommandStack commandStack)
             : base()
         {
             // assertion
@@ -46,7 +46,7 @@ namespace DataViewer.UndoRedo
             _commandStack = commandStack;
         }
 
-        public UndoRedoList(int capacity, CommandStack commandStack) 
+        public UndoRedoList(int capacity, CommandStack commandStack)
             : base(capacity)
         {
             // assertion
@@ -58,7 +58,7 @@ namespace DataViewer.UndoRedo
             _commandStack = commandStack;
         }
 
-        public UndoRedoList(IEnumerable<T> enumerable,  CommandStack commandStack) 
+        public UndoRedoList(IEnumerable<T> enumerable, CommandStack commandStack)
             : base(enumerable)
         {
             // assertion
@@ -101,7 +101,7 @@ namespace DataViewer.UndoRedo
         /// <summary>
         /// Inserts element to the list and adds <see cref="AddCommand{T}"/> to the corresponding <see cref="CommandStack"/>
         /// </summary>
-        public void InsertWithUndoRedoTracking(int index, T item) 
+        public void InsertWithUndoRedoTracking(int index, T item)
             => _commandStack.Push(new AddCommand<T>(this, index, item));
     }
 }

@@ -45,7 +45,7 @@ namespace DataViewer.Controllers
             if (entries.Count == 0)
                 throw new ArgumentException("entry list cannot be empty", "entries");
 #endif
-            
+
             _entries = entries;
 
             RemoveEntriesWithInvalidGUID();
@@ -190,7 +190,7 @@ namespace DataViewer.Controllers
                         textsToCheck.Add(textLine.Text);
                     }
 
-            if(!_cloud.DetectLanguages(textsToCheck, out IList<Language?> detections))
+            if (!_cloud.DetectLanguages(textsToCheck, out IList<Language?> detections))
                 return false; // detection not possible, return control
 
             // apply detected data

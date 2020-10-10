@@ -93,7 +93,7 @@ namespace DataViewer.UndoRedo
         public void Refresh()
         {
             // edit command relies on add and remove so we have to first iterate over these
-            for(int i = 0; i < _undoRedoStack.Count; i++)
+            for (int i = 0; i < _undoRedoStack.Count; i++)
             {
                 IUndoRedoCommand cmd = _undoRedoStack[i];
                 if (cmd is AddCommand<IModel> || cmd is RemoveCommand<IModel>)

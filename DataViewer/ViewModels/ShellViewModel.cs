@@ -165,7 +165,7 @@ namespace DataViewer.ViewModels
 
         public bool CanTranslate
             => !IsProcessingBackgroundTask
-            && SelectedTextLine != null 
+            && SelectedTextLine != null
             && SelectedTextLine.Language != TranslationLanguage
             && !string.IsNullOrWhiteSpace(SelectedTextLine.Text);
 
@@ -355,7 +355,7 @@ namespace DataViewer.ViewModels
 
             _variantsView.ForceCommitRefresh();
         }
-        
+
         public void TextLines_CellEditEnding(DataGridCellEditEndingEventArgs e)
         {
             if (e.EditAction != DataGridEditAction.Commit)
